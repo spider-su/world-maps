@@ -1,0 +1,26 @@
+# Component ledger
+
+This ledger distinguishes source-tested behavior from coverage provided by this starter. Update it when the template changes.
+
+| Component | Source / contract | Test evidence | Compatibility / adoption |
+|---|---|---|---|
+| App shell owns top safe area; visible tabs own bottom; hidden-tabs screen may own both edges | Ryczałt Android system-bar regression; reusable safe-area contract | Template tests cover both navigation modes and inset sizing | Expo 57 / RN 0.86 baseline; do not double-consume bottom inset |
+| Tab bar adds the reported bottom inset once and enforces minimum padding when inset is zero | Shared behavior; height and spacing remain app-configurable | Focused source tests in both apps; starter tests cover positive, zero, and negative inset inputs | Compare tab sizing with product design before adoption |
+| Modal/fallback screens account for system edges | Both apps' modal/safe-area conventions | Edge contract source tests; starter tests cover edge constants and modal padding | Modal windows need their own safe area; avoid consuming the same inset twice |
+| Theme, auth, API, persistence, notifications, telemetry, release identity | Intentionally omitted from starter | Not applicable | Add and verify per app; do not copy app credentials or product semantics |
+
+## Validation status
+
+- Source-level safe-area contract and unit tests: present in both source apps; starter has equivalent focused tests.
+- Automated validation: this starter's CI result is recorded in the initial commit/release notes and GitHub Actions.
+- Android three-button navigation: not claimed as verified by the source port audit; validate on a device/emulator using that mode.
+- iOS simulator safe areas: not claimed as verified by the source port audit; validate in simulator.
+- Physical-device, store-build, and live-service behavior: not established by unit tests or CI.
+- Hidden-tab safe-area mode: unit-tested ownership only; device validation still required.
+- Local-first consistency, navigation/scroll, and release-upgrade recipes: documented patterns, not prepackaged financial models or tested store deployment.
+
+For each future component, replace generic status with dated evidence and the device/OS/configuration used. A test passing in one app does not prove the receiving app adopted it correctly.
+
+| App error boundary and loading/error/empty UI | Generic template primitives | Storage contract unit tests; UI device evidence pending | Error boundary handles render failures only; async failures require screen-level handling |
+| Opt-in typed persistence and native/web adapters | Generic template contract | Unit tests cover round-trip, missing/corrupt data, invalid keys and backend errors | AsyncStorage install required only for adopting native apps; web localStorage is browser-only |
+| Codex instructions and skill templates | Adapted from Ryczałt workflow structure, without project-specific paths or credentials | Documentation only; emulator execution not yet verified | Downstream apps must supply app identity, test fixtures and device evidence |

@@ -1,0 +1,6 @@
+# Generic repository defaults; downstream apps should tune these for their needs.
+model_reasoning_effort = "medium"
+model_verbosity = "low"
+project_doc_max_bytes = 32768
+
+# Do not grant autonomous write or network permissions in the shared starter.

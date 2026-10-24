@@ -1,7 +1,7 @@
 import type { ExpoConfig, ConfigContext } from 'expo/config';
 
-const appName = process.env.APP_NAME ?? 'Mobile Starter';
-const slug = process.env.APP_SLUG ?? 'mobile-starter';
+const appName = process.env.APP_NAME ?? 'World Maps';
+const slug = process.env.APP_SLUG ?? 'world-maps';
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
@@ -13,11 +13,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     ...config.ios,
     supportsTablet: false,
-    ...(process.env.IOS_BUNDLE_IDENTIFIER ? { bundleIdentifier: process.env.IOS_BUNDLE_IDENTIFIER } : {})
+    bundleIdentifier: process.env.IOS_BUNDLE_IDENTIFIER ?? 'com.spidersu.worldmaps'
   },
   android: {
     ...config.android,
-    ...(process.env.ANDROID_PACKAGE ? { package: process.env.ANDROID_PACKAGE } : {})
+    package: process.env.ANDROID_PACKAGE ?? 'com.spidersu.worldmaps'
   },
   plugins: ['expo-system-ui', ['expo-local-authentication', { faceIDPermission: 'Allow this app to verify your identity using Face ID.' }]],
   extra: {

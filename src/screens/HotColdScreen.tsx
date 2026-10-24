@@ -5,7 +5,8 @@ import * as Speech from 'expo-speech';
 import { europePack, europeShapes } from '../features/geography/europe';
 import { europeBorderDistanceKm } from '../features/geography/borderDistance';
 import { guess, startRound, type GuessResult, type Round } from '../features/geography/engine';
-import { initialProgress, loadProgress, recordSession, saveProgress, scoreRound, sessionFromRound, summary, type GameProgress } from '../features/geography/progress';
+import { initialProgress, recordSession, scoreRound, sessionFromRound, summary, type GameProgress } from '../features/geography/progress';
+import { loadProgress, saveProgress } from '../features/geography/progressStorage';
 
 const SEA = '#B7DEEF';
 const NEUTRAL = '#F0F3F1';
@@ -74,6 +75,7 @@ export function HotColdScreen() {
   useEffect(() => () => { void Speech.stop().catch(() => undefined); }, []);
 
   const selectCountry = useCallback((id: string) => {
+    if (!progressLoaded) return;
     try {
       const picked = guess(europePack, round, id, europeBorderDistanceKm);
       setRound(picked.round);

@@ -40,7 +40,10 @@ all country labels eligible; larger countries have priority and overlapping/offs
 labels are omitted until zoom provides room. Small-country button names are shown
 when enabled or guessed. Labels do not intercept country taps. Hide names restores
 the guessed-only view; a new round hides unguessed names again. Switching label
-visibility does not change guesses, scoring, or saved voice preferences.
+visibility does not change guesses, scoring, or saved voice preferences. Switching
+game modes resets label visibility. In Name It, names stay hidden until completion
+and the highlighted target never reveals a marker name or map label before an
+answer; in Learn, the selected country can reveal its name without recording a score.
 
 ## Validation
 

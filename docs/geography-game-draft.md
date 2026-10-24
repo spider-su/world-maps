@@ -54,3 +54,17 @@ Record raw results: pack ID, mode ID, target ID, ordered guesses, start/completi
 - Higher-resolution country shapes and microstates.
 - Theme and layout polish on actual Android devices.
 - Persisted in-progress rounds (only completed sessions are recorded intentionally).
+
+
+## Stage 4 — multiple game modes
+
+The Play screen has a reusable, pack-agnostic ModeSelector with four modes using the **same Europe SVG map**:
+
+- **Hot & Cold**: hidden target, persistent proximity colors, scoring by number of guesses (unchanged).
+- **Find It**: the target's name is visible and can be pronounced; tap a country until correct. Wrong guesses are indicated; success completes the round.
+- **Name It**: one highlighted target on the map, with four unique country names. Wrong options are disabled after being chosen and a correct option completes the round.
+- **Learn**: free tap-to-reveal with pronunciation and no scoring or saved completed sessions.
+
+Quiz scores are stored independently per mode. Existing Hot & Cold records retain their original storage key/pack ID; additional modes use a pack/mode suffix. Speech respects the saved mute preference. Switching modes discards the active round without recording a success.
+
+Stage 4 tests cover the mode registry, non-leaking Hot & Cold prompt, answer option uniqueness, and completion/repeat-answer behavior. Physical device, accessibility, and web smoke tests are still required before merge.

@@ -178,13 +178,12 @@ export function HotColdScreen() {
               onPress={() => selectCountry(shape.id)}
             />
           ))}
-          {microstates.map((state, i) => {
+          {microstates.map(state => {
             const result = resultById.get(state.id);
             return <Circle key={state.id} cx={state.x} cy={state.y}
               r={Math.max(2, 5 / zoom)}
               fill={result ? COLORS[result] : '#F9FAFB'} stroke="#17364A"
               strokeWidth={Math.max(0.7, 1.5 / zoom)} onPress={() => selectCountry(state.id)} />;
-
           })}
           {microstates.map((state, i) => <SvgText key={`${state.id}-number`} x={state.x} y={state.y + 2.1 / zoom}
             fontSize={Math.max(4, 6 / zoom)} textAnchor="middle" fill="#15384F">{i + 1}</SvgText>)}

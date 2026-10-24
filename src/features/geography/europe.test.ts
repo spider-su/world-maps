@@ -1,12 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { europePack, europeShapes } from './europe';
+import { microstates } from './microstates';
 import { guess, startRound } from './engine';
 
 describe('Europe Hot & Cold map pack', () => {
   it('contains a unique selectable ID for every rendered shape', () => {
     expect(europeShapes.length).toBeGreaterThanOrEqual(35);
     expect(new Set(europeShapes.map(shape => shape.id)).size).toBe(europeShapes.length);
-    expect(europePack.locations.map(location => location.id)).toEqual(europeShapes.map(shape => shape.id));
+    expect(europePack.locations.map(location => location.id)).toEqual([...europeShapes, ...microstates].map(shape => shape.id));
+    expect(new Set(europePack.locations.map(location => location.id)).size).toBe(europePack.locations.length);
+    expect(microstates).toHaveLength(6);
     expect(europeShapes.every(shape => /^M\d/.test(shape.path))).toBe(true);
   });
   it('allows the target to stay hidden until the correct guess', () => {

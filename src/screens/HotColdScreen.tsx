@@ -3,6 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } fr
 import Svg, { Path, Rect } from 'react-native-svg';
 import * as Speech from 'expo-speech';
 import { europePack, europeShapes } from '../features/geography/europe';
+import { europeBorderDistanceKm } from '../features/geography/borderDistance';
 import { guess, startRound, type GuessResult, type Round } from '../features/geography/engine';
 
 const SEA = '#B7DEEF';
@@ -52,7 +53,7 @@ export function HotColdScreen() {
 
   const selectCountry = useCallback((id: string) => {
     try {
-      const picked = guess(europePack, round, id);
+      const picked = guess(europePack, round, id, europeBorderDistanceKm);
       setRound(picked.round);
       setFeedback({ name: picked.location.name, result: picked.result });
       if (soundEnabled) {
@@ -72,9 +73,7 @@ export function HotColdScreen() {
       for (const id of round.guesses) {
         const location = europePack.locations.find(item => item.id === id);
         if (location) {
-          // MVP proximity uses representative country points. Replace with a
-          // shortest-border lookup when higher-resolution map geometry is shipped.
-          const result = guess(europePack, { ...round, guesses: [], completedAt: undefined }, id);
+          const result = guess(europePack, { ...round, guesses: [], completedAt: undefined }, id, europeBorderDistanceKm);
           results.set(id, result.result);
         }
       }

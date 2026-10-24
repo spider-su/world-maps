@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { PanResponder, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
-import Svg, { Circle, Path, Rect } from 'react-native-svg';
+import Svg, { Circle, Path, Rect, Text as SvgText } from 'react-native-svg';
 import * as Speech from 'expo-speech';
 import { europePack, europeShapes } from '../features/geography/europe';
 import { europeBorderDistanceKm } from '../features/geography/borderDistance';
@@ -178,13 +178,16 @@ export function HotColdScreen() {
               onPress={() => selectCountry(shape.id)}
             />
           ))}
-          {microstates.map(state => {
+          {microstates.map((state, i) => {
             const result = resultById.get(state.id);
             return <Circle key={state.id} cx={state.x} cy={state.y}
               r={Math.max(2, 5 / zoom)}
               fill={result ? COLORS[result] : '#F9FAFB'} stroke="#17364A"
               strokeWidth={Math.max(0.7, 1.5 / zoom)} onPress={() => selectCountry(state.id)} />;
+
           })}
+          {microstates.map((state, i) => <SvgText key={`${state.id}-number`} x={state.x} y={state.y + 2.1 / zoom}
+            fontSize={Math.max(4, 6 / zoom)} textAnchor="middle" fill="#15384F">{i + 1}</SvgText>)}
           {microstates.map(state => <Circle key={`${state.id}-hit`} cx={state.x} cy={state.y}
             r={Math.max(5, 24 / zoom)} fill="transparent"
             onPress={() => selectCountry(state.id)} />)}
@@ -199,12 +202,12 @@ export function HotColdScreen() {
           <Pressable style={styles.control} onPress={() => setViewport(v => normalize({ ...v, center: { ...v.center, y: v.center.y - 90 / v.zoom } }))}><Text style={styles.controlText}>↑</Text></Pressable>
           <Pressable style={styles.control} onPress={() => setViewport(v => normalize({ ...v, center: { ...v.center, y: v.center.y + 90 / v.zoom } }))}><Text style={styles.controlText}>↓</Text></Pressable>
         </View>
-        <Text style={styles.smallCountryTitle}>SMALL COUNTRIES · TAP TO SELECT</Text>
+        <Text style={styles.smallCountryTitle}>SMALL COUNTRIES · NUMBERED MARKERS</Text>
         <View style={styles.microstateChips}>
-          {microstates.map(country => (
-            <Pressable key={country.id} accessibilityRole="button" accessibilityLabel={`Select ${country.name}`}
+          {microstates.map((country, index) => (
+            <Pressable key={country.id} accessibilityRole="button" accessibilityLabel={`Select small country marker ${index + 1}`}
               style={styles.microstateChip} onPress={() => selectCountry(country.id)}>
-              <Text style={styles.microstateChipText}>{country.name}</Text>
+              <Text style={styles.microstateChipText}>#{index + 1}</Text>
             </Pressable>
           ))}
         </View>

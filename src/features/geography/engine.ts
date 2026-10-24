@@ -57,7 +57,7 @@ export function proximity(distance: number): GuessResult {
 export function startRound(pack: GeographyPack, random: () => number = Math.random, now = Date.now()): Round {
   if (pack.locations.length === 0) throw new Error('Map pack cannot be empty');
   const index = Math.min(pack.locations.length - 1, Math.max(0, Math.floor(random() * pack.locations.length)));
-  return { packId: pack.id, targetId: pack.locations[index].id, guesses: [], startedAt: now };
+  return { packId: pack.id, targetId: pack.locations[index]!.id, guesses: [], startedAt: now };
 }
 
 export function guess(

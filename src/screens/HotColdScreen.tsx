@@ -156,7 +156,7 @@ export function HotColdScreen() {
               strokeWidth={Math.max(0.7, 1.5 / zoom)} onPress={() => selectCountry(state.id)} />;
           })}
           {microstates.map(state => <Circle key={`${state.id}-hit`} cx={state.x} cy={state.y}
-            r={Math.max(5, 14 / zoom)} fill="transparent"
+            r={Math.max(5, 24 / zoom)} fill="transparent"
             onPress={() => selectCountry(state.id)} />)}
         </Svg>
         </View>
@@ -168,6 +168,15 @@ export function HotColdScreen() {
           <Pressable style={styles.control} onPress={() => setViewport(v => normalize({ ...v, center: { ...v.center, x: v.center.x + 90 / v.zoom } }))}><Text style={styles.controlText}>→</Text></Pressable>
           <Pressable style={styles.control} onPress={() => setViewport(v => normalize({ ...v, center: { ...v.center, y: v.center.y - 90 / v.zoom } }))}><Text style={styles.controlText}>↑</Text></Pressable>
           <Pressable style={styles.control} onPress={() => setViewport(v => normalize({ ...v, center: { ...v.center, y: v.center.y + 90 / v.zoom } }))}><Text style={styles.controlText}>↓</Text></Pressable>
+        </View>
+        <Text style={styles.smallCountryTitle}>SMALL COUNTRIES · TAP TO SELECT</Text>
+        <View style={styles.microstateChips}>
+          {microstates.map(country => (
+            <Pressable key={country.id} accessibilityRole="button" accessibilityLabel={`Select ${country.name}`}
+              style={styles.microstateChip} onPress={() => selectCountry(country.id)}>
+              <Text style={styles.microstateChipText}>{country.name}</Text>
+            </Pressable>
+          ))}
         </View>
       </View>
       <View style={styles.feedback}>
@@ -205,6 +214,10 @@ const styles = StyleSheet.create({
   stats:{flexDirection:'row',justifyContent:'space-between',paddingHorizontal:9},
   stat:{fontSize:13,color:'#3D6679'},
   statBold:{fontWeight:'800',color:'#153F56'},
+  smallCountryTitle:{fontSize:10,color:'#315C70',fontWeight:'800',letterSpacing:1,marginTop:12},
+  microstateChips:{flexDirection:'row',flexWrap:'wrap',gap:6,justifyContent:'center',paddingHorizontal:8,paddingVertical:10},
+  microstateChip:{backgroundColor:'#F8FCFF',borderRadius:10,borderWidth:1,borderColor:'#92B4C6',minHeight:38,paddingHorizontal:10,justifyContent:'center'},
+  microstateChipText:{fontSize:12,color:'#1B4A63',fontWeight:'700'},
   mapCard:{borderRadius:18,backgroundColor:'#B7DEEF',overflow:'hidden',alignItems:'center',paddingTop:8,paddingBottom:6},
   controls:{flexDirection:'row',gap:6,alignItems:'center',marginTop:6,flexWrap:'wrap',justifyContent:'center'},
   control:{width:35,height:34,borderRadius:10,backgroundColor:'#fff',alignItems:'center',justifyContent:'center'},

@@ -1,7 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Round } from './engine';
 
-const KEY = 'world-maps:hot-cold:progress:v1';
 export const MAX_HISTORY = 100;
 
 export interface CompletedSession {
@@ -83,10 +81,3 @@ export function parseProgress(raw: string | null): GameProgress {
   }
 }
 
-export async function loadProgress(): Promise<GameProgress> {
-  return parseProgress(await AsyncStorage.getItem(KEY));
-}
-
-export async function saveProgress(progress: GameProgress): Promise<void> {
-  await AsyncStorage.setItem(KEY, JSON.stringify(progress));
-}

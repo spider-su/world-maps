@@ -1,13 +1,15 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
-import Svg, { Rect } from 'react-native-svg';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { PanResponder, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import Svg, { Circle, Rect, Text as SvgText } from 'react-native-svg';
 import * as Speech from 'expo-speech';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { appSafeAreaEdges } from '../platform/safeArea';
 import { CountryPath } from '../features/geography/CountryPath';
 import { europePack, europeShapes } from '../features/geography/europe';
 import { europeBorderDistanceKm } from '../features/geography/borderDistance';
-import { guess, startRound, type GuessResult, type Round } from '../features/geography/engine';
+import { microstates } from '../features/geography/microstates';
+import { frame, INITIAL_VIEWPORT, normalize, pan, zoomAt, type Viewport } from '../features/geography/viewport';
+import { distanceKm, guess, startRound, type GuessResult, type Round } from '../features/geography/engine';
 import { initialProgress, recordSession, scoreRound, sessionFromRound, summary, type GameProgress } from '../features/geography/progress';
 import { loadProgress, saveProgress } from '../features/geography/progressStorage';
 
@@ -39,8 +41,10 @@ export function HotColdScreen() {
   const [storageWarning, setStorageWarning] = useState(false);
   const soundEnabled = progress.voiceEnabled;
   const stats = useMemo(() => summary(progress, europePack.id), [progress]);
-  const [zoom, setZoom] = useState(1);
-  const [center, setCenter] = useState({ x: 432, y: 285 });
+  const [viewport, setViewport] = useState<Viewport>(INITIAL_VIEWPORT);
+  const viewportRef = useRef(viewport);
+  viewportRef.current = viewport;
+  const gestureRef = useRef({ viewport, pinchDistance: 0 });
   const completed = round.completedAt !== undefined;
   const spokenLanguage = 'en-US';
 
@@ -61,13 +65,8 @@ export function HotColdScreen() {
     void saveProgress(next).catch(() => setStorageWarning(true));
   }, []);
 
-  const visible = useMemo(() => {
-    const sizeX = 864 / zoom;
-    const sizeY = 570 / zoom;
-    const x = Math.max(0, Math.min(864 - sizeX, center.x - sizeX / 2));
-    const y = Math.max(0, Math.min(570 - sizeY, center.y - sizeY / 2));
-    return { x, y, sizeX, sizeY };
-  }, [zoom, center]);
+  const visible = useMemo(() => frame(viewport), [viewport]);
+  const zoom = viewport.zoom;
 
   const restart = () => {
     void Speech.stop().catch(() => undefined);
@@ -77,10 +76,15 @@ export function HotColdScreen() {
 
   useEffect(() => () => { void Speech.stop().catch(() => undefined); }, []);
 
+  const distanceResolver = useCallback((a: (typeof europePack.locations)[number], b: (typeof europePack.locations)[number]) =>
+    microstates.some(state => state.id === a.id || state.id === b.id)
+      ? distanceKm(a, b)
+      : europeBorderDistanceKm(a, b), []);
+
   const selectCountry = useCallback((id: string) => {
     if (!progressLoaded) return;
     try {
-      const picked = guess(europePack, round, id, europeBorderDistanceKm);
+      const picked = guess(europePack, round, id, distanceResolver);
       setRound(picked.round);
       if (!picked.repeated && picked.round.completedAt !== undefined && progressLoaded) {
         updateProgress(recordSession(progress, sessionFromRound(picked.round)));
@@ -94,7 +98,7 @@ export function HotColdScreen() {
     } catch {
       // A completed round cannot accept new guesses; the player starts the next round.
     }
-  }, [round, soundEnabled, progress, progressLoaded, updateProgress]);
+  }, [round, soundEnabled, progress, progressLoaded, updateProgress, distanceResolver]);
 
   const resultById = useMemo(() => {
     const target = europePack.locations.find(item => item.id === round.targetId);
@@ -103,16 +107,47 @@ export function HotColdScreen() {
       for (const id of round.guesses) {
         const location = europePack.locations.find(item => item.id === id);
         if (location) {
-          const result = guess(europePack, { ...round, guesses: [], completedAt: undefined }, id, europeBorderDistanceKm);
+          const result = guess(europePack, { ...round, guesses: [], completedAt: undefined }, id, distanceResolver);
           results.set(id, result.result);
         }
       }
     }
     return results;
-  }, [round]);
+  }, [round, distanceResolver]);
 
   const mapWidth = Math.max(280, Math.min(width - 24, 680));
   const mapHeight = mapWidth * 570 / 864;
+  const responder = useMemo(() => PanResponder.create({
+    onStartShouldSetPanResponder: () => false,
+    onMoveShouldSetPanResponder: (event, gesture) =>
+      event.nativeEvent.touches.length > 1 || Math.abs(gesture.dx) > 5 || Math.abs(gesture.dy) > 5,
+    onPanResponderGrant: () => {
+      gestureRef.current = { viewport: viewportRef.current, pinchDistance: 0 };
+    },
+    onPanResponderMove: (event, gesture) => {
+      const touches = event.nativeEvent.touches;
+      if (touches.length >= 2 && touches[0] && touches[1]) {
+        const dx = touches[0].pageX - touches[1].pageX;
+        const dy = touches[0].pageY - touches[1].pageY;
+        const distance = Math.hypot(dx, dy);
+        if (!gestureRef.current.pinchDistance) {
+          gestureRef.current = { viewport: viewportRef.current, pinchDistance: distance };
+          return;
+        }
+        setViewport(zoomAt(gestureRef.current.viewport, distance / gestureRef.current.pinchDistance,
+          { x: mapWidth / 2, y: mapHeight / 2 }, mapWidth));
+      } else if (gestureRef.current.pinchDistance) {
+        gestureRef.current = { viewport: viewportRef.current, pinchDistance: 0 };
+      } else {
+        setViewport(pan(gestureRef.current.viewport, gesture.dx, gesture.dy, mapWidth));
+      }
+    },
+    onPanResponderRelease: () => { gestureRef.current.pinchDistance = 0; },
+    onPanResponderTerminate: () => { gestureRef.current.pinchDistance = 0; },
+  }), [mapWidth, mapHeight]);
+
+  const adjustZoom = (factor: number) => setViewport(old =>
+    zoomAt(old, factor, { x: mapWidth / 2, y: mapHeight / 2 }, mapWidth));
 
   return (
     <SafeAreaView edges={appSafeAreaEdges} style={styles.screen}>
@@ -137,7 +172,8 @@ export function HotColdScreen() {
           <Text style={styles.progressText}>Total  <Text style={styles.progressValue}>{stats.totalScore}</Text></Text>
         </View>
         <View style={styles.mapCard}>
-          <Svg width={mapWidth} height={mapHeight} viewBox={`${visible.x} ${visible.y} ${visible.sizeX} ${visible.sizeY}`} accessibilityLabel="Interactive map of Europe. Tap countries to guess.">
+          <View {...responder.panHandlers} collapsable={false}>
+          <Svg width={mapWidth} height={mapHeight} viewBox={`${visible.x} ${visible.y} ${visible.w} ${visible.h}`} accessibilityLabel="Interactive map of Europe. Tap countries to guess.">
             <Rect width="864" height="570" fill={SEA} />
             {europeShapes.map(shape => (
               <CountryPath key={shape.id} d={shape.path}
@@ -146,15 +182,37 @@ export function HotColdScreen() {
                 onSelect={() => selectCountry(shape.id)}
               />
             ))}
+            {microstates.map(state => {
+              const result = resultById.get(state.id);
+              return <Circle key={state.id} cx={state.x} cy={state.y}
+                r={Math.max(2, 5 / zoom)}
+                fill={result ? COLORS[result] : '#F9FAFB'} stroke="#17364A"
+                strokeWidth={Math.max(0.7, 1.5 / zoom)} onPress={() => selectCountry(state.id)} />;
+            })}
+            {microstates.map((state, i) => <SvgText key={`${state.id}-number`} x={state.x} y={state.y + 2.1 / zoom}
+              fontSize={Math.max(4, 6 / zoom)} textAnchor="middle" fill="#15384F">{i + 1}</SvgText>)}
+            {microstates.map(state => <Circle key={`${state.id}-hit`} cx={state.x} cy={state.y}
+              r={Math.max(5, 24 / zoom)} fill="transparent"
+              onPress={() => selectCountry(state.id)} />)}
           </Svg>
+          </View>
           <View style={styles.controls}>
-            <Pressable style={styles.control} onPress={() => setZoom(z => Math.max(1, z / 1.5))}><Text style={styles.controlText}>−</Text></Pressable>
+            <Pressable style={styles.control} onPress={() => adjustZoom(1 / 1.5)}><Text style={styles.controlText}>−</Text></Pressable>
             <Text style={styles.zoomLabel}>{zoom.toFixed(1)}×</Text>
-            <Pressable style={styles.control} onPress={() => setZoom(z => Math.min(5, z * 1.5))}><Text style={styles.controlText}>+</Text></Pressable>
-            <Pressable style={styles.control} onPress={() => setCenter(p => ({ ...p, x: Math.max(0, p.x - 90 / zoom) }))}><Text style={styles.controlText}>←</Text></Pressable>
-            <Pressable style={styles.control} onPress={() => setCenter(p => ({ ...p, x: Math.min(864, p.x + 90 / zoom) }))}><Text style={styles.controlText}>→</Text></Pressable>
-            <Pressable style={styles.control} onPress={() => setCenter(p => ({ ...p, y: Math.max(0, p.y - 90 / zoom) }))}><Text style={styles.controlText}>↑</Text></Pressable>
-            <Pressable style={styles.control} onPress={() => setCenter(p => ({ ...p, y: Math.min(570, p.y + 90 / zoom) }))}><Text style={styles.controlText}>↓</Text></Pressable>
+            <Pressable style={styles.control} onPress={() => adjustZoom(1.5)}><Text style={styles.controlText}>+</Text></Pressable>
+            <Pressable style={styles.control} onPress={() => setViewport(v => normalize({ ...v, center: { ...v.center, x: v.center.x - 90 / v.zoom } }))}><Text style={styles.controlText}>←</Text></Pressable>
+            <Pressable style={styles.control} onPress={() => setViewport(v => normalize({ ...v, center: { ...v.center, x: v.center.x + 90 / v.zoom } }))}><Text style={styles.controlText}>→</Text></Pressable>
+            <Pressable style={styles.control} onPress={() => setViewport(v => normalize({ ...v, center: { ...v.center, y: v.center.y - 90 / v.zoom } }))}><Text style={styles.controlText}>↑</Text></Pressable>
+            <Pressable style={styles.control} onPress={() => setViewport(v => normalize({ ...v, center: { ...v.center, y: v.center.y + 90 / v.zoom } }))}><Text style={styles.controlText}>↓</Text></Pressable>
+          </View>
+          <Text style={styles.smallCountryTitle}>SMALL COUNTRIES · NUMBERED MARKERS</Text>
+          <View style={styles.microstateChips}>
+            {microstates.map((country, index) => (
+              <Pressable key={country.id} accessibilityRole="button" accessibilityLabel={`Select small country marker ${index + 1}`}
+                style={styles.microstateChip} onPress={() => selectCountry(country.id)}>
+                <Text style={styles.microstateChipText}>#{index + 1}</Text>
+              </Pressable>
+            ))}
           </View>
         </View>
         <View style={styles.feedback}>
@@ -178,7 +236,7 @@ export function HotColdScreen() {
           <Text style={styles.nextText}>{completed ? 'Next country →' : 'New hidden country ↻'}</Text>
         </Pressable>
         {storageWarning && <Text style={styles.warning}>Progress could not be saved on this device.</Text>}
-        <Text style={styles.footer}>Offline Europe preview · simplified country outlines · scores saved on device</Text>
+        <Text style={styles.footer}>Pinch to zoom · drag to move · tap the microstate dots · scores saved on device</Text>
       </ScrollView>
     </SafeAreaView>
   );
@@ -201,6 +259,10 @@ const styles = StyleSheet.create({
   progressValue:{fontWeight:'800',color:'#184A66'},
   scoreText:{fontSize:17,color:'#22885A',fontWeight:'800',paddingTop:5},
   warning:{fontSize:12,textAlign:'center',color:'#A63C35'},
+  smallCountryTitle:{fontSize:10,color:'#315C70',fontWeight:'800',letterSpacing:1,marginTop:12},
+  microstateChips:{flexDirection:'row',flexWrap:'wrap',gap:6,justifyContent:'center',paddingHorizontal:8,paddingVertical:10},
+  microstateChip:{backgroundColor:'#F8FCFF',borderRadius:10,borderWidth:1,borderColor:'#92B4C6',minHeight:38,paddingHorizontal:10,justifyContent:'center'},
+  microstateChipText:{fontSize:12,color:'#1B4A63',fontWeight:'700'},
   mapCard:{borderRadius:18,backgroundColor:'#B7DEEF',overflow:'hidden',alignItems:'center',paddingTop:8,paddingBottom:6},
   controls:{flexDirection:'row',gap:6,alignItems:'center',marginTop:6,flexWrap:'wrap',justifyContent:'center'},
   control:{width:35,height:34,borderRadius:10,backgroundColor:'#fff',alignItems:'center',justifyContent:'center'},

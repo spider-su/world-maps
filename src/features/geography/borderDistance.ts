@@ -51,7 +51,8 @@ function crosses(a: Point, b: Point, c: Point, d: Point): boolean {
   const a2 = orientation(a, b, d);
   const b1 = orientation(c, d, a);
   const b2 = orientation(c, d, b);
-  return a1 * a2 <= 0 && b1 * b2 <= 0;
+  // Strict crossing only. Collinear disjoint segments are not intersections.
+  return a1 * a2 < 0 && b1 * b2 < 0;
 }
 
 function edgeDistanceSquared([a, b]: Segment, [c, d]: Segment): number {

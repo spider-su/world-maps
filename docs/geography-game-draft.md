@@ -37,3 +37,20 @@ Record raw results: pack ID, mode ID, target ID, ordered guesses, start/completi
 3. Build Hot & Cold screen with color legend, country label and expo-speech, replay on repeat tap.
 4. Add pan/zoom and accessible selection for microstates.
 5. Persist local progress, implement Find It and Name It, then run CI and Android device checks.
+
+
+## Stage 3 — progress and scoring (feature/europe-gameplay-polish)
+
+- Completed Hot & Cold rounds earn 100 points for the first guess, decreasing by 10 per additional guess (minimum 10).
+- Sessions are stored locally under a versioned AsyncStorage key; the most recent 100 completed sessions are retained.
+- Incomplete, abandoned, and repeated guesses are not counted as completed sessions.
+- The Play screen displays number of solved rounds, personal best and total score; voice preference persists across restarts.
+- Invalid stored data is ignored rather than causing an app crash. Storage failures surface a nonfatal warning.
+- CI and on-device validation required before promoting this feature branch.
+
+### Still outstanding for the stage
+
+- Native gesture pinch-to-zoom and drag-to-pan; current map navigation relies on buttons.
+- Higher-resolution country shapes and microstates.
+- Theme and layout polish on actual Android devices.
+- Persisted in-progress rounds (only completed sessions are recorded intentionally).

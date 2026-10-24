@@ -1,9 +1,12 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
-import Svg, { Path, Rect } from 'react-native-svg';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { PanResponder, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import * as Speech from 'expo-speech';
 import { europePack, europeShapes } from '../features/geography/europe';
 import { europeBorderDistanceKm } from '../features/geography/borderDistance';
+import { microstates } from '../features/geography/microstates';
+import { distanceKm } from '../features/geography/engine';
+import { frame, INITIAL_VIEWPORT, normalize, pan, zoomAt, type Viewport } from '../features/geography/viewport';
 import { guess, startRound, type GuessResult, type Round } from '../features/geography/engine';
 
 const SEA = '#B7DEEF';
@@ -30,18 +33,15 @@ export function HotColdScreen() {
   const [round, setRound] = useState<Round>(() => startRound(europePack));
   const [feedback, setFeedback] = useState<{ name: string; result: GuessResult } | null>(null);
   const [soundEnabled, setSoundEnabled] = useState(true);
-  const [zoom, setZoom] = useState(1);
-  const [center, setCenter] = useState({ x: 432, y: 285 });
+  const [viewport, setViewport] = useState<Viewport>(INITIAL_VIEWPORT);
+  const viewportRef = useRef(viewport);
+  viewportRef.current = viewport;
+  const gestureRef = useRef({ viewport, pinchDistance: 0, startZoom: 1 });
   const completed = round.completedAt !== undefined;
   const spokenLanguage = 'en-US';
 
-  const visible = useMemo(() => {
-    const sizeX = 864 / zoom;
-    const sizeY = 570 / zoom;
-    const x = Math.max(0, Math.min(864 - sizeX, center.x - sizeX / 2));
-    const y = Math.max(0, Math.min(570 - sizeY, center.y - sizeY / 2));
-    return { x, y, sizeX, sizeY };
-  }, [zoom, center]);
+  const visible = useMemo(() => frame(viewport), [viewport]);
+  const zoom = viewport.zoom;
 
   const restart = () => {
     void Speech.stop().catch(() => undefined);
@@ -53,7 +53,7 @@ export function HotColdScreen() {
 
   const selectCountry = useCallback((id: string) => {
     try {
-      const picked = guess(europePack, round, id, europeBorderDistanceKm);
+      const picked = guess(europePack, round, id, distanceResolver);
       setRound(picked.round);
       setFeedback({ name: picked.location.name, result: picked.result });
       if (soundEnabled) {
@@ -64,7 +64,13 @@ export function HotColdScreen() {
     } catch {
       // A completed round cannot accept new guesses; the player starts the next round.
     }
-  }, [round, soundEnabled]);
+  }, [round, soundEnabled, distanceResolver]);
+
+  const distanceResolver = useCallback((a: (typeof europePack.locations)[number], b: (typeof europePack.locations)[number]) => (
+    microstates.some(state => state.id === a.id || state.id === b.id)
+      ? distanceKm(a, b)
+      : europeBorderDistanceKm(a, b)
+  ), []);
 
   const resultById = useMemo(() => {
     const target = europePack.locations.find(item => item.id === round.targetId);
@@ -73,16 +79,47 @@ export function HotColdScreen() {
       for (const id of round.guesses) {
         const location = europePack.locations.find(item => item.id === id);
         if (location) {
-          const result = guess(europePack, { ...round, guesses: [], completedAt: undefined }, id, europeBorderDistanceKm);
+          const result = guess(europePack, { ...round, guesses: [], completedAt: undefined }, id, distanceResolver);
           results.set(id, result.result);
         }
       }
     }
     return results;
-  }, [round]);
+  }, [round, distanceResolver]);
 
   const mapWidth = Math.max(280, Math.min(width - 24, 680));
   const mapHeight = mapWidth * 570 / 864;
+  const responder = useMemo(() => PanResponder.create({
+    onStartShouldSetPanResponder: () => false,
+    onMoveShouldSetPanResponder: (event, gesture) =>
+      event.nativeEvent.touches.length > 1 || Math.abs(gesture.dx) > 5 || Math.abs(gesture.dy) > 5,
+    onPanResponderGrant: () => {
+      gestureRef.current = { viewport: viewportRef.current, pinchDistance: 0, startZoom: viewportRef.current.zoom };
+    },
+    onPanResponderMove: (event, gesture) => {
+      const touches = event.nativeEvent.touches;
+      if (touches.length >= 2 && touches[0] && touches[1]) {
+        const dx = touches[0].pageX - touches[1].pageX;
+        const dy = touches[0].pageY - touches[1].pageY;
+        const distance = Math.hypot(dx, dy);
+        if (!gestureRef.current.pinchDistance) {
+          gestureRef.current = { viewport: viewportRef.current, pinchDistance: distance, startZoom: viewportRef.current.zoom };
+          return;
+        }
+        const factor = distance / gestureRef.current.pinchDistance;
+        setViewport(zoomAt(gestureRef.current.viewport, factor, { x: mapWidth / 2, y: mapHeight / 2 }, mapWidth));
+      } else if (gestureRef.current.pinchDistance) {
+        gestureRef.current = { viewport: viewportRef.current, pinchDistance: 0, startZoom: viewportRef.current.zoom };
+      } else {
+        setViewport(pan(gestureRef.current.viewport, gesture.dx, gesture.dy, mapWidth));
+      }
+    },
+    onPanResponderRelease: () => { gestureRef.current.pinchDistance = 0; },
+    onPanResponderTerminate: () => { gestureRef.current.pinchDistance = 0; },
+  }), [mapWidth, mapHeight]);
+
+  const adjustZoom = (factor: number) => setViewport(old =>
+    zoomAt(old, factor, { x: mapWidth / 2, y: mapHeight / 2 }, mapWidth));
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -101,7 +138,8 @@ export function HotColdScreen() {
         <Text style={styles.stat}>{completed ? 'Solved ✓' : 'Target hidden ?'}</Text>
       </View>
       <View style={styles.mapCard}>
-        <Svg width={mapWidth} height={mapHeight} viewBox={`${visible.x} ${visible.y} ${visible.sizeX} ${visible.sizeY}`} accessibilityLabel="Interactive map of Europe. Tap countries to guess.">
+        <View {...responder.panHandlers} collapsable={false}>
+        <Svg width={mapWidth} height={mapHeight} viewBox={`${visible.x} ${visible.y} ${visible.w} ${visible.h}`} accessibilityLabel="Interactive map of Europe. Tap countries to guess.">
           <Rect width="864" height="570" fill={SEA} />
           {europeShapes.map(shape => (
             <Path key={shape.id} d={shape.path}
@@ -110,15 +148,26 @@ export function HotColdScreen() {
               onPress={() => selectCountry(shape.id)}
             />
           ))}
+          {microstates.map(state => {
+            const result = resultById.get(state.id);
+            return <Circle key={state.id} cx={state.x} cy={state.y}
+              r={Math.max(2, 5 / zoom)}
+              fill={result ? COLORS[result] : '#F9FAFB'} stroke="#17364A"
+              strokeWidth={Math.max(0.7, 1.5 / zoom)} onPress={() => selectCountry(state.id)} />;
+          })}
+          {microstates.map(state => <Circle key={`${state.id}-hit`} cx={state.x} cy={state.y}
+            r={Math.max(5, 14 / zoom)} fill="transparent"
+            onPress={() => selectCountry(state.id)} />)}
         </Svg>
+        </View>
         <View style={styles.controls}>
-          <Pressable style={styles.control} onPress={() => setZoom(z => Math.max(1, z / 1.5))}><Text style={styles.controlText}>−</Text></Pressable>
+          <Pressable style={styles.control} onPress={() => adjustZoom(1 / 1.5)}><Text style={styles.controlText}>−</Text></Pressable>
           <Text style={styles.zoomLabel}>{zoom.toFixed(1)}×</Text>
-          <Pressable style={styles.control} onPress={() => setZoom(z => Math.min(5, z * 1.5))}><Text style={styles.controlText}>+</Text></Pressable>
-          <Pressable style={styles.control} onPress={() => setCenter(p => ({ ...p, x: Math.max(0, p.x - 90 / zoom) }))}><Text style={styles.controlText}>←</Text></Pressable>
-          <Pressable style={styles.control} onPress={() => setCenter(p => ({ ...p, x: Math.min(864, p.x + 90 / zoom) }))}><Text style={styles.controlText}>→</Text></Pressable>
-          <Pressable style={styles.control} onPress={() => setCenter(p => ({ ...p, y: Math.max(0, p.y - 90 / zoom) }))}><Text style={styles.controlText}>↑</Text></Pressable>
-          <Pressable style={styles.control} onPress={() => setCenter(p => ({ ...p, y: Math.min(570, p.y + 90 / zoom) }))}><Text style={styles.controlText}>↓</Text></Pressable>
+          <Pressable style={styles.control} onPress={() => adjustZoom(1.5)}><Text style={styles.controlText}>+</Text></Pressable>
+          <Pressable style={styles.control} onPress={() => setViewport(v => normalize({ ...v, center: { ...v.center, x: v.center.x - 90 / v.zoom } }))}><Text style={styles.controlText}>←</Text></Pressable>
+          <Pressable style={styles.control} onPress={() => setViewport(v => normalize({ ...v, center: { ...v.center, x: v.center.x + 90 / v.zoom } }))}><Text style={styles.controlText}>→</Text></Pressable>
+          <Pressable style={styles.control} onPress={() => setViewport(v => normalize({ ...v, center: { ...v.center, y: v.center.y - 90 / v.zoom } }))}><Text style={styles.controlText}>↑</Text></Pressable>
+          <Pressable style={styles.control} onPress={() => setViewport(v => normalize({ ...v, center: { ...v.center, y: v.center.y + 90 / v.zoom } }))}><Text style={styles.controlText}>↓</Text></Pressable>
         </View>
       </View>
       <View style={styles.feedback}>
@@ -140,7 +189,7 @@ export function HotColdScreen() {
       <Pressable style={styles.nextButton} onPress={restart} accessibilityRole="button">
         <Text style={styles.nextText}>{completed ? 'Next country →' : 'New hidden country ↻'}</Text>
       </Pressable>
-      <Text style={styles.footer}>Offline Europe preview · simplified country outlines</Text>
+      <Text style={styles.footer}>Pinch to zoom · drag to move · tap the microstate dots</Text>
     </ScrollView>
   );
 }

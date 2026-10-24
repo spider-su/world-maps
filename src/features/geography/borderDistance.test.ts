@@ -12,7 +12,7 @@ describe('European border distances', () => {
     expect(europeBorderDistanceKm(get('ESP'), get('UKR'))).toBeGreaterThan(1000);
   });
   it('never treats zero-distance neighbours as the secret country', () => {
-    const round = startRound(europePack, () => europePack.locations.findIndex(location => location.id === 'POL') / europePack.locations.length);
+    const round = startRound(europePack, () => (europePack.locations.findIndex(location => location.id === 'POL') + 0.5) / europePack.locations.length);
     expect(round.targetId).toBe('POL');
     const wrong = guess(europePack, round, 'DEU', () => 0);
     expect(wrong.result).not.toBe('correct');

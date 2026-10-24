@@ -4,9 +4,9 @@ Offline-first geography learning game built with Expo and React Native, bootstra
 
 ## Current status
 
-**Europe Hot & Cold playable draft.** The Play tab renders simplified Europe country outlines and lets users discover a hidden country through distance-colored guesses and spoken country names. See [game design and remaining work](docs/geography-game-draft.md).
+**Europe Hot & Cold playable draft.** The Play tab renders detailed Europe country outlines and lets users discover a hidden country through distance-colored guesses and spoken country names. See [game design and remaining work](docs/geography-game-draft.md).
 
-The current milestone implements **Hot & Cold** guessing: a hidden country, approximate border proximity colored on the map, names revealed on selection, and text-to-speech pronunciation. Small microstates, accurate high-resolution borders, gesture zoom/pan, and persistent progress are still future work. Next modes: Find It, Name It and Learn. Future map packs: South America countries and Poland cities.
+The current milestone implements **Hot & Cold** guessing: a hidden country, approximate border proximity colored on the map, names revealed on selection, and text-to-speech pronunciation. The map uses bundled Natural Earth 1:50m outlines, six small-country markers, gesture/button navigation, and saved completed scores. Next modes: Find It, Name It and Learn. Future map packs: South America countries and Poland cities.
 
 ## Local checks
 
@@ -16,6 +16,16 @@ npm run ci
 npx expo-doctor
 npm start
 ```
+
+## Map views
+
+The map follows a clean atlas style: blue water, pale land and dark borders.
+**Show names / Hide names** switches labels on the same interactive map. Names
+start hidden; guessed countries can reveal their labels, and starting a new round
+hides names again. Zoom reveals more labels without overlapping text. Numbered
+small-country buttons also reveal their names when labels are shown or guessed.
+
+Map data, attribution and regeneration: [Europe map assets](docs/europe-map-assets.md).
 
 ## Web map compatibility
 

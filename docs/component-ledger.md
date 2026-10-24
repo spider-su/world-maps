@@ -29,3 +29,5 @@ For each future component, replace generic status with dated evidence and the de
 
 - `src/features/geography/CountryPath`: app-owned SVG path adapter. Web uses a DOM `onClick`; native uses `react-native-svg` `onPress`. No new dependencies. Regression test covers web event routing; browser smoke verified selection, repeat guesses, completion, restart, zoom/pan and tab navigation on 2026-10-24. Native runtime remains unverified.
 - `HotColdScreen` owns the top safe-area edge; visible tabs own the bottom edge.
+
+- Europe map views: bundled 1:50m country/context geometry and collision-filtered labels share the existing 864×570 coordinates. `mapLabels` exposes names only when explicitly enabled or already guessed. `CountryMarker` uses native SVG press events and DOM click events on web, matching `CountryPath`. No dependencies added. Web evidence and current native limitations are recorded in `docs/europe-map-assets.md`.

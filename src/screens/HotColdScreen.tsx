@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { PanResponder, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
-import Svg, { Circle, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Path, Rect, Text as SvgText } from 'react-native-svg';
 import * as Speech from 'expo-speech';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { appSafeAreaEdges } from '../platform/safeArea';
+import { CountryMarker } from '../features/geography/CountryMarker';
+import { mapLabels } from '../features/geography/mapLabels';
 import { CountryPath } from '../features/geography/CountryPath';
-import { europePack, europeShapes } from '../features/geography/europe';
+import { europePack, europeShapes, europeContextShapes } from '../features/geography/europe';
 import { europeBorderDistanceKm } from '../features/geography/borderDistance';
 import { microstates } from '../features/geography/microstates';
 import { frame, INITIAL_VIEWPORT, normalize, pan, zoomAt, type Viewport } from '../features/geography/viewport';
@@ -13,8 +15,8 @@ import { distanceKm, guess, startRound, type GuessResult, type Round } from '../
 import { initialProgress, recordSession, scoreRound, sessionFromRound, summary, type GameProgress } from '../features/geography/progress';
 import { loadProgress, saveProgress } from '../features/geography/progressStorage';
 
-const SEA = '#B7DEEF';
-const NEUTRAL = '#F0F3F1';
+const SEA = '#8FD3F4';
+const NEUTRAL = '#FFF3CF';
 const COLORS: Record<GuessResult, string> = {
   correct: '#29B765',
   'very-close': '#E65347',
@@ -35,6 +37,7 @@ const LABELS: Record<GuessResult, string> = {
 export function HotColdScreen() {
   const { width } = useWindowDimensions();
   const [round, setRound] = useState<Round>(() => startRound(europePack));
+  const [showNames, setShowNames] = useState(false);
   const [feedback, setFeedback] = useState<{ name: string; result: GuessResult } | null>(null);
   const [progress, setProgress] = useState<GameProgress>(initialProgress);
   const [progressLoaded, setProgressLoaded] = useState(false);
@@ -43,7 +46,7 @@ export function HotColdScreen() {
   const stats = useMemo(() => summary(progress, europePack.id), [progress]);
   const [viewport, setViewport] = useState<Viewport>(INITIAL_VIEWPORT);
   const viewportRef = useRef(viewport);
-  viewportRef.current = viewport;
+  useEffect(() => { viewportRef.current = viewport; }, [viewport]);
   const gestureRef = useRef({ viewport, pinchDistance: 0 });
   const completed = round.completedAt !== undefined;
   const spokenLanguage = 'en-US';
@@ -72,6 +75,7 @@ export function HotColdScreen() {
     void Speech.stop().catch(() => undefined);
     setRound(startRound(europePack));
     setFeedback(null);
+    setShowNames(false);
   };
 
   useEffect(() => () => { void Speech.stop().catch(() => undefined); }, []);
@@ -117,34 +121,38 @@ export function HotColdScreen() {
 
   const mapWidth = Math.max(280, Math.min(width - 24, 680));
   const mapHeight = mapWidth * 570 / 864;
+  const visibleLabels = mapLabels(europeShapes, showNames, round.guesses, visible, mapWidth);
+  const labelFontSize = 11 * visible.w / mapWidth;
+  const beginGesture = useCallback(() => {
+    gestureRef.current = { viewport: viewportRef.current, pinchDistance: 0 };
+  }, []);
+  const moveGesture = useCallback<NonNullable<Parameters<typeof PanResponder.create>[0]['onPanResponderMove']>>((event, gesture) => {
+    const touches = event.nativeEvent.touches;
+    if (touches.length >= 2 && touches[0] && touches[1]) {
+      const distance = Math.hypot(touches[0].pageX - touches[1].pageX, touches[0].pageY - touches[1].pageY);
+      if (!gestureRef.current.pinchDistance) {
+        gestureRef.current = { viewport: viewportRef.current, pinchDistance: distance };
+        return;
+      }
+      setViewport(zoomAt(gestureRef.current.viewport, distance / gestureRef.current.pinchDistance,
+        { x: mapWidth / 2, y: mapHeight / 2 }, mapWidth));
+    } else if (gestureRef.current.pinchDistance) {
+      gestureRef.current = { viewport: viewportRef.current, pinchDistance: 0 };
+    } else {
+      setViewport(pan(gestureRef.current.viewport, gesture.dx, gesture.dy, mapWidth));
+    }
+  }, [mapWidth, mapHeight]);
+  const endGesture = useCallback(() => { gestureRef.current.pinchDistance = 0; }, []);
+  // eslint-disable-next-line react-hooks/refs -- PanResponder.create stores these callbacks; gestures invoke them after render.
   const responder = useMemo(() => PanResponder.create({
     onStartShouldSetPanResponder: () => false,
     onMoveShouldSetPanResponder: (event, gesture) =>
       event.nativeEvent.touches.length > 1 || Math.abs(gesture.dx) > 5 || Math.abs(gesture.dy) > 5,
-    onPanResponderGrant: () => {
-      gestureRef.current = { viewport: viewportRef.current, pinchDistance: 0 };
-    },
-    onPanResponderMove: (event, gesture) => {
-      const touches = event.nativeEvent.touches;
-      if (touches.length >= 2 && touches[0] && touches[1]) {
-        const dx = touches[0].pageX - touches[1].pageX;
-        const dy = touches[0].pageY - touches[1].pageY;
-        const distance = Math.hypot(dx, dy);
-        if (!gestureRef.current.pinchDistance) {
-          gestureRef.current = { viewport: viewportRef.current, pinchDistance: distance };
-          return;
-        }
-        setViewport(zoomAt(gestureRef.current.viewport, distance / gestureRef.current.pinchDistance,
-          { x: mapWidth / 2, y: mapHeight / 2 }, mapWidth));
-      } else if (gestureRef.current.pinchDistance) {
-        gestureRef.current = { viewport: viewportRef.current, pinchDistance: 0 };
-      } else {
-        setViewport(pan(gestureRef.current.viewport, gesture.dx, gesture.dy, mapWidth));
-      }
-    },
-    onPanResponderRelease: () => { gestureRef.current.pinchDistance = 0; },
-    onPanResponderTerminate: () => { gestureRef.current.pinchDistance = 0; },
-  }), [mapWidth, mapHeight]);
+    onPanResponderGrant: beginGesture,
+    onPanResponderMove: moveGesture,
+    onPanResponderRelease: endGesture,
+    onPanResponderTerminate: endGesture,
+  }), [beginGesture, moveGesture, endGesture]);
 
   const adjustZoom = (factor: number) => setViewport(old =>
     zoomAt(old, factor, { x: mapWidth / 2, y: mapHeight / 2 }, mapWidth));
@@ -171,10 +179,19 @@ export function HotColdScreen() {
           <Text style={styles.progressText}>Best  <Text style={styles.progressValue}>{stats.bestScore}</Text></Text>
           <Text style={styles.progressText}>Total  <Text style={styles.progressValue}>{stats.totalScore}</Text></Text>
         </View>
+        <View style={styles.mapModeRow}>
+          <Text style={styles.mapModeText}>{showNames ? 'Names shown · zoom for more detail' : 'Names hidden · tap to discover'}</Text>
+          <Pressable accessibilityRole="button" accessibilityLabel={showNames ? 'Hide country names' : 'Show country names'}
+            accessibilityState={{ expanded: showNames }} style={styles.namesButton} onPress={() => setShowNames(value => !value)}>
+            <Text style={styles.namesButtonText}>{showNames ? 'Hide names' : 'Show names'}</Text>
+          </Pressable>
+        </View>
         <View style={styles.mapCard}>
           <View {...responder.panHandlers} collapsable={false}>
           <Svg width={mapWidth} height={mapHeight} viewBox={`${visible.x} ${visible.y} ${visible.w} ${visible.h}`} accessibilityLabel="Interactive map of Europe. Tap countries to guess.">
             <Rect width="864" height="570" fill={SEA} />
+            {europeContextShapes.map(shape => <Path key={shape.id} d={shape.path}
+              fill="#D6DDE1" stroke="#46677B" strokeWidth={0.8 / zoom} strokeLinejoin="round" />)}
             {europeShapes.map(shape => (
               <CountryPath key={shape.id} d={shape.path}
                 fill={resultById.has(shape.id) ? COLORS[resultById.get(shape.id)!] : NEUTRAL}
@@ -182,18 +199,23 @@ export function HotColdScreen() {
                 onSelect={() => selectCountry(shape.id)}
               />
             ))}
+            {visibleLabels.map(location => <SvgText key={`${location.id}-label`}
+              x={location.labelX} y={location.labelY} fontSize={labelFontSize}
+              fontFamily="sans-serif" fontWeight="700" textAnchor="middle" fill="#183B51" pointerEvents="none">
+              {location.name}
+            </SvgText>)}
             {microstates.map(state => {
               const result = resultById.get(state.id);
-              return <Circle key={state.id} cx={state.x} cy={state.y}
+              return <CountryMarker key={state.id} cx={state.x} cy={state.y}
                 r={Math.max(2, 5 / zoom)}
                 fill={result ? COLORS[result] : '#F9FAFB'} stroke="#17364A"
-                strokeWidth={Math.max(0.7, 1.5 / zoom)} onPress={() => selectCountry(state.id)} />;
+                strokeWidth={Math.max(0.7, 1.5 / zoom)} onSelect={() => selectCountry(state.id)} />;
             })}
             {microstates.map((state, i) => <SvgText key={`${state.id}-number`} x={state.x} y={state.y + 2.1 / zoom}
-              fontSize={Math.max(4, 6 / zoom)} textAnchor="middle" fill="#15384F">{i + 1}</SvgText>)}
-            {microstates.map(state => <Circle key={`${state.id}-hit`} cx={state.x} cy={state.y}
+              fontSize={Math.max(4, 6 / zoom)} textAnchor="middle" fill="#15384F" pointerEvents="none">{i + 1}</SvgText>)}
+            {microstates.map(state => <CountryMarker key={`${state.id}-hit`} cx={state.x} cy={state.y}
               r={Math.max(5, 24 / zoom)} fill="transparent"
-              onPress={() => selectCountry(state.id)} />)}
+              onSelect={() => selectCountry(state.id)} />)}
           </Svg>
           </View>
           <View style={styles.controls}>
@@ -208,9 +230,9 @@ export function HotColdScreen() {
           <Text style={styles.smallCountryTitle}>SMALL COUNTRIES · NUMBERED MARKERS</Text>
           <View style={styles.microstateChips}>
             {microstates.map((country, index) => (
-              <Pressable key={country.id} accessibilityRole="button" accessibilityLabel={`Select small country marker ${index + 1}`}
+              <Pressable key={country.id} accessibilityRole="button" accessibilityLabel={showNames || resultById.has(country.id) ? `Select ${country.name}` : `Select small country marker ${index + 1}`}
                 style={styles.microstateChip} onPress={() => selectCountry(country.id)}>
-                <Text style={styles.microstateChipText}>#{index + 1}</Text>
+                <Text style={styles.microstateChipText}>#{index + 1}{showNames || resultById.has(country.id) ? ` ${country.name}` : ''}</Text>
               </Pressable>
             ))}
           </View>
@@ -218,7 +240,7 @@ export function HotColdScreen() {
         <View style={styles.feedback}>
           <Text style={styles.feedbackLabel}>{feedback ? 'YOUR LAST GUESS' : 'HOW TO PLAY'}</Text>
           <Text style={styles.feedbackTitle}>{feedback ? feedback.name : 'Discover a country'}</Text>
-          <Text style={styles.feedbackDescription}>{feedback ? LABELS[feedback.result] : 'Each guess is colored based on proximity. Names are only revealed after you tap.'}</Text>
+          <Text style={styles.feedbackDescription}>{feedback ? LABELS[feedback.result] : showNames ? 'Names are visible. Hide them to test your recall, or tap a country for a distance clue.' : 'Each guess is colored based on proximity. Tap to discover a name, or show names to explore.'}</Text>
           {completed && <Text style={styles.scoreText}>+{scoreRound(round.guesses.length)} points · {round.guesses.length} {round.guesses.length === 1 ? 'guess' : 'guesses'}</Text>}
           {feedback && soundEnabled && <Pressable accessibilityRole="button" onPress={() => {
             void Speech.stop().catch(() => undefined).then(() => Speech.speak(feedback.name, { language: spokenLanguage, rate: 0.9 }));
@@ -263,7 +285,11 @@ const styles = StyleSheet.create({
   microstateChips:{flexDirection:'row',flexWrap:'wrap',gap:6,justifyContent:'center',paddingHorizontal:8,paddingVertical:10},
   microstateChip:{backgroundColor:'#F8FCFF',borderRadius:10,borderWidth:1,borderColor:'#92B4C6',minHeight:38,paddingHorizontal:10,justifyContent:'center'},
   microstateChipText:{fontSize:12,color:'#1B4A63',fontWeight:'700'},
-  mapCard:{borderRadius:18,backgroundColor:'#B7DEEF',overflow:'hidden',alignItems:'center',paddingTop:8,paddingBottom:6},
+  mapModeRow:{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:8,flexWrap:'wrap'},
+  mapModeText:{fontSize:12,color:'#47728A'},
+  namesButton:{backgroundColor:'#fff',borderRadius:10,paddingHorizontal:14,minHeight:44,justifyContent:'center'},
+  namesButtonText:{color:'#1C567B',fontWeight:'700',fontSize:13},
+  mapCard:{borderRadius:18,backgroundColor:SEA,overflow:'hidden',alignItems:'center',paddingTop:8,paddingBottom:6},
   controls:{flexDirection:'row',gap:6,alignItems:'center',marginTop:6,flexWrap:'wrap',justifyContent:'center'},
   control:{width:35,height:34,borderRadius:10,backgroundColor:'#fff',alignItems:'center',justifyContent:'center'},
   controlText:{fontSize:20,color:'#29536C',fontWeight:'600'},

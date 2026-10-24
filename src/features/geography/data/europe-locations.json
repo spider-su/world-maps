@@ -1,0 +1,207 @@
+{
+  "RUS": {
+    "name": "Russia",
+    "latitude": 59.41,
+    "longitude": 40.0
+  },
+  "NOR": {
+    "name": "Norway",
+    "latitude": 62.0,
+    "longitude": 9.0
+  },
+  "FRA": {
+    "name": "France",
+    "latitude": 46.9,
+    "longitude": 2.1
+  },
+  "SWE": {
+    "name": "Sweden",
+    "latitude": 62.27,
+    "longitude": 14.79
+  },
+  "BLR": {
+    "name": "Belarus",
+    "latitude": 53.71,
+    "longitude": 27.79
+  },
+  "UKR": {
+    "name": "Ukraine",
+    "latitude": 48.8,
+    "longitude": 30.98
+  },
+  "POL": {
+    "name": "Poland",
+    "latitude": 51.88,
+    "longitude": 19.08
+  },
+  "AUT": {
+    "name": "Austria",
+    "latitude": 47.92,
+    "longitude": 14.95
+  },
+  "HUN": {
+    "name": "Hungary",
+    "latitude": 47.25,
+    "longitude": 19.1
+  },
+  "MDA": {
+    "name": "Moldova",
+    "latitude": 47.14,
+    "longitude": 28.65
+  },
+  "ROU": {
+    "name": "Romania",
+    "latitude": 46.04,
+    "longitude": 24.21
+  },
+  "LTU": {
+    "name": "Lithuania",
+    "latitude": 55.09,
+    "longitude": 24.13
+  },
+  "LVA": {
+    "name": "Latvia",
+    "latitude": 56.9,
+    "longitude": 24.5
+  },
+  "EST": {
+    "name": "Estonia",
+    "latitude": 58.5,
+    "longitude": 25.56
+  },
+  "DEU": {
+    "name": "Germany",
+    "latitude": 51.43,
+    "longitude": 10.43
+  },
+  "BGR": {
+    "name": "Bulgaria",
+    "latitude": 42.74,
+    "longitude": 25.14
+  },
+  "GRC": {
+    "name": "Greece",
+    "latitude": 39.08,
+    "longitude": 21.81
+  },
+  "TUR": {
+    "name": "Turkey",
+    "latitude": 38.63,
+    "longitude": 35.45
+  },
+  "ALB": {
+    "name": "Albania",
+    "latitude": 41.25,
+    "longitude": 19.97
+  },
+  "HRV": {
+    "name": "Croatia",
+    "latitude": 44.54,
+    "longitude": 15.58
+  },
+  "CHE": {
+    "name": "Switzerland",
+    "latitude": 46.81,
+    "longitude": 8.29
+  },
+  "BEL": {
+    "name": "Belgium",
+    "latitude": 50.58,
+    "longitude": 4.74
+  },
+  "NLD": {
+    "name": "Netherlands",
+    "latitude": 52.04,
+    "longitude": 5.4
+  },
+  "PRT": {
+    "name": "Portugal",
+    "latitude": 39.51,
+    "longitude": -8.37
+  },
+  "ESP": {
+    "name": "Spain",
+    "latitude": 39.92,
+    "longitude": -3.52
+  },
+  "IRL": {
+    "name": "Ireland",
+    "latitude": 53.51,
+    "longitude": -7.81
+  },
+  "ITA": {
+    "name": "Italy",
+    "latitude": 42.56,
+    "longitude": 12.63
+  },
+  "DNK": {
+    "name": "Denmark",
+    "latitude": 56.32,
+    "longitude": 9.46
+  },
+  "GBR": {
+    "name": "United Kingdom",
+    "latitude": 54.22,
+    "longitude": -1.75
+  },
+  "ISL": {
+    "name": "Iceland",
+    "latitude": 64.99,
+    "longitude": -18.46
+  },
+  "SVN": {
+    "name": "Slovenia",
+    "latitude": 46.13,
+    "longitude": 14.73
+  },
+  "FIN": {
+    "name": "Finland",
+    "latitude": 65.03,
+    "longitude": 27.37
+  },
+  "SVK": {
+    "name": "Slovakia",
+    "latitude": 48.71,
+    "longitude": 19.63
+  },
+  "CZE": {
+    "name": "Czechia",
+    "latitude": 49.76,
+    "longitude": 15.54
+  },
+  "BIH": {
+    "name": "Bosnia and Herzegovina",
+    "latitude": 43.85,
+    "longitude": 18.12
+  },
+  "MKD": {
+    "name": "North Macedonia",
+    "latitude": 41.68,
+    "longitude": 21.72
+  },
+  "SRB": {
+    "name": "Serbia",
+    "latitude": 44.14,
+    "longitude": 21.01
+  },
+  "MNE": {
+    "name": "Montenegro",
+    "latitude": 42.75,
+    "longitude": 19.4
+  },
+  "KOS": {
+    "name": "Kosovo",
+    "latitude": 42.51,
+    "longitude": 20.91
+  },
+  "LUX": {
+    "name": "Luxembourg",
+    "latitude": 49.75,
+    "longitude": 6.1
+  },
+  "CYP": {
+    "name": "Cyprus",
+    "latitude": 35.0,
+    "longitude": 33.2
+  }
+}

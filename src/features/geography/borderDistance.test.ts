@@ -1,0 +1,21 @@
+import { describe, expect, it } from 'vitest';
+import { europePack } from './europe';
+import { europeBorderDistanceKm } from './borderDistance';
+import { guess, startRound } from './engine';
+
+const get = (id: string) => europePack.locations.find(location => location.id === id)!;
+
+describe('European border distances', () => {
+  it('is symmetric and keeps distant countries farther apart', () => {
+    expect(europeBorderDistanceKm(get('POL'), get('DEU'))).toBeLessThan(250);
+    expect(europeBorderDistanceKm(get('POL'), get('DEU'))).toBe(europeBorderDistanceKm(get('DEU'), get('POL')));
+    expect(europeBorderDistanceKm(get('ESP'), get('UKR'))).toBeGreaterThan(1000);
+  });
+  it('never treats zero-distance neighbours as the secret country', () => {
+    const round = startRound(europePack, () => europePack.locations.findIndex(location => location.id === 'POL') / europePack.locations.length);
+    expect(round.targetId).toBe('POL');
+    const wrong = guess(europePack, round, 'DEU', () => 0);
+    expect(wrong.result).not.toBe('correct');
+    expect(wrong.round.completedAt).toBeUndefined();
+  });
+});

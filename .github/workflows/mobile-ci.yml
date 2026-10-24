@@ -2,7 +2,7 @@ name: Mobile CI
 
 on:
   push:
-    branches: [main, 'feat/**']
+    branches: [main, 'feat/**', 'feature/**']
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -29,7 +29,7 @@ jobs:
     env:
       CI: '1'
       EXPO_NO_TELEMETRY: '1'
-      ANDROID_PACKAGE: com.spidersu.mobiletemplate
+      ANDROID_PACKAGE: com.spidersu.worldmaps
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -52,7 +52,7 @@ jobs:
       - name: Upload installable APK
         uses: actions/upload-artifact@v4
         with:
-          name: mobile-template-debug-apk
+          name: world-maps-debug-apk
           path: android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 14

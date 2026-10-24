@@ -30,7 +30,7 @@ describe('geography engine', () => {
     expect(() => guess(pack, correct.round, 'other')).toThrow();
   });
   it('supports proximity buckets and city distances', () => {
-    expect(distanceKm(pack.locations[0], pack.locations[1])).toBeGreaterThan(200);
+    expect(distanceKm(pack.locations[0]!, pack.locations[1]!)).toBeGreaterThan(200);
     expect(proximity(0)).toBe('correct');
     expect(proximity(200)).toBe('very-close');
     expect(proximity(500)).toBe('close');

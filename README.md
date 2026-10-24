@@ -4,9 +4,9 @@ Offline-first geography learning game built with Expo and React Native, bootstra
 
 ## Current status
 
-**Initial code draft, not yet playable.** The current application retains the starter screens while the geography engine and unit tests live in `src/features/geography/`. See [game design and remaining work](docs/geography-game-draft.md).
+**Europe Hot & Cold playable draft.** The Play tab renders simplified Europe country outlines and lets users discover a hidden country through distance-colored guesses and spoken country names. See [game design and remaining work](docs/geography-game-draft.md).
 
-The first playable milestone is a map of Europe with **Hot & Cold** guessing: a hidden country, geographic feedback colored on the map, revealed country names on selection, and text-to-speech pronunciation. Next modes: Find It, Name It and Learn. Future map packs: South America countries and Poland cities.
+The current milestone implements **Hot & Cold** guessing: a hidden country, approximate border proximity colored on the map, names revealed on selection, and text-to-speech pronunciation. Small microstates, accurate high-resolution borders, gesture zoom/pan, and persistent progress are still future work. Next modes: Find It, Name It and Learn. Future map packs: South America countries and Poland cities.
 
 ## Local checks
 

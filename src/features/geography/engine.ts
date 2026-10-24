@@ -57,7 +57,7 @@ export function proximity(distance: number): GuessResult {
 export function startRound(pack: GeographyPack, random: () => number = Math.random, now = Date.now()): Round {
   if (pack.locations.length === 0) throw new Error('Map pack cannot be empty');
   const index = Math.min(pack.locations.length - 1, Math.max(0, Math.floor(random() * pack.locations.length)));
-  return { packId: pack.id, targetId: pack.locations[index].id, guesses: [], startedAt: now };
+  return { packId: pack.id, targetId: pack.locations[index]!.id, guesses: [], startedAt: now };
 }
 
 export function guess(
@@ -79,5 +79,6 @@ export function guess(
     guesses: [...round.guesses, locationId],
     completedAt: locationId === target.id ? now : undefined,
   };
-  return { location, result: proximity(distance), distanceKm: distance, repeated, round: updated };
+  // Adjacent countries may have zero border distance; only matching IDs win.
+  return { location, result: locationId === target.id ? 'correct' : proximity(Math.max(distance, 0.001)), distanceKm: distance, repeated, round: updated };
 }

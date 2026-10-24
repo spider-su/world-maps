@@ -36,7 +36,7 @@ export function HotColdScreen() {
   const [viewport, setViewport] = useState<Viewport>(INITIAL_VIEWPORT);
   const viewportRef = useRef(viewport);
   viewportRef.current = viewport;
-  const gestureRef = useRef({ viewport, pinchDistance: 0, startZoom: 1 });
+  const gestureRef = useRef({ viewport, pinchDistance: 0 });
   const completed = round.completedAt !== undefined;
   const spokenLanguage = 'en-US';
 
@@ -50,6 +50,12 @@ export function HotColdScreen() {
   };
 
   useEffect(() => () => { void Speech.stop().catch(() => undefined); }, []);
+
+  const distanceResolver = useCallback((a: (typeof europePack.locations)[number], b: (typeof europePack.locations)[number]) => (
+    microstates.some(state => state.id === a.id || state.id === b.id)
+      ? distanceKm(a, b)
+      : europeBorderDistanceKm(a, b)
+  ), []);
 
   const selectCountry = useCallback((id: string) => {
     try {
@@ -65,12 +71,6 @@ export function HotColdScreen() {
       // A completed round cannot accept new guesses; the player starts the next round.
     }
   }, [round, soundEnabled, distanceResolver]);
-
-  const distanceResolver = useCallback((a: (typeof europePack.locations)[number], b: (typeof europePack.locations)[number]) => (
-    microstates.some(state => state.id === a.id || state.id === b.id)
-      ? distanceKm(a, b)
-      : europeBorderDistanceKm(a, b)
-  ), []);
 
   const resultById = useMemo(() => {
     const target = europePack.locations.find(item => item.id === round.targetId);
@@ -94,7 +94,7 @@ export function HotColdScreen() {
     onMoveShouldSetPanResponder: (event, gesture) =>
       event.nativeEvent.touches.length > 1 || Math.abs(gesture.dx) > 5 || Math.abs(gesture.dy) > 5,
     onPanResponderGrant: () => {
-      gestureRef.current = { viewport: viewportRef.current, pinchDistance: 0, startZoom: viewportRef.current.zoom };
+      gestureRef.current = { viewport: viewportRef.current, pinchDistance: 0 };
     },
     onPanResponderMove: (event, gesture) => {
       const touches = event.nativeEvent.touches;
@@ -103,7 +103,7 @@ export function HotColdScreen() {
         const dy = touches[0].pageY - touches[1].pageY;
         const distance = Math.hypot(dx, dy);
         if (!gestureRef.current.pinchDistance) {
-          gestureRef.current = { viewport: viewportRef.current, pinchDistance: distance, startZoom: viewportRef.current.zoom };
+          gestureRef.current = { viewport: viewportRef.current, pinchDistance: distance };
           return;
         }
         const factor = distance / gestureRef.current.pinchDistance;

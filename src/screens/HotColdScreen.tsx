@@ -10,6 +10,7 @@ import { distanceKm, guess, startRound, type GuessResult, type Round } from '../
 import { initialProgress, recordSession, scoreRound, sessionFromRound, summary, type GameProgress } from '../features/geography/progress';
 import { loadProgress, saveProgress } from '../features/geography/progressStorage';
 import { answerChoices, MODE_DEFINITIONS, modePrompt, nameItAnswer, type GameMode } from '../features/geography/modes';
+import { ModeSelector } from '../features/geography/ModeSelector';
 
 const SEA = '#B7DEEF';
 const NEUTRAL = '#F0F3F1';
@@ -39,7 +40,7 @@ export function HotColdScreen() {
   const [progressLoaded, setProgressLoaded] = useState(false);
   const [storageWarning, setStorageWarning] = useState(false);
   const soundEnabled = progress.voiceEnabled;
-  const stats = useMemo(() => summary(progress, europePack.id), [progress]);
+  const stats = useMemo(() => summary(progress, mode === 'hot-cold' ? europePack.id : `${europePack.id}:${mode}`), [progress, mode]);
   const [viewport, setViewport] = useState<Viewport>(INITIAL_VIEWPORT);
   const viewportRef = useRef(viewport);
   viewportRef.current = viewport;
@@ -99,9 +100,10 @@ export function HotColdScreen() {
 
   const completeRound = useCallback((nextRound: Round) => {
     if (nextRound.completedAt !== undefined && progressLoaded) {
-      updateProgress(recordSession(progress, sessionFromRound(nextRound)));
+      const session = sessionFromRound(nextRound);
+      updateProgress(recordSession(progress, { ...session, packId: mode === 'hot-cold' ? session.packId : `${session.packId}:${mode}` }));
     }
-  }, [progress, progressLoaded, updateProgress]);
+  }, [progress, progressLoaded, updateProgress, mode]);
 
   const selectCountry = useCallback((id: string) => {
     if (!progressLoaded) return;
@@ -196,15 +198,7 @@ export function HotColdScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.modeHeader}>CHOOSE A MODE</Text>
-      <View style={styles.modeSelector}>
-        {MODE_DEFINITIONS.map(item => <Pressable key={item.id}
-          accessibilityRole="button" accessibilityState={{ selected: item.id === mode }}
-          style={[styles.modeButton, mode === item.id && styles.modeActive]}
-          onPress={() => changeMode(item.id)}>
-          <Text style={[styles.modeTitle, mode === item.id && styles.modeActiveText]}>{item.title}</Text>
-        </Pressable>)}
-      </View>
+      <ModeSelector value={mode} onChange={changeMode} />
       <View style={styles.header}>
         <View>
           <Text style={styles.eyebrow}>EUROPE · {MODE_DEFINITIONS.find(item => item.id === mode)?.title.toUpperCase()}</Text>
@@ -306,12 +300,6 @@ export function HotColdScreen() {
 }
 
 const styles = StyleSheet.create({
-  modeHeader:{fontSize:11,fontWeight:'800',color:'#47728A',letterSpacing:1,marginLeft:5},
-  modeSelector:{flexDirection:'row',flexWrap:'wrap',gap:7},
-  modeButton:{flexGrow:1,paddingHorizontal:12,paddingVertical:11,backgroundColor:'#FFF',borderRadius:12,alignItems:'center'},
-  modeActive:{backgroundColor:'#1C567B'},
-  modeTitle:{fontSize:13,fontWeight:'700',color:'#1C567B'},
-  modeActiveText:{color:'#FFF'},
   options:{flexDirection:'row',flexWrap:'wrap',gap:8},
   option:{width:'48%',minHeight:48,backgroundColor:'#FFF',borderRadius:12,justifyContent:'center',paddingHorizontal:12,borderWidth:1,borderColor:'#A2C6D9'},
   optionUsed:{opacity:0.45},

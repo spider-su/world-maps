@@ -9,6 +9,7 @@ import { frame, INITIAL_VIEWPORT, normalize, pan, zoomAt, type Viewport } from '
 import { distanceKm, guess, startRound, type GuessResult, type Round } from '../features/geography/engine';
 import { initialProgress, recordSession, scoreRound, sessionFromRound, summary, type GameProgress } from '../features/geography/progress';
 import { loadProgress, saveProgress } from '../features/geography/progressStorage';
+import { answerChoices, MODE_DEFINITIONS, modePrompt, nameItAnswer, type GameMode } from '../features/geography/modes';
 
 const SEA = '#B7DEEF';
 const NEUTRAL = '#F0F3F1';
@@ -31,6 +32,7 @@ const LABELS: Record<GuessResult, string> = {
 
 export function HotColdScreen() {
   const { width } = useWindowDimensions();
+  const [mode, setMode] = useState<GameMode>('hot-cold');
   const [round, setRound] = useState<Round>(() => startRound(europePack));
   const [feedback, setFeedback] = useState<{ name: string; result: GuessResult } | null>(null);
   const [progress, setProgress] = useState<GameProgress>(initialProgress);
@@ -42,7 +44,9 @@ export function HotColdScreen() {
   const viewportRef = useRef(viewport);
   viewportRef.current = viewport;
   const gestureRef = useRef({ viewport, pinchDistance: 0 });
-  const completed = round.completedAt !== undefined;
+  const completed = mode !== 'learn' && round.completedAt !== undefined;
+  const target = europePack.locations.find(item => item.id === round.targetId)!;
+  const choices = useMemo(() => mode === 'name-it' ? answerChoices(europePack, round.targetId) : [], [mode, round.targetId]);
   const spokenLanguage = 'en-US';
 
   useEffect(() => {
@@ -71,6 +75,15 @@ export function HotColdScreen() {
     setFeedback(null);
   };
 
+  const changeMode = (next: GameMode) => {
+    if (next === mode) return;
+    void Speech.stop().catch(() => undefined);
+    setMode(next);
+    setRound(startRound(europePack));
+    setFeedback(null);
+    setViewport(INITIAL_VIEWPORT);
+  };
+
   useEffect(() => () => { void Speech.stop().catch(() => undefined); }, []);
 
   const distanceResolver = useCallback((a: (typeof europePack.locations)[number], b: (typeof europePack.locations)[number]) =>
@@ -78,39 +91,74 @@ export function HotColdScreen() {
       ? distanceKm(a, b)
       : europeBorderDistanceKm(a, b), []);
 
+  const speak = useCallback((name: string) => {
+    if (!soundEnabled) return;
+    void Speech.stop().catch(() => undefined)
+      .then(() => Speech.speak(name, { language: spokenLanguage, rate: 0.9 }));
+  }, [soundEnabled]);
+
+  const completeRound = useCallback((nextRound: Round) => {
+    if (nextRound.completedAt !== undefined && progressLoaded) {
+      updateProgress(recordSession(progress, sessionFromRound(nextRound)));
+    }
+  }, [progress, progressLoaded, updateProgress]);
+
   const selectCountry = useCallback((id: string) => {
     if (!progressLoaded) return;
+    const location = europePack.locations.find(item => item.id === id);
+    if (!location) return;
+    if (mode === 'name-it') return; // Name It is answered using four options.
+    if (mode === 'learn') {
+      setFeedback({ name: location.name, result: 'correct' });
+      speak(location.name);
+      return;
+    }
+    if (round.completedAt !== undefined) return;
     try {
       const picked = guess(europePack, round, id, distanceResolver);
       setRound(picked.round);
-      if (!picked.repeated && picked.round.completedAt !== undefined && progressLoaded) {
-        updateProgress(recordSession(progress, sessionFromRound(picked.round)));
-      }
       setFeedback({ name: picked.location.name, result: picked.result });
-      if (soundEnabled) {
-        void Speech.stop()
-          .catch(() => undefined)
-          .then(() => Speech.speak(picked.location.name, { language: spokenLanguage, rate: 0.9 }));
-      }
+      if (!picked.repeated && picked.round.completedAt !== undefined) completeRound(picked.round);
+      speak(picked.location.name);
     } catch {
-      // A completed round cannot accept new guesses; the player starts the next round.
+      // Reject invalid country IDs without losing game state.
     }
-  }, [round, soundEnabled, progress, progressLoaded, updateProgress, distanceResolver]);
+  }, [round, mode, progressLoaded, distanceResolver, completeRound, speak]);
+
+  const selectAnswer = useCallback((id: string) => {
+    if (mode !== 'name-it' || !progressLoaded || completed) return;
+    const answer = nameItAnswer(round, id);
+    const location = europePack.locations.find(item => item.id === id);
+    if (!location) return;
+    setRound(answer.round);
+    setFeedback({ name: location.name, result: answer.correct ? 'correct' : 'far' });
+    if (answer.correct && !answer.repeated) completeRound(answer.round);
+    speak(location.name);
+  }, [mode, round, completed, progressLoaded, completeRound, speak]);
 
   const resultById = useMemo(() => {
-    const target = europePack.locations.find(item => item.id === round.targetId);
     const results = new Map<string, GuessResult>();
-    if (target) {
-      for (const id of round.guesses) {
-        const location = europePack.locations.find(item => item.id === id);
-        if (location) {
-          const result = guess(europePack, { ...round, guesses: [], completedAt: undefined }, id, distanceResolver);
-          results.set(id, result.result);
-        }
+    if (mode === 'learn') {
+      if (feedback) {
+        const item = europePack.locations.find(location => location.name === feedback.name);
+        if (item) results.set(item.id, 'correct');
       }
+      return results;
+    }
+    if (mode === 'name-it') {
+      results.set(round.targetId, 'correct');
+      return results;
+    }
+    if (mode === 'find-it') {
+      for (const id of round.guesses) results.set(id, id === round.targetId ? 'correct' : 'far');
+      return results;
+    }
+    for (const id of round.guesses) {
+      const picked = guess(europePack, { ...round, guesses: [], completedAt: undefined }, id, distanceResolver);
+      results.set(id, picked.result);
     }
     return results;
-  }, [round, distanceResolver]);
+  }, [round, mode, feedback, distanceResolver]);
 
   const mapWidth = Math.max(280, Math.min(width - 24, 680));
   const mapHeight = mapWidth * 570 / 864;
@@ -148,25 +196,34 @@ export function HotColdScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.modeHeader}>CHOOSE A MODE</Text>
+      <View style={styles.modeSelector}>
+        {MODE_DEFINITIONS.map(item => <Pressable key={item.id}
+          accessibilityRole="button" accessibilityState={{ selected: item.id === mode }}
+          style={[styles.modeButton, mode === item.id && styles.modeActive]}
+          onPress={() => changeMode(item.id)}>
+          <Text style={[styles.modeTitle, mode === item.id && styles.modeActiveText]}>{item.title}</Text>
+        </Pressable>)}
+      </View>
       <View style={styles.header}>
         <View>
-          <Text style={styles.eyebrow}>EUROPE · HOT & COLD</Text>
-          <Text style={styles.title}>{completed ? 'Country found!' : 'Find the hidden country'}</Text>
-          <Text style={styles.subtitle}>{completed ? 'Great work. Ready for another?' : 'Tap a country to reveal a distance clue.'}</Text>
+          <Text style={styles.eyebrow}>EUROPE · {MODE_DEFINITIONS.find(item => item.id === mode)?.title.toUpperCase()}</Text>
+          <Text style={styles.title}>{completed ? 'Correct!' : modePrompt(mode, target.name)}</Text>
+          <Text style={styles.subtitle}>{completed ? 'Great work. Ready for another?' : MODE_DEFINITIONS.find(item => item.id === mode)?.description}</Text>
         </View>
         <Pressable style={styles.voiceButton} onPress={() => { if (progressLoaded) updateProgress({ ...progress, voiceEnabled: !soundEnabled }); }} accessibilityRole="button" accessibilityLabel={soundEnabled ? 'Mute voice' : 'Enable voice'}>
           <Text style={styles.voiceText}>{soundEnabled ? '🔊' : '🔇'}</Text>
         </Pressable>
       </View>
       <View style={styles.stats}>
-        <Text style={styles.stat}>Guesses  <Text style={styles.statBold}>{round.guesses.length}</Text></Text>
-        <Text style={styles.stat}>{completed ? 'Solved ✓' : 'Target hidden ?'}</Text>
+        <Text style={styles.stat}>{mode === 'learn' ? 'Explore freely' : 'Attempts'}  <Text style={styles.statBold}>{mode === 'learn' ? '∞' : round.guesses.length}</Text></Text>
+        <Text style={styles.stat}>{completed ? 'Solved ✓' : mode === 'hot-cold' ? 'Target hidden ?' : mode === 'learn' ? 'No score' : 'Find the answer'}</Text>
       </View>
-      <View style={styles.progressStrip}>
+      {mode !== 'learn' && <View style={styles.progressStrip}>
         <Text style={styles.progressText}>Solved  <Text style={styles.progressValue}>{stats.played}</Text></Text>
         <Text style={styles.progressText}>Best  <Text style={styles.progressValue}>{stats.bestScore}</Text></Text>
         <Text style={styles.progressText}>Total  <Text style={styles.progressValue}>{stats.totalScore}</Text></Text>
-      </View>
+      </View>}
       <View style={styles.mapCard}>
         <View {...responder.panHandlers} collapsable={false}>
         <Svg width={mapWidth} height={mapHeight} viewBox={`${visible.x} ${visible.y} ${visible.w} ${visible.h}`} accessibilityLabel="Interactive map of Europe. Tap countries to guess.">
@@ -212,32 +269,56 @@ export function HotColdScreen() {
         </View>
       </View>
       <View style={styles.feedback}>
-        <Text style={styles.feedbackLabel}>{feedback ? 'YOUR LAST GUESS' : 'HOW TO PLAY'}</Text>
-        <Text style={styles.feedbackTitle}>{feedback ? feedback.name : 'Discover a country'}</Text>
-        <Text style={styles.feedbackDescription}>{feedback ? LABELS[feedback.result] : 'Each guess is colored based on proximity. Names are only revealed after you tap.'}</Text>
+        <Text style={styles.feedbackLabel}>{feedback ? 'LAST SELECTION' : 'HOW TO PLAY'}</Text>
+        <Text style={styles.feedbackTitle}>{feedback ? feedback.name : mode === 'find-it' ? target.name : mode === 'name-it' ? 'Look at the highlighted country' : 'Discover a country'}</Text>
+        <Text style={styles.feedbackDescription}>{feedback ? (mode === 'find-it' || mode === 'name-it' ? (feedback.result === 'correct' ? 'Correct!' : 'Not quite, try again') : mode === 'learn' ? 'Tap another country to continue learning' : LABELS[feedback.result]) : mode === 'hot-cold' ? 'Each guess gives a distance clue. Names appear after you tap.' : MODE_DEFINITIONS.find(item => item.id === mode)?.description}</Text>
         {completed && <Text style={styles.scoreText}>+{scoreRound(round.guesses.length)} points · {round.guesses.length} {round.guesses.length === 1 ? 'guess' : 'guesses'}</Text>}
-        {feedback && soundEnabled && <Pressable accessibilityRole="button" onPress={() => {
-          void Speech.stop().catch(() => undefined).then(() => Speech.speak(feedback.name, { language: spokenLanguage, rate: 0.9 }));
-        }}><Text style={styles.replay}>▶ Hear name again</Text></Pressable>}
+        {feedback && soundEnabled && <Pressable accessibilityRole="button" onPress={() => speak(feedback.name)}>
+          <Text style={styles.replay}>▶ Hear name again</Text>
+        </Pressable>}
       </View>
-      <View style={styles.legend}>
+      {mode === 'name-it' && <View style={styles.options}>
+        {choices.map(option => <Pressable key={option.id} accessibilityRole="button"
+          disabled={completed || round.guesses.includes(option.id)}
+          style={[styles.option, round.guesses.includes(option.id) && styles.optionUsed]}
+          onPress={() => selectAnswer(option.id)}>
+          <Text style={styles.optionText}>{option.name}</Text>
+        </Pressable>)}
+      </View>}
+      {mode === 'find-it' && <Pressable style={styles.sayTarget} onPress={() => speak(target.name)}>
+        <Text style={styles.sayTargetText}>🔊 Hear target: {target.name}</Text>
+      </Pressable>}
+      {mode === 'hot-cold' && <View style={styles.legend}>
         {(['very-far','far','close','very-close','correct'] as const).map(key =>
           <View key={key} style={styles.legendItem}>
             <View style={[styles.legendSwatch, {backgroundColor:COLORS[key]}]} />
             <Text style={styles.legendText}>{LABELS[key]}</Text>
           </View>
         )}
-      </View>
-      <Pressable style={styles.nextButton} onPress={restart} accessibilityRole="button">
+      </View>}
+      {mode !== 'learn' && <Pressable style={styles.nextButton} onPress={restart} accessibilityRole="button">
         <Text style={styles.nextText}>{completed ? 'Next country →' : 'New hidden country ↻'}</Text>
-      </Pressable>
+      </Pressable>}
       {storageWarning && <Text style={styles.warning}>Progress could not be saved on this device.</Text>}
-      <Text style={styles.footer}>Pinch to zoom · drag to move · tap the microstate dots · scores saved on device</Text>
+      <Text style={styles.footer}>Pinch to zoom · drag to move · tap numbered microstate markers</Text>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  modeHeader:{fontSize:11,fontWeight:'800',color:'#47728A',letterSpacing:1,marginLeft:5},
+  modeSelector:{flexDirection:'row',flexWrap:'wrap',gap:7},
+  modeButton:{flexGrow:1,paddingHorizontal:12,paddingVertical:11,backgroundColor:'#FFF',borderRadius:12,alignItems:'center'},
+  modeActive:{backgroundColor:'#1C567B'},
+  modeTitle:{fontSize:13,fontWeight:'700',color:'#1C567B'},
+  modeActiveText:{color:'#FFF'},
+  options:{flexDirection:'row',flexWrap:'wrap',gap:8},
+  option:{width:'48%',minHeight:48,backgroundColor:'#FFF',borderRadius:12,justifyContent:'center',paddingHorizontal:12,borderWidth:1,borderColor:'#A2C6D9'},
+  optionUsed:{opacity:0.45},
+  optionText:{fontSize:13,color:'#153C53',fontWeight:'700'},
+  sayTarget:{backgroundColor:'#FFF',borderRadius:12,alignItems:'center',padding:11},
+  sayTargetText:{color:'#1C567B',fontWeight:'700'},
+
   container:{padding:12,paddingBottom:36,backgroundColor:'#EAF3F8',gap:12},
   header:{flexDirection:'row',justifyContent:'space-between',alignItems:'center',paddingHorizontal:6,marginTop:8},
   eyebrow:{fontSize:11,fontWeight:'700',letterSpacing:1.6,color:'#47728A'},

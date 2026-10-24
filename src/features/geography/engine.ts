@@ -79,5 +79,6 @@ export function guess(
     guesses: [...round.guesses, locationId],
     completedAt: locationId === target.id ? now : undefined,
   };
-  return { location, result: proximity(distance), distanceKm: distance, repeated, round: updated };
+  // Adjacent countries may have zero border distance; only matching IDs win.
+  return { location, result: locationId === target.id ? 'correct' : proximity(Math.max(distance, 0.001)), distanceKm: distance, repeated, round: updated };
 }

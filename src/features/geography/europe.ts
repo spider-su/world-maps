@@ -1,4 +1,5 @@
 import type { GeographyPack } from './engine';
+import { microstates } from './microstates';
 
 /** Simplified outline draft derived from Natural Earth low resolution public-domain geometry.
  * Full-resolution polygons and microstates will replace these during map polish.
@@ -12,5 +13,5 @@ export const europeShapes = outlineData.split('\n').map(line => {
 });
 export const europePack: GeographyPack = {
   id: 'europe-countries',title:'Europe',kind:'country',
-  locations:europeShapes.map(({id,name,latitude,longitude})=>({id,name,latitude,longitude,geometryId:id}))
+  locations:[...europeShapes.map(({id,name,latitude,longitude})=>({id,name,latitude,longitude,geometryId:id})), ...microstates]
 };

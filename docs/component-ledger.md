@@ -24,3 +24,8 @@ For each future component, replace generic status with dated evidence and the de
 | App error boundary and loading/error/empty UI | Generic template primitives | Storage contract unit tests; UI device evidence pending | Error boundary handles render failures only; async failures require screen-level handling |
 | Opt-in typed persistence and native/web adapters | Generic template contract | Unit tests cover round-trip, missing/corrupt data, invalid keys and backend errors | AsyncStorage install required only for adopting native apps; web localStorage is browser-only |
 | Codex instructions and skill templates | Adapted from Ryczałt workflow structure, without project-specific paths or credentials | Documentation only; emulator execution not yet verified | Downstream apps must supply app identity, test fixtures and device evidence |
+
+## World Maps game components
+
+- `src/features/geography/CountryPath`: app-owned SVG path adapter. Web uses a DOM `onClick`; native uses `react-native-svg` `onPress`. No new dependencies. Regression test covers web event routing; browser smoke verified selection, repeat guesses, completion, restart, zoom/pan and tab navigation on 2026-10-24. Native runtime remains unverified.
+- `HotColdScreen` owns the top safe-area edge; visible tabs own the bottom edge.

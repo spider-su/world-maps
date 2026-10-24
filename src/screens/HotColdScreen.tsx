@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
-import Svg, { Path, Rect } from 'react-native-svg';
+import Svg, { Rect } from 'react-native-svg';
 import * as Speech from 'expo-speech';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { appSafeAreaEdges } from '../platform/safeArea';
+import { CountryPath } from '../features/geography/CountryPath';
 import { europePack, europeShapes } from '../features/geography/europe';
 import { europeBorderDistanceKm } from '../features/geography/borderDistance';
 import { guess, startRound, type GuessResult, type Round } from '../features/geography/engine';
@@ -112,74 +115,77 @@ export function HotColdScreen() {
   const mapHeight = mapWidth * 570 / 864;
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.eyebrow}>EUROPE · HOT & COLD</Text>
-          <Text style={styles.title}>{completed ? 'Country found!' : 'Find the hidden country'}</Text>
-          <Text style={styles.subtitle}>{completed ? 'Great work. Ready for another?' : 'Tap a country to reveal a distance clue.'}</Text>
-        </View>
-        <Pressable style={styles.voiceButton} onPress={() => { if (progressLoaded) updateProgress({ ...progress, voiceEnabled: !soundEnabled }); }} accessibilityRole="button" accessibilityLabel={soundEnabled ? 'Mute voice' : 'Enable voice'}>
-          <Text style={styles.voiceText}>{soundEnabled ? '🔊' : '🔇'}</Text>
-        </Pressable>
-      </View>
-      <View style={styles.stats}>
-        <Text style={styles.stat}>Guesses  <Text style={styles.statBold}>{round.guesses.length}</Text></Text>
-        <Text style={styles.stat}>{completed ? 'Solved ✓' : 'Target hidden ?'}</Text>
-      </View>
-      <View style={styles.progressStrip}>
-        <Text style={styles.progressText}>Solved  <Text style={styles.progressValue}>{stats.played}</Text></Text>
-        <Text style={styles.progressText}>Best  <Text style={styles.progressValue}>{stats.bestScore}</Text></Text>
-        <Text style={styles.progressText}>Total  <Text style={styles.progressValue}>{stats.totalScore}</Text></Text>
-      </View>
-      <View style={styles.mapCard}>
-        <Svg width={mapWidth} height={mapHeight} viewBox={`${visible.x} ${visible.y} ${visible.sizeX} ${visible.sizeY}`} accessibilityLabel="Interactive map of Europe. Tap countries to guess.">
-          <Rect width="864" height="570" fill={SEA} />
-          {europeShapes.map(shape => (
-            <Path key={shape.id} d={shape.path}
-              fill={resultById.has(shape.id) ? COLORS[resultById.get(shape.id)!] : NEUTRAL}
-              stroke="#46677B" strokeWidth={Math.max(0.8, 1.5 / zoom)} strokeLinejoin="round"
-              onPress={() => selectCountry(shape.id)}
-            />
-          ))}
-        </Svg>
-        <View style={styles.controls}>
-          <Pressable style={styles.control} onPress={() => setZoom(z => Math.max(1, z / 1.5))}><Text style={styles.controlText}>−</Text></Pressable>
-          <Text style={styles.zoomLabel}>{zoom.toFixed(1)}×</Text>
-          <Pressable style={styles.control} onPress={() => setZoom(z => Math.min(5, z * 1.5))}><Text style={styles.controlText}>+</Text></Pressable>
-          <Pressable style={styles.control} onPress={() => setCenter(p => ({ ...p, x: Math.max(0, p.x - 90 / zoom) }))}><Text style={styles.controlText}>←</Text></Pressable>
-          <Pressable style={styles.control} onPress={() => setCenter(p => ({ ...p, x: Math.min(864, p.x + 90 / zoom) }))}><Text style={styles.controlText}>→</Text></Pressable>
-          <Pressable style={styles.control} onPress={() => setCenter(p => ({ ...p, y: Math.max(0, p.y - 90 / zoom) }))}><Text style={styles.controlText}>↑</Text></Pressable>
-          <Pressable style={styles.control} onPress={() => setCenter(p => ({ ...p, y: Math.min(570, p.y + 90 / zoom) }))}><Text style={styles.controlText}>↓</Text></Pressable>
-        </View>
-      </View>
-      <View style={styles.feedback}>
-        <Text style={styles.feedbackLabel}>{feedback ? 'YOUR LAST GUESS' : 'HOW TO PLAY'}</Text>
-        <Text style={styles.feedbackTitle}>{feedback ? feedback.name : 'Discover a country'}</Text>
-        <Text style={styles.feedbackDescription}>{feedback ? LABELS[feedback.result] : 'Each guess is colored based on proximity. Names are only revealed after you tap.'}</Text>
-        {completed && <Text style={styles.scoreText}>+{scoreRound(round.guesses.length)} points · {round.guesses.length} {round.guesses.length === 1 ? 'guess' : 'guesses'}</Text>}
-        {feedback && soundEnabled && <Pressable accessibilityRole="button" onPress={() => {
-          void Speech.stop().catch(() => undefined).then(() => Speech.speak(feedback.name, { language: spokenLanguage, rate: 0.9 }));
-        }}><Text style={styles.replay}>▶ Hear name again</Text></Pressable>}
-      </View>
-      <View style={styles.legend}>
-        {(['very-far','far','close','very-close','correct'] as const).map(key =>
-          <View key={key} style={styles.legendItem}>
-            <View style={[styles.legendSwatch, {backgroundColor:COLORS[key]}]} />
-            <Text style={styles.legendText}>{LABELS[key]}</Text>
+    <SafeAreaView edges={appSafeAreaEdges} style={styles.screen}>
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.eyebrow}>EUROPE · HOT & COLD</Text>
+            <Text style={styles.title}>{completed ? 'Country found!' : 'Find the hidden country'}</Text>
+            <Text style={styles.subtitle}>{completed ? 'Great work. Ready for another?' : 'Tap a country to reveal a distance clue.'}</Text>
           </View>
-        )}
-      </View>
-      <Pressable style={styles.nextButton} onPress={restart} accessibilityRole="button">
-        <Text style={styles.nextText}>{completed ? 'Next country →' : 'New hidden country ↻'}</Text>
-      </Pressable>
-      {storageWarning && <Text style={styles.warning}>Progress could not be saved on this device.</Text>}
-      <Text style={styles.footer}>Offline Europe preview · simplified country outlines · scores saved on device</Text>
-    </ScrollView>
+          <Pressable style={styles.voiceButton} onPress={() => { if (progressLoaded) updateProgress({ ...progress, voiceEnabled: !soundEnabled }); }} accessibilityRole="button" accessibilityLabel={soundEnabled ? 'Mute voice' : 'Enable voice'}>
+            <Text style={styles.voiceText}>{soundEnabled ? '🔊' : '🔇'}</Text>
+          </Pressable>
+        </View>
+        <View style={styles.stats}>
+          <Text style={styles.stat}>Guesses  <Text style={styles.statBold}>{round.guesses.length}</Text></Text>
+          <Text style={styles.stat}>{completed ? 'Solved ✓' : 'Target hidden ?'}</Text>
+        </View>
+        <View style={styles.progressStrip}>
+          <Text style={styles.progressText}>Solved  <Text style={styles.progressValue}>{stats.played}</Text></Text>
+          <Text style={styles.progressText}>Best  <Text style={styles.progressValue}>{stats.bestScore}</Text></Text>
+          <Text style={styles.progressText}>Total  <Text style={styles.progressValue}>{stats.totalScore}</Text></Text>
+        </View>
+        <View style={styles.mapCard}>
+          <Svg width={mapWidth} height={mapHeight} viewBox={`${visible.x} ${visible.y} ${visible.sizeX} ${visible.sizeY}`} accessibilityLabel="Interactive map of Europe. Tap countries to guess.">
+            <Rect width="864" height="570" fill={SEA} />
+            {europeShapes.map(shape => (
+              <CountryPath key={shape.id} d={shape.path}
+                fill={resultById.has(shape.id) ? COLORS[resultById.get(shape.id)!] : NEUTRAL}
+                stroke="#46677B" strokeWidth={Math.max(0.8, 1.5 / zoom)}
+                onSelect={() => selectCountry(shape.id)}
+              />
+            ))}
+          </Svg>
+          <View style={styles.controls}>
+            <Pressable style={styles.control} onPress={() => setZoom(z => Math.max(1, z / 1.5))}><Text style={styles.controlText}>−</Text></Pressable>
+            <Text style={styles.zoomLabel}>{zoom.toFixed(1)}×</Text>
+            <Pressable style={styles.control} onPress={() => setZoom(z => Math.min(5, z * 1.5))}><Text style={styles.controlText}>+</Text></Pressable>
+            <Pressable style={styles.control} onPress={() => setCenter(p => ({ ...p, x: Math.max(0, p.x - 90 / zoom) }))}><Text style={styles.controlText}>←</Text></Pressable>
+            <Pressable style={styles.control} onPress={() => setCenter(p => ({ ...p, x: Math.min(864, p.x + 90 / zoom) }))}><Text style={styles.controlText}>→</Text></Pressable>
+            <Pressable style={styles.control} onPress={() => setCenter(p => ({ ...p, y: Math.max(0, p.y - 90 / zoom) }))}><Text style={styles.controlText}>↑</Text></Pressable>
+            <Pressable style={styles.control} onPress={() => setCenter(p => ({ ...p, y: Math.min(570, p.y + 90 / zoom) }))}><Text style={styles.controlText}>↓</Text></Pressable>
+          </View>
+        </View>
+        <View style={styles.feedback}>
+          <Text style={styles.feedbackLabel}>{feedback ? 'YOUR LAST GUESS' : 'HOW TO PLAY'}</Text>
+          <Text style={styles.feedbackTitle}>{feedback ? feedback.name : 'Discover a country'}</Text>
+          <Text style={styles.feedbackDescription}>{feedback ? LABELS[feedback.result] : 'Each guess is colored based on proximity. Names are only revealed after you tap.'}</Text>
+          {completed && <Text style={styles.scoreText}>+{scoreRound(round.guesses.length)} points · {round.guesses.length} {round.guesses.length === 1 ? 'guess' : 'guesses'}</Text>}
+          {feedback && soundEnabled && <Pressable accessibilityRole="button" onPress={() => {
+            void Speech.stop().catch(() => undefined).then(() => Speech.speak(feedback.name, { language: spokenLanguage, rate: 0.9 }));
+          }}><Text style={styles.replay}>▶ Hear name again</Text></Pressable>}
+        </View>
+        <View style={styles.legend}>
+          {(['very-far','far','close','very-close','correct'] as const).map(key =>
+            <View key={key} style={styles.legendItem}>
+              <View style={[styles.legendSwatch, {backgroundColor:COLORS[key]}]} />
+              <Text style={styles.legendText}>{LABELS[key]}</Text>
+            </View>
+          )}
+        </View>
+        <Pressable style={styles.nextButton} onPress={restart} accessibilityRole="button">
+          <Text style={styles.nextText}>{completed ? 'Next country →' : 'New hidden country ↻'}</Text>
+        </Pressable>
+        {storageWarning && <Text style={styles.warning}>Progress could not be saved on this device.</Text>}
+        <Text style={styles.footer}>Offline Europe preview · simplified country outlines · scores saved on device</Text>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  screen:{flex:1,backgroundColor:'#EAF3F8'},
   container:{padding:12,paddingBottom:36,backgroundColor:'#EAF3F8',gap:12},
   header:{flexDirection:'row',justifyContent:'space-between',alignItems:'center',paddingHorizontal:6,marginTop:8},
   eyebrow:{fontSize:11,fontWeight:'700',letterSpacing:1.6,color:'#47728A'},

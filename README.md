@@ -17,6 +17,13 @@ npx expo-doctor
 npm start
 ```
 
+## Web map compatibility
+
+Country paths use DOM click events on web and native SVG press events on Android/iOS.
+Keep the platform-specific `CountryPath.web.tsx` implementation: passing native
+`onPress` handlers to the pinned SVG library on web emits unsupported responder
+errors and a `TouchableMixin` deprecation warning.
+
 ## App identity
 
 The default slug and identifiers are `world-maps` and `com.spidersu.worldmaps`. Copy `.env.example` to `.env` only if overrides are needed. Do not reuse another application's EAS project or signing credentials.

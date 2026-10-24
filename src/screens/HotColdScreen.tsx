@@ -5,6 +5,7 @@ import * as Speech from 'expo-speech';
 import { europePack, europeShapes } from '../features/geography/europe';
 import { europeBorderDistanceKm } from '../features/geography/borderDistance';
 import { guess, startRound, type GuessResult, type Round } from '../features/geography/engine';
+import { initialProgress, loadProgress, recordSession, saveProgress, scoreRound, sessionFromRound, summary, type GameProgress } from '../features/geography/progress';
 
 const SEA = '#B7DEEF';
 const NEUTRAL = '#F0F3F1';
@@ -29,11 +30,32 @@ export function HotColdScreen() {
   const { width } = useWindowDimensions();
   const [round, setRound] = useState<Round>(() => startRound(europePack));
   const [feedback, setFeedback] = useState<{ name: string; result: GuessResult } | null>(null);
-  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [progress, setProgress] = useState<GameProgress>(initialProgress);
+  const [progressLoaded, setProgressLoaded] = useState(false);
+  const [storageWarning, setStorageWarning] = useState(false);
+  const soundEnabled = progress.voiceEnabled;
+  const stats = useMemo(() => summary(progress, europePack.id), [progress]);
   const [zoom, setZoom] = useState(1);
   const [center, setCenter] = useState({ x: 432, y: 285 });
   const completed = round.completedAt !== undefined;
   const spokenLanguage = 'en-US';
+
+  useEffect(() => {
+    let active = true;
+    loadProgress().then(saved => {
+      if (active) setProgress(saved);
+    }).catch(() => {
+      if (active) setStorageWarning(true);
+    }).finally(() => {
+      if (active) setProgressLoaded(true);
+    });
+    return () => { active = false; };
+  }, []);
+
+  const updateProgress = useCallback((next: GameProgress) => {
+    setProgress(next);
+    void saveProgress(next).catch(() => setStorageWarning(true));
+  }, []);
 
   const visible = useMemo(() => {
     const sizeX = 864 / zoom;
@@ -55,6 +77,9 @@ export function HotColdScreen() {
     try {
       const picked = guess(europePack, round, id, europeBorderDistanceKm);
       setRound(picked.round);
+      if (!picked.repeated && picked.round.completedAt !== undefined && progressLoaded) {
+        updateProgress(recordSession(progress, sessionFromRound(picked.round)));
+      }
       setFeedback({ name: picked.location.name, result: picked.result });
       if (soundEnabled) {
         void Speech.stop()
@@ -64,7 +89,7 @@ export function HotColdScreen() {
     } catch {
       // A completed round cannot accept new guesses; the player starts the next round.
     }
-  }, [round, soundEnabled]);
+  }, [round, soundEnabled, progress, progressLoaded, updateProgress]);
 
   const resultById = useMemo(() => {
     const target = europePack.locations.find(item => item.id === round.targetId);
@@ -92,13 +117,18 @@ export function HotColdScreen() {
           <Text style={styles.title}>{completed ? 'Country found!' : 'Find the hidden country'}</Text>
           <Text style={styles.subtitle}>{completed ? 'Great work. Ready for another?' : 'Tap a country to reveal a distance clue.'}</Text>
         </View>
-        <Pressable style={styles.voiceButton} onPress={() => setSoundEnabled(value => !value)} accessibilityRole="button" accessibilityLabel={soundEnabled ? 'Mute voice' : 'Enable voice'}>
+        <Pressable style={styles.voiceButton} onPress={() => { if (progressLoaded) updateProgress({ ...progress, voiceEnabled: !soundEnabled }); }} accessibilityRole="button" accessibilityLabel={soundEnabled ? 'Mute voice' : 'Enable voice'}>
           <Text style={styles.voiceText}>{soundEnabled ? '🔊' : '🔇'}</Text>
         </Pressable>
       </View>
       <View style={styles.stats}>
         <Text style={styles.stat}>Guesses  <Text style={styles.statBold}>{round.guesses.length}</Text></Text>
         <Text style={styles.stat}>{completed ? 'Solved ✓' : 'Target hidden ?'}</Text>
+      </View>
+      <View style={styles.progressStrip}>
+        <Text style={styles.progressText}>Solved  <Text style={styles.progressValue}>{stats.played}</Text></Text>
+        <Text style={styles.progressText}>Best  <Text style={styles.progressValue}>{stats.bestScore}</Text></Text>
+        <Text style={styles.progressText}>Total  <Text style={styles.progressValue}>{stats.totalScore}</Text></Text>
       </View>
       <View style={styles.mapCard}>
         <Svg width={mapWidth} height={mapHeight} viewBox={`${visible.x} ${visible.y} ${visible.sizeX} ${visible.sizeY}`} accessibilityLabel="Interactive map of Europe. Tap countries to guess.">
@@ -125,7 +155,8 @@ export function HotColdScreen() {
         <Text style={styles.feedbackLabel}>{feedback ? 'YOUR LAST GUESS' : 'HOW TO PLAY'}</Text>
         <Text style={styles.feedbackTitle}>{feedback ? feedback.name : 'Discover a country'}</Text>
         <Text style={styles.feedbackDescription}>{feedback ? LABELS[feedback.result] : 'Each guess is colored based on proximity. Names are only revealed after you tap.'}</Text>
-        {feedback && <Pressable accessibilityRole="button" onPress={() => {
+        {completed && <Text style={styles.scoreText}>+{scoreRound(round.guesses.length)} points · {round.guesses.length} {round.guesses.length === 1 ? 'guess' : 'guesses'}</Text>}
+        {feedback && soundEnabled && <Pressable accessibilityRole="button" onPress={() => {
           void Speech.stop().catch(() => undefined).then(() => Speech.speak(feedback.name, { language: spokenLanguage, rate: 0.9 }));
         }}><Text style={styles.replay}>▶ Hear name again</Text></Pressable>}
       </View>
@@ -140,7 +171,8 @@ export function HotColdScreen() {
       <Pressable style={styles.nextButton} onPress={restart} accessibilityRole="button">
         <Text style={styles.nextText}>{completed ? 'Next country →' : 'New hidden country ↻'}</Text>
       </Pressable>
-      <Text style={styles.footer}>Offline Europe preview · simplified country outlines</Text>
+      {storageWarning && <Text style={styles.warning}>Progress could not be saved on this device.</Text>}
+      <Text style={styles.footer}>Offline Europe preview · simplified country outlines · scores saved on device</Text>
     </ScrollView>
   );
 }
@@ -156,6 +188,11 @@ const styles = StyleSheet.create({
   stats:{flexDirection:'row',justifyContent:'space-between',paddingHorizontal:9},
   stat:{fontSize:13,color:'#3D6679'},
   statBold:{fontWeight:'800',color:'#153F56'},
+  progressStrip:{flexDirection:'row',justifyContent:'space-around',backgroundColor:'#fff',paddingVertical:11,borderRadius:12},
+  progressText:{fontSize:12,color:'#4E7285'},
+  progressValue:{fontWeight:'800',color:'#184A66'},
+  scoreText:{fontSize:17,color:'#22885A',fontWeight:'800',paddingTop:5},
+  warning:{fontSize:12,textAlign:'center',color:'#A63C35'},
   mapCard:{borderRadius:18,backgroundColor:'#B7DEEF',overflow:'hidden',alignItems:'center',paddingTop:8,paddingBottom:6},
   controls:{flexDirection:'row',gap:6,alignItems:'center',marginTop:6,flexWrap:'wrap',justifyContent:'center'},
   control:{width:35,height:34,borderRadius:10,backgroundColor:'#fff',alignItems:'center',justifyContent:'center'},

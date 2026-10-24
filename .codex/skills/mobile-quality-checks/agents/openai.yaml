@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mobile Quality Checks"
+  short_description: "Run template checks and report results"
+  default_prompt: "Run the mobile template quality checks and report failures and verification gaps."

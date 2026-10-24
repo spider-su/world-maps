@@ -1,0 +1,39 @@
+name: EAS Cloud Build (optional)
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: EAS build profile configured in eas.json
+        required: true
+        default: preview
+        type: string
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  eas-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Validate cloud-build configuration
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          test -n "$EXPO_TOKEN" || { echo "EXPO_TOKEN is required for an explicitly requested cloud build"; exit 1; }
+          test -f eas.json || { echo "Configure eas.json before enabling EAS cloud builds"; exit 1; }
+      - name: Start EAS cloud build
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          PROFILE: ${{ github.event.inputs.profile || 'preview' }}
+        run: npx --yes eas-cli build --platform android --profile "$PROFILE" --non-interactive --no-wait

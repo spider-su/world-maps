@@ -83,3 +83,8 @@ For each future component, replace generic status with dated evidence and the de
   `europe-countries:<mode>` otherwise). Tabs are typed by `TabParamList`. All app
   text, including tab labels, lives in `gameCopy`; `src/ui/i18n.ts` keeps only
   language and speech-locale definitions.
+
+- Cleanup integration review: `gamePrompt` accepts resolved Find It clues and
+  Name It answer types, including legacy capital modes. ModeSelector retains the
+  current system-aware icon tints while using the four public `GAME_MODES` IDs.
+  Theme and richer Learn components from develop remain intact.

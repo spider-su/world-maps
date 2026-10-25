@@ -1,6 +1,6 @@
 import type { Language } from '../../ui/i18n';
 import { capitalName, countryName } from './countryFacts';
-import type { GameMode } from './modes';
+import type { FindClue, GameMode, NameAnswer } from './modes';
 
 const en = {
   learningProgress: 'Learning progress', practiced: 'Practiced', mastered: 'Mastered', needsPractice: 'Needs practice', accuracy: 'Accuracy',
@@ -118,8 +118,8 @@ const ru: Copy = {
 };
 export const gameCopy: Record<Language, Copy> = { en, pl, ru };
 
-/** Prompt shown above the map. Hot & Cold and Name It never reveal the target. */
-export function gamePrompt(language: Language, mode: GameMode, targetId: string, completed: boolean, clue: 'name' | 'capital' | 'flag' = 'name', answer: 'country' | 'capital' = 'country'): string {
+/** Prompt above the map. Country-name quizzes keep their answer hidden. */
+export function gamePrompt(language: Language, mode: GameMode, targetId: string, completed: boolean, clue: Exclude<FindClue, 'mixed'> = 'name', answer: NameAnswer = 'country'): string {
   const c = gameCopy[language];
   if (completed) return c.correct;
   switch (mode) {

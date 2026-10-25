@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { LANGUAGE_OPTIONS } from '../../ui/i18n';
 import { gameCopy, gamePrompt } from './copy';
-import { countryName } from './countryFacts';
+import { capitalName, countryName } from './countryFacts';
 
 function strings(value: object, prefix = ''): [string, string][] {
   return Object.entries(value).flatMap(([key, item]): [string, string][] => typeof item === 'string'
@@ -28,6 +28,21 @@ describe('game prompts shown by the screen', () => {
     expect(gamePrompt('en', 'find-it', 'DEU', false)).toBe('Find: Germany');
     expect(gamePrompt('pl', 'find-it', 'DEU', false)).toBe('Znajdź: Niemcy');
     expect(gamePrompt('ru', 'find-it', 'DEU', false)).toBe('Найдите: Германия');
+  });
+  it('preserves capital, flag and legacy quiz variants in every language', () => {
+    for (const { id: language } of LANGUAGE_OPTIONS) {
+      const c = gameCopy[language];
+      const capitalPrompt = `${c.capitalFindPrompt} ${capitalName('DEU', language)}`;
+      const nameCapitalPrompt = `${c.capitalNamePrompt} ${countryName('DEU', language)}`;
+      expect(gamePrompt(language, 'find-it', 'DEU', false, 'capital')).toBe(capitalPrompt);
+      expect(gamePrompt(language, 'capital-find', 'DEU', false)).toBe(capitalPrompt);
+      expect(gamePrompt(language, 'find-it', 'DEU', false, 'flag')).toBe(c.flagPrompt);
+      expect(gamePrompt(language, 'name-it', 'DEU', false, 'name', 'capital')).toBe(nameCapitalPrompt);
+      expect(gamePrompt(language, 'capital-name', 'DEU', false)).toBe(nameCapitalPrompt);
+      for (const mode of ['find-it', 'name-it', 'capital-find', 'capital-name'] as const) {
+        expect(gamePrompt(language, mode, 'DEU', true, 'flag', 'capital')).toBe(c.correct);
+      }
+    }
   });
   it('never reveals hidden targets and reports completion', () => {
     for (const { id: language } of LANGUAGE_OPTIONS) {

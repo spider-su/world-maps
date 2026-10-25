@@ -11,7 +11,7 @@ import { LearningOverview } from '../features/geography/LearningOverview';
 import { useProgress } from '../features/geography/ProgressContext';
 import { ProgressStatus } from '../features/geography/ProgressStatus';
 import { gameCopy } from '../features/geography/copy';
-import type { GameMode } from '../features/geography/modes';
+import type { FindClue, GameMode, NameAnswer } from '../features/geography/modes';
 import { useLanguage } from '../ui/LanguageContext';
 import { worldMapsTheme as theme } from '../ui/worldMapsTheme';
 import { getTabBarMetrics } from '../platform/safeArea';
@@ -21,6 +21,8 @@ const noResults = new Map();
 export function HomeScreen() {
   const { progress, status } = useProgress();
   const [mode, setMode] = useState<GameMode | null>(null);
+  const [findClue, setFindClue] = useState<FindClue>('mixed');
+  const [nameAnswer, setNameAnswer] = useState<NameAnswer>('country');
   const { language } = useLanguage();
   const c = gameCopy[language];
   const navigation = useNavigation();
@@ -33,7 +35,7 @@ export function HomeScreen() {
     const listener = BackHandler.addEventListener('hardwareBackPress', () => { setMode(null); return true; });
     return () => listener.remove();
   }, [mode]));
-  if (mode) return <GeographyGameScreen key={`${mode}:${progress.difficulty}:${status === 'loading' || status === 'read-error' ? 'loading' : 'loaded'}`} mode={mode} onBack={() => setMode(null)} />;
+  if (mode) return <GeographyGameScreen key={`${mode}:${progress.difficulty}:${status === 'loading' || status === 'read-error' ? 'loading' : 'loaded'}`} mode={mode} findClue={findClue} nameAnswer={nameAnswer} onBack={() => setMode(null)} />;
   return <SafeAreaView edges={['top']} style={styles.screen}>
     <ScrollView contentContainerStyle={styles.body}>
       <View style={styles.top}>
@@ -49,7 +51,7 @@ export function HomeScreen() {
       <ProgressStatus language={language} />
       <DifficultySelector language={language} />
       <PracticeSelector language={language} />
-      <ModeSelector onChange={setMode} language={language} />
+      <ModeSelector onChange={setMode} language={language} findClue={findClue} onFindClue={setFindClue} nameAnswer={nameAnswer} onNameAnswer={setNameAnswer} />
       <LearningOverview language={language} />
       <Text style={styles.source}>{c.mapSource}</Text>
     </ScrollView>

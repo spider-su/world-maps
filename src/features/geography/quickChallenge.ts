@@ -15,14 +15,17 @@ export interface ChallengeAnswer {
 
 /** Uses existing country, capital and flag quiz variants, without duplicate country targets. */
 export function challengeQuestions(pack: GeographyPack, random: () => number = Math.random): ChallengeQuestion[] {
-  if (pack.locations.length < CHALLENGE_LENGTH) throw new Error('Quick Challenge requires at least ten countries');
+  if (pack.locations.length === 0) throw new Error('Quick Challenge requires countries');
   const ids = pack.locations.map(country => country.id);
-  for (let i = 0; i < CHALLENGE_LENGTH; i++) {
+  for (let i = 0; i < ids.length; i++) {
     const u = Math.max(0, Math.min(0.999999999, random()));
     const j = i + Math.floor(u * (ids.length - i));
     [ids[i], ids[j]] = [ids[j]!, ids[i]!];
   }
-  return ids.slice(0, CHALLENGE_LENGTH).map((targetId, i) => ({
+  // Easy difficulty has only seven countries: repeat after the pool is exhausted,
+  // never consecutively, instead of silently overriding the selected difficulty.
+  const targets = Array.from({ length: CHALLENGE_LENGTH }, (_, i) => ids[i % ids.length]!);
+  return targets.map((targetId, i) => ({
     targetId,
     mode: i % 2 === 0 ? 'find-it' : 'name-it',
     findClue: (['name', 'capital', 'flag'] as const)[Math.floor(i / 2) % 3]!,

@@ -14,7 +14,7 @@ import { frame, INITIAL_VIEWPORT, normalize, pan, zoomAt, type Viewport } from '
 import { distanceKm, guess, startRound, type GuessResult, type Round } from '../features/geography/engine';
 import { initialProgress, recordSession, scoreRound, sessionFromRound, summary, type GameProgress } from '../features/geography/progress';
 import { loadProgress, saveProgress } from '../features/geography/progressStorage';
-import { answerChoices, MODE_DEFINITIONS, modePrompt, nameItAnswer, type GameMode } from '../features/geography/modes';
+import { canRevealNames, answerChoices, MODE_DEFINITIONS, modePrompt, nameItAnswer, type GameMode } from '../features/geography/modes';
 import { ModeSelector } from '../features/geography/ModeSelector';
 
 const SEA = '#8FD3F4';
@@ -173,7 +173,7 @@ export function HotColdScreen() {
   const mapWidth = Math.max(280, Math.min(width - 24, 680));
   const mapHeight = mapWidth * 570 / 864;
   const revealedIds = mode === 'learn' ? [...resultById.keys()] : round.guesses;
-  const canShowNames = mode !== 'name-it' || completed;
+  const canShowNames = canRevealNames(mode, completed);
   const visibleLabels = mapLabels(europeShapes, showNames && canShowNames, revealedIds, visible, mapWidth);
   const labelFontSize = 11 * visible.w / mapWidth;
   const beginGesture = useCallback(() => {
@@ -234,7 +234,7 @@ export function HotColdScreen() {
           <Text style={styles.progressText}>Total  <Text style={styles.progressValue}>{stats.totalScore}</Text></Text>
         </View>}
         <View style={styles.mapModeRow}>
-          <Text style={styles.mapModeText}>{!canShowNames ? 'Names hidden · choose an answer below' : showNames ? 'Names shown · zoom for more detail' : 'Names hidden · tap to discover'}</Text>
+          <Text style={styles.mapModeText}>{!canShowNames ? 'Names hidden during the quiz' : showNames ? 'Names shown · zoom for more detail' : 'Names hidden · tap to discover'}</Text>
           {canShowNames && <Pressable accessibilityRole="button" accessibilityLabel={showNames ? 'Hide country names' : 'Show country names'}
             accessibilityState={{ expanded: showNames }} style={styles.namesButton} onPress={() => setShowNames(value => !value)}>
             <Text style={styles.namesButtonText}>{showNames ? 'Hide names' : 'Show names'}</Text>

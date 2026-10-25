@@ -43,3 +43,8 @@ export function nameItAnswer(round: Round, chosenId: string, now = Date.now()): 
     round: repeated ? round : { ...round, guesses: [...round.guesses, chosenId], completedAt: correct ? now : undefined },
   };
 }
+
+/** Quiz locations remain hidden until solved; Learn permits free label exploration. */
+export function canRevealNames(mode: GameMode, completed: boolean): boolean {
+  return mode === 'learn' || completed;
+}

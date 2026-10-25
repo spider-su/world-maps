@@ -56,3 +56,22 @@ For each future component, replace generic status with dated evidence and the de
   Learn/preview. Excluded outlines are muted and noninteractive; excluded markers
   are hidden. Quiz score summaries accept a difficulty filter; legacy rounds count
   as Difficult. See `docs/difficulty-testing.md` for current evidence.
+
+- P0 map stabilization: even-odd multipart paths; `selectionAlternatives` covers
+  marker-only countries and outlines below 700 map-area units. `createSelectionGuard`
+  suppresses guesses during/just after movement. Distances are an offline table
+  generated from shared geometry; see `docs/p0-geography-gameplay.md`.
+
+- `learning.ts`: schema-2 country/mode counters, one-time score migration,
+  deterministic adaptive/random target sampling, and learning summaries.
+- `LearningOverview` / `PracticeSelector`: app-owned saved practice controls and
+  expandable country progress; reused on Home/Settings. See country-learning.md.
+
+- `EuropeMap.atlas` / `showBorders`: optional offline relief appearance, sharing
+  the existing SVG viewBox and hit geometry; selected terrain is translucent blue.
+  Raster registration/asset checksums are tested. See docs/atlas-data.md.
+
+- `LANGUAGE_OPTIONS`, `SPEECH_LOCALES`: shared EN/PL/RU language/voice locale contract.
+- `speechController`: serialized stop/speak queue, installed-voice matching, stale
+  callback guards and recoverable unavailable state. Hook stops on blur, mute,
+  language change and unmount. Physical audible speech remains a separate gate.

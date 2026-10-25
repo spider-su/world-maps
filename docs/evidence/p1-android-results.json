@@ -1,0 +1,106 @@
+[
+  {
+    "scenario": "API35 standalone cold launch in airplane mode",
+    "result": "PASS"
+  },
+  {
+    "scenario": "Country progress migrated from existing completed round",
+    "result": "PASS"
+  },
+  {
+    "scenario": "Original Name It score survives schema upgrade",
+    "result": "PASS"
+  },
+  {
+    "scenario": "Hot Cold hides target before first answer",
+    "result": "PASS"
+  },
+  {
+    "scenario": "Native two-finger pinch changes zoom",
+    "result": "PASS"
+  },
+  {
+    "scenario": "Pinch did not count a guess",
+    "result": "PASS"
+  },
+  {
+    "scenario": "Map drag did not count a guess",
+    "result": "PASS"
+  },
+  {
+    "scenario": "Repeated microstate guess keeps one attempt",
+    "result": "PASS"
+  },
+  {
+    "scenario": "Russian Settings switches immediately",
+    "result": "PASS"
+  },
+  {
+    "scenario": "Russian offline atlas details",
+    "result": "PASS"
+  },
+  {
+    "scenario": "Tiny Cyprus selectable through alternative",
+    "result": "PASS"
+  },
+  {
+    "scenario": "Russian and Difficult survive offline restart",
+    "result": "PASS"
+  },
+  {
+    "scenario": "Learning overview restores after restart",
+    "result": "PASS"
+  },
+  {
+    "scenario": "Integrated Name It keeps difficulty and options",
+    "result": "PASS"
+  },
+  {
+    "scenario": "Find It target prompt",
+    "result": "PASS"
+  },
+  {
+    "scenario": "OS dark with intentional light theme and large-text navigation",
+    "result": "PASS"
+  },
+  {
+    "scenario": "Lower atlas actions reachable with 1.3 text and three-button navigation",
+    "result": "PASS"
+  },
+  {
+    "scenario": "All 47 supported countries selected on API35 (34 physical outlines, 13 alternatives)",
+    "result": "PASS"
+  },
+  {
+    "scenario": "Final APK Name It completes offline",
+    "result": "PASS"
+  },
+  {
+    "scenario": "Final APK Find It completes with physical country tap",
+    "result": "PASS"
+  },
+  {
+    "scenario": "Final APK pinch changes zoom without counting a guess",
+    "result": "PASS"
+  },
+  {
+    "scenario": "Final APK Hot Cold completes with retained clue colors",
+    "result": "PASS"
+  },
+  {
+    "scenario": "Native pronunciation replay remains usable with offline device voices",
+    "result": "PASS"
+  },
+  {
+    "scenario": "Final APK Russian offline country facts",
+    "result": "PASS"
+  },
+  {
+    "scenario": "Final APK Russian language survives force-stop",
+    "result": "PASS"
+  },
+  {
+    "scenario": "Final APK mode histories survive restart",
+    "result": "PASS"
+  }
+]

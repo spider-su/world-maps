@@ -58,3 +58,30 @@ the selected pool. Learn always includes every country.
 The level is saved with preferences and completed rounds; quiz history is filtered
 by mode and level. Older rounds remain intact and count as Difficult because they
 used the full pool. See [difficulty validation](docs/difficulty-testing.md).
+
+### Country learning
+
+Home offers Adaptive or Random practice. Adaptive revisits recent misses and older
+practice while reducing repeats of mastered countries. Home/Settings show local
+Europe learning statistics and per-country accuracy. Existing scores migrate once
+without being reset; misses from unfinished rounds are retained. See
+[learning model and migration](docs/country-learning.md).
+
+### Atlas and quiz appearance
+
+Home/Learn use bundled Natural Earth shaded relief, registered to the same SVG
+country geometry used for taps. Learn offers a border toggle; quizzes keep the
+clean political map. [Source, license and regeneration](docs/atlas-data.md).
+
+### Languages and pronunciation
+
+Choose English, Polish or Russian in Settings. All country names/capitals and game
+prompts update without changing scores. Pronunciation uses installed device voices;
+missing voices produce an inline message. See [speech behavior](docs/languages-and-speech.md).
+
+### P0–P1 validation
+
+The [delivery report](docs/p0-p1-delivery.md) records the focused feature PRs,
+combined branch, 73 source/setup tests, offline Android APK provenance and emulator
+evidence, including selection of all 47 countries. Physical-phone, audible speech
+and iOS validation remain separate pending gates.

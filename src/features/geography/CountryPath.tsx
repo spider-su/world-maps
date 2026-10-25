@@ -11,5 +11,5 @@ export interface CountryPathProps {
 
 /** Native SVG touch handling; Metro selects CountryPath.web on the web. */
 export function CountryPath({ onSelect, ...props }: CountryPathProps) {
-  return <Path {...props} accessible strokeLinejoin="round" onPress={onSelect} />;
+  return <Path {...props} accessible fillRule="evenodd" strokeLinejoin="round" onPress={onSelect} />;
 }

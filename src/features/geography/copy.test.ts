@@ -7,7 +7,7 @@ function strings(value: object, prefix = ''): string[] {
 }
 describe('game language coverage', () => {
   it('provides matching English and Polish keys for every mode and game control', () => {
-    expect(strings(gameCopy.en).sort()).toEqual(strings(gameCopy.pl).sort());
+    for (const copy of Object.values(gameCopy)) expect(strings(gameCopy.en).sort()).toEqual(strings(copy).sort());
     for (const c of Object.values(gameCopy)) expect(c.modes.learn.title.length).toBeGreaterThan(0);
   });
 });

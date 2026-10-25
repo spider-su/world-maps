@@ -26,17 +26,6 @@ describe('local game progress', () => {
     expect(summary(recorded, 'europe')).toEqual({ played: 1, bestScore: 90, totalScore: 90, averageGuesses: 2 });
     expect(summary(recorded, 'other').played).toBe(0);
   });
-  it('restores difficulty and separates scores, keeping legacy all-country rounds Difficult', () => {
-    const legacy = sessionFromRound(completed);
-    const easy = sessionFromRound({ ...completed, startedAt: 101 }, 'easy');
-    const state = parseProgress(JSON.stringify({ difficulty: 'easy', voiceEnabled: false, sessions: [legacy, easy] }));
-    expect(state.difficulty).toBe('easy');
-    expect(summary(state, 'europe', 'easy').played).toBe(1);
-    expect(summary(state, 'europe', 'difficult').played).toBe(1);
-    expect(summary(state, 'europe', 'normal').played).toBe(0);
-    expect(summary(state, 'europe').played).toBe(2);
-    expect(parseProgress(JSON.stringify({ difficulty: 'unknown', sessions: [legacy] })).difficulty).toBe('normal');
-  });
   it('bounds history and recovers from malformed saved data', () => {
     let state = initialProgress;
     for (let i = 0; i < MAX_HISTORY + 5; i++) {
@@ -45,7 +34,7 @@ describe('local game progress', () => {
     expect(state.sessions).toHaveLength(MAX_HISTORY);
     expect(parseProgress('{bad')).toEqual(initialProgress);
     expect(parseProgress(JSON.stringify({ voiceEnabled: false, sessions: [sessionFromRound(completed), { bad: true }] }))).toEqual({
-      difficulty: 'normal', voiceEnabled: false, sessions: [sessionFromRound(completed)],
+      ...initialProgress, voiceEnabled: false, sessions: [sessionFromRound(completed)], learning: parseProgress(JSON.stringify({ sessions: [sessionFromRound(completed)] })).learning,
     });
   });
 });

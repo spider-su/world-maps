@@ -1,6 +1,6 @@
 # Offline country learning data
 
-All 47 selectable map IDs have bundled English/Polish names, capitals and SVG flags.
+All 47 selectable map IDs have bundled English/Polish/Russian names, capitals and SVG flags.
 No population, imagery or remote API is used. Country/territory coverage follows the
 learning pack, not a definition of international recognition.
 
@@ -9,7 +9,7 @@ https://github.com/mledoze/countries/tree/6031f5df137c41c76d180c55a0782185ae3ed0
 
 The derived country facts database (`data/country-facts.json`, excluding flag artwork)
 is made available under ODbL 1.0, with the source license in
-[licenses/countries-ODbL.txt](licenses/countries-ODbL.txt). Polish capital city spellings
+[licenses/countries-ODbL.txt](licenses/countries-ODbL.txt). Polish and Russian capital city spellings
 are editorial translations of the source capital names. `UNK` is mapped to the app's
 existing `KOS` ID. Dataset checksum is embedded in the generated JSON.
 

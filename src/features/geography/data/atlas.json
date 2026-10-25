@@ -1,0 +1,17 @@
+{
+  "source": "Natural Earth I 1:50m Shaded Relief 3.2.0",
+  "url": "https://naturalearth.s3.amazonaws.com/50m_raster/NE1_50M_SR.zip",
+  "license": "Public domain",
+  "sourceSha256": "3047f49b6bc40900d6c2106905d2ac94b9a7326a437dfe05e11a882e87176b89",
+  "assetSha256": "4673a072cbc1f34689f3413e0ae5b66c4824ab3031122a9ae88d59c7be7eea5e",
+  "bounds": {
+    "west": -26,
+    "south": 34,
+    "east": 46,
+    "north": 72
+  },
+  "width": 1728,
+  "height": 1140,
+  "mapWidth": 864,
+  "mapHeight": 570
+}

@@ -27,3 +27,16 @@ it('uses marker-to-outline proximity for small countries', () => {
   expect(europeBorderDistanceKm(get('VAT'), get('ITA'))).toBeLessThan(100);
   expect(europeBorderDistanceKm(get('MLT'), get('ITA'))).toBe(europeBorderDistanceKm(get('ITA'), get('MLT')));
 });
+
+it('covers all supported pairs with symmetric finite distances and correct marker borders', () => {
+  for (const a of europePack.locations) for (const b of europePack.locations) {
+    const distance = europeBorderDistanceKm(a, b);
+    expect(Number.isFinite(distance)).toBe(true);
+    expect(distance).toBeGreaterThanOrEqual(0);
+    expect(distance).toBe(europeBorderDistanceKm(b, a));
+  }
+  expect(europeBorderDistanceKm(get('VAT'), get('ITA'))).toBe(0);
+  expect(europeBorderDistanceKm(get('LIE'), get('CHE'))).toBe(0);
+  expect(europeBorderDistanceKm(get('GBR'), get('FRA'))).toBeGreaterThan(15);
+  expect(europeBorderDistanceKm(get('MLT'), get('ITA'))).toBeGreaterThan(50);
+});

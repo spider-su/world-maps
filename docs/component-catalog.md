@@ -31,3 +31,19 @@ For a new local-first feature: define the pure model in `src/services/`, add tes
 ## Extension decision
 
 Reuse the current primitive when its behavior matches. Extend it when at least two flows need the same generic behavior and tests can cover it. Keep app-specific widgets inside the app. Add new dependencies only after checking native compatibility and documenting why existing primitives are insufficient. Update `docs/component-ledger.md` for shared contract changes.
+
+## World Maps app components
+
+- `features/geography/EuropeMap`: shared interactive renderer and noninteractive
+  Home preview; takes guess results, revealed IDs, label visibility and selection.
+- `features/geography/ModeSelector`: four icon-led mode cards, EN/PL, no round state.
+- `screens/GeographyGameScreen`: one game mode/round, compact prompt and answers.
+- `features/geography/DifficultySelector`: saved EN/PL Home level selection.
+  `difficultyPack` supplies eligible quiz locations; `EuropeMap.selectableIds`
+  restricts interactions while retaining geographic context.
+- `features/geography/learning`: per-country/mode attempt records, schema migration,
+  adaptive/random sampling and pure summaries. `LearningOverview` is reused by
+  Home/Settings; `PracticeSelector` saves the sampling preference.
+- `EuropeMap.atlas` / `showBorders`: bundled relief registered to the shared viewBox.
+- `speechController`: serialized pronunciation with installed-voice matching,
+  cancellation and bounded voice discovery. EN/PL/RU share `LANGUAGE_OPTIONS`.

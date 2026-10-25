@@ -34,7 +34,7 @@ describe('local game progress', () => {
     expect(state.sessions).toHaveLength(MAX_HISTORY);
     expect(parseProgress('{bad')).toEqual(initialProgress);
     expect(parseProgress(JSON.stringify({ voiceEnabled: false, sessions: [sessionFromRound(completed), { bad: true }] }))).toEqual({
-      voiceEnabled: false, sessions: [sessionFromRound(completed)],
+      ...initialProgress, voiceEnabled: false, sessions: [sessionFromRound(completed)], learning: parseProgress(JSON.stringify({ sessions: [sessionFromRound(completed)] })).learning,
     });
   });
 });

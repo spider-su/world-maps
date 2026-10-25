@@ -24,3 +24,54 @@ For each future component, replace generic status with dated evidence and the de
 | App error boundary and loading/error/empty UI | Generic template primitives | Storage contract unit tests; UI device evidence pending | Error boundary handles render failures only; async failures require screen-level handling |
 | Opt-in typed persistence and native/web adapters | Generic template contract | Unit tests cover round-trip, missing/corrupt data, invalid keys and backend errors | AsyncStorage install required only for adopting native apps; web localStorage is browser-only |
 | Codex instructions and skill templates | Adapted from Ryczałt workflow structure, without project-specific paths or credentials | Documentation only; emulator execution not yet verified | Downstream apps must supply app identity, test fixtures and device evidence |
+
+## World Maps game components
+
+- `src/features/geography/CountryPath`: app-owned SVG path adapter. Web uses a DOM `onClick`; native uses `react-native-svg` `onPress`. No new dependencies. Regression test covers web event routing; browser smoke verified selection, repeat guesses, completion, restart, zoom/pan and tab navigation on 2026-10-24. Native runtime remains unverified.
+- `HotColdScreen` owns the top safe-area edge; visible tabs own the bottom edge.
+
+- Europe map views: bundled 1:50m country/context geometry and collision-filtered labels share the existing 864×570 coordinates. `mapLabels` exposes names only when explicitly enabled or already guessed. `CountryMarker` uses native SVG press events and DOM click events on web, matching `CountryPath`. No dependencies added. Web evidence and current native limitations are recorded in `docs/europe-map-assets.md`.
+
+- POC shell: `HomeScreen` owns mode entry; `GeographyGameScreen` owns one mounted
+  round. Game hides tabs and owns top/bottom insets; Home/Settings own only top.
+  `EuropeMap` shares offline geometry, gestures and controls with Home preview.
+  `ModeSelector` accepts EN/PL copy and optional selected mode. Existing branding
+  branch was integrated, including its app-specific icon and theme tokens.
+
+- `CountryInfoCard`: app-owned offline flag/name/capital/pronunciation card, EN/PL.
+  All 47 map IDs covered by a pinned derived country dataset and SVG flag artwork;
+  attribution and full licenses in `docs/country-data.md` and `docs/licenses/`.
+
+- `ProgressProvider` uses one feature-owned serialized store for Home/game/Settings.
+  Failed reads block mutations; failed saves retain the latest in-memory snapshot
+  and expose retry. Tests cover interleaved updates, read failure and save retry.
+- Product Settings replaces biometric/demo flows with language, voice, recent-history
+  summaries and bundled data license notices. EN/PL covers controls and country names;
+  speech uses the matching language, cancels queued pronunciation on blur/unmount.
+
+- `DifficultySelector`: app-owned EN/PL Home radio buttons using the shared progress
+  store; blocks changes while loading or after failed reads. `difficultyPack`
+  filters quiz targets, guesses and Name It distractors by projected outline area.
+- `EuropeMap.selectableIds`: optional eligible country IDs; omitted for unrestricted
+  Learn/preview. Excluded outlines are muted and noninteractive; excluded markers
+  are hidden. Quiz score summaries accept a difficulty filter; legacy rounds count
+  as Difficult. See `docs/difficulty-testing.md` for current evidence.
+
+- P0 map stabilization: even-odd multipart paths; `selectionAlternatives` covers
+  marker-only countries and outlines below 700 map-area units. `createSelectionGuard`
+  suppresses guesses during/just after movement. Distances are an offline table
+  generated from shared geometry; see `docs/p0-geography-gameplay.md`.
+
+- `learning.ts`: schema-2 country/mode counters, one-time score migration,
+  deterministic adaptive/random target sampling, and learning summaries.
+- `LearningOverview` / `PracticeSelector`: app-owned saved practice controls and
+  expandable country progress; reused on Home/Settings. See country-learning.md.
+
+- `EuropeMap.atlas` / `showBorders`: optional offline relief appearance, sharing
+  the existing SVG viewBox and hit geometry; selected terrain is translucent blue.
+  Raster registration/asset checksums are tested. See docs/atlas-data.md.
+
+- `LANGUAGE_OPTIONS`, `SPEECH_LOCALES`: shared EN/PL/RU language/voice locale contract.
+- `speechController`: serialized stop/speak queue, installed-voice matching, stale
+  callback guards and recoverable unavailable state. Hook stops on blur, mute,
+  language change and unmount. Physical audible speech remains a separate gate.

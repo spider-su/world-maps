@@ -1,0 +1,102 @@
+{
+  "results": [
+    {
+      "scenario": "Legacy country learning migration visible",
+      "result": "PASS"
+    },
+    {
+      "scenario": "Quiz uses clean map",
+      "result": "PASS"
+    },
+    {
+      "scenario": "Easy has exactly seven outlines",
+      "result": "PASS"
+    },
+    {
+      "scenario": "Repeated guess keeps attempts",
+      "result": "PASS"
+    },
+    {
+      "scenario": "Hot Cold completes",
+      "result": "PASS"
+    },
+    {
+      "scenario": "Find It target translated from stable ID",
+      "result": "PASS"
+    },
+    {
+      "scenario": "Find It completes",
+      "result": "PASS"
+    },
+    {
+      "scenario": "No immediate target repeat",
+      "result": "PASS"
+    },
+    {
+      "scenario": "Four unique Name It options including target",
+      "result": "PASS"
+    },
+    {
+      "scenario": "Wrong option visibly marked and disabled",
+      "result": "PASS"
+    },
+    {
+      "scenario": "Name It completes",
+      "result": "PASS"
+    },
+    {
+      "scenario": "Learn terrain asset offline-bundled",
+      "result": "PASS"
+    },
+    {
+      "scenario": "Learn unrestricted",
+      "result": "PASS"
+    },
+    {
+      "scenario": "Marker alternative selects Andorra",
+      "result": "PASS"
+    },
+    {
+      "scenario": "Real map coordinate selects France",
+      "result": "PASS"
+    },
+    {
+      "scenario": "Atlas shares zoom and fixed geographic bounds",
+      "result": "PASS"
+    },
+    {
+      "scenario": "Learn does not record scores or practice",
+      "result": "PASS"
+    },
+    {
+      "scenario": "Russian Settings",
+      "result": "PASS"
+    },
+    {
+      "scenario": "Russian country and capital",
+      "result": "PASS"
+    },
+    {
+      "scenario": "Loaded atlas and facts usable offline",
+      "result": "PASS"
+    },
+    {
+      "scenario": "Russian persists on reload",
+      "result": "PASS"
+    },
+    {
+      "scenario": "Schema, scores and learning persist",
+      "result": "PASS"
+    },
+    {
+      "scenario": "No horizontal overflow",
+      "result": "PASS"
+    },
+    {
+      "scenario": "No page errors",
+      "result": "PASS"
+    }
+  ],
+  "errors": [],
+  "sourceCommit": "a4e34c3e748b6d5cf1d33e7ac82873717e916ce3"
+}

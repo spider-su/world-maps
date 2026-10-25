@@ -1,66 +1,63 @@
-import { useState } from 'react';
-import { Alert } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { BackHandler, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { ModeSelector } from '../features/geography/ModeSelector';
+import { EuropeMap } from '../features/geography/EuropeMap';
+import { DifficultySelector } from '../features/geography/DifficultySelector';
+import { PracticeSelector } from '../features/geography/PracticeSelector';
+import { LearningOverview } from '../features/geography/LearningOverview';
+import { useProgress } from '../features/geography/ProgressContext';
+import { ProgressStatus } from '../features/geography/ProgressStatus';
+import { gameCopy } from '../features/geography/copy';
+import type { GameMode } from '../features/geography/modes';
 import { useLanguage } from '../ui/LanguageContext';
-import type { TranslationKey } from '../ui/i18n';
-import { AppButton, AppCard, AppScreen, AppText, ConfirmDialog, FeedbackBanner, LoadingSpinner, TextField, ToggleField } from '../ui/primitives';
-import { validateDemoForm, type DemoForm, type FormErrors } from '../ui/validation';
+import { worldMapsTheme as theme } from '../ui/worldMapsTheme';
+import { getTabBarMetrics } from '../platform/safeArea';
+import { GeographyGameScreen } from './GeographyGameScreen';
 
+const noResults = new Map();
 export function HomeScreen() {
-  const { t } = useLanguage();
-  const [form, setForm] = useState<DemoForm>({ name: '', email: '', amount: '' });
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [loading, setLoading] = useState(false);
-  const [confirm, setConfirm] = useState(false);
-  const [enabled, setEnabled] = useState(false);
-  const [message, setMessage] = useState<TranslationKey>('welcome');
-  const change = (key: keyof DemoForm) => (value: string) => {
-    setForm(previous => ({ ...previous, [key]: value }));
-    setErrors(previous => ({ ...previous, [key]: undefined }));
-  };
-  const localError = (error?: string) => {
-    const keys: Record<string, 'requiredName' | 'shortName' | 'invalidEmail' | 'positiveAmount' | 'maxAmount'> = {
-      'Name is required': 'requiredName',
-      'Enter at least 2 characters': 'shortName',
-      'Enter a valid email': 'invalidEmail',
-      'Enter a positive number': 'positiveAmount',
-      'Maximum is 1,000,000': 'maxAmount'
-    };
-    return error ? t(keys[error] ?? 'correctFields') : undefined;
-  };
-  const submit = () => {
-    const next = validateDemoForm(form);
-    setErrors(next);
-    setMessage(Object.keys(next).length ? 'correctFields' : 'validated');
-  };
-  return <AppScreen>
-    <AppText title>{t('home')}</AppText>
-    <AppText>{t('intro')}</AppText>
-    <FeedbackBanner message={t(message)} />
-    <AppCard>
-      <AppText title>{t('actions')}</AppText>
-      <AppButton label={t('showMessage')} onPress={() => setMessage('actionDone')} />
-      <AppButton label={t('openConfirm')} variant="secondary" onPress={() => setConfirm(true)} />
-      <AppButton label={t('showAlert')} variant="secondary" onPress={() => Alert.alert(t('alertTitle'), t('alertMessage'))} />
-      <AppButton label={t('disabled')} disabled onPress={() => undefined} />
-    </AppCard>
-    <AppCard>
-      <AppText title>{t('loadingStates')}</AppText>
-      <AppButton label={loading ? t('stopSpinner') : t('showSpinner')} variant="secondary" onPress={() => setLoading(!loading)} />
-      {loading ? <LoadingSpinner label={t('loadingExample')} /> : <AppText>{t('ready')}</AppText>}
-    </AppCard>
-    <AppCard>
-      <AppText title>{t('form')}</AppText>
-      <TextField label={t('name')} placeholder="Ada" value={form.name} onChangeText={change('name')} error={localError(errors.name)} />
-      <TextField label={t('email')} placeholder="ada@example.com" value={form.email} onChangeText={change('email')} error={localError(errors.email)} keyboardType="email-address" />
-      <TextField label={t('amount')} placeholder="12.50" value={form.amount} onChangeText={change('amount')} error={localError(errors.amount)} keyboardType="numeric" />
-      <ToggleField label={t('preference')} value={enabled} onValueChange={setEnabled} />
-      <AppButton label={t('validate')} onPress={submit} />
-      <AppButton label={t('clear')} variant="secondary" onPress={() => { setForm({ name: '', email: '', amount: '' }); setErrors({}); setMessage('cleared'); }} />
-    </AppCard>
-    <AppCard>
-      <AppText title>{t('notifications')}</AppText>
-      <AppText>{t('notificationsInfo')}</AppText>
-    </AppCard>
-    <ConfirmDialog visible={confirm} title={t('confirmTitle')} cancelLabel={t('cancel')} confirmLabel={t('confirm')} onCancel={() => setConfirm(false)} onConfirm={() => { setConfirm(false); setMessage('confirmed'); }} />
-  </AppScreen>;
+  const { progress, status } = useProgress();
+  const [mode, setMode] = useState<GameMode | null>(null);
+  const { language } = useLanguage();
+  const c = gameCopy[language];
+  const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
+  useEffect(() => {
+    navigation.setOptions({ tabBarStyle: mode ? { display: 'none' } : { ...getTabBarMetrics(insets.bottom) } });
+  }, [mode, navigation, insets.bottom]);
+  useFocusEffect(useCallback(() => {
+    if (!mode) return;
+    const listener = BackHandler.addEventListener('hardwareBackPress', () => { setMode(null); return true; });
+    return () => listener.remove();
+  }, [mode]));
+  if (mode) return <GeographyGameScreen key={`${mode}:${progress.difficulty}:${status === 'loading' || status === 'read-error' ? 'loading' : 'loaded'}`} mode={mode} onBack={() => setMode(null)} />;
+  return <SafeAreaView edges={['top']} style={styles.screen}>
+    <ScrollView contentContainerStyle={styles.body}>
+      <View style={styles.top}>
+        <View><Text style={styles.brand}>World Maps</Text><Text style={styles.tagline}>{c.tagline}</Text></View>
+        <Pressable accessibilityRole="button" accessibilityLabel={c.settings} onPress={() => navigation.navigate('Settings' as never)} style={styles.settings}>
+          <Ionicons name="settings-outline" size={24} color={theme.brandDark} />
+        </Pressable>
+      </View>
+      <View style={styles.hero}>
+        <EuropeMap results={noResults} revealedIds={[]} showNames={false} onSelect={() => undefined} language={language} preview atlas />
+        <View style={styles.heroCopy}><Ionicons name="earth-outline" size={21} color={theme.brand} /><Text style={styles.region}>{c.europe}</Text><Text style={styles.offline}>{c.offline}</Text></View>
+      </View>
+      <ProgressStatus language={language} />
+      <DifficultySelector language={language} />
+      <PracticeSelector language={language} />
+      <ModeSelector onChange={setMode} language={language} />
+      <LearningOverview language={language} />
+      <Text style={styles.source}>{c.mapSource}</Text>
+    </ScrollView>
+  </SafeAreaView>;
 }
+const styles = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: theme.paper }, body: { padding: 16, gap: 18, maxWidth: 720, width: '100%', alignSelf: 'center', paddingBottom: 24 },
+  top: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }, brand: { fontSize: 30, fontWeight: '800', color: theme.navy }, tagline: { color: theme.muted, fontSize: 13, marginTop: 5 },
+  settings: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
+  hero: { borderRadius: 20, overflow: 'hidden', backgroundColor: '#FFF', borderWidth: 1, borderColor: '#E0EAF3' }, heroCopy: { flexDirection: 'row', alignItems: 'center', padding: 12, gap: 8, flexWrap: 'wrap' }, region: { color: theme.navy, fontWeight: '800', fontSize: 15 }, offline: { color: theme.muted, fontSize: 11 }, source: { color: theme.muted, fontSize: 10, textAlign: 'center' },
+});

@@ -1,3 +1,4 @@
+import { focusPoint } from './viewport';
 import { describe, expect, it } from 'vitest';
 import { frame, INITIAL_VIEWPORT, MAX_ZOOM, normalize, pan, zoomAt } from './viewport';
 
@@ -19,4 +20,11 @@ describe('map viewport gestures', () => {
     expect(f.x + (216 / 432) * f.w).toBeCloseTo(432);
     expect(f.y + (142.5 / 432) * f.w).toBeCloseTo(285);
   });
+});
+
+it('focuses a tiny target while respecting the map edges', () => {
+  const focused = focusPoint({ x: 330, y: 442 }, 4);
+  expect(focused.zoom).toBe(4);
+  expect(focused.center).toEqual({ x: 330, y: 442 });
+  expect(focusPoint({ x: 0, y: 0 }, 4).center.x).toBe(108);
 });

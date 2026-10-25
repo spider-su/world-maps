@@ -33,7 +33,7 @@ export function ModeSelector({ value, onChange, language = 'en', findClue = 'mix
               accessibilityState={{ selected }}
               style={[styles.option, selected && styles.selected]}
               onPress={() => onChange(item.id)}>
-              <View style={[styles.iconTile, { backgroundColor: selected ? theme.surface : colors.tint }]}>
+              <View style={[styles.iconTile, { backgroundColor: selected ? colors.tint : colors.tint }]}>
                 <Ionicons name={colors.icon} size={23} color={colors.foreground} />
               </View>
               <View style={styles.copy}>

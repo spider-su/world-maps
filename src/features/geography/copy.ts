@@ -1,6 +1,7 @@
 import type { Language } from '../../ui/i18n';
 
 const en = {
+  hideBorders: 'Hide borders', showBorders: 'Show borders',
   tagline: 'Explore · Learn · Play', chooseMode: 'Choose how to explore', europe: 'Europe',
   offline: '47 countries · Offline map', back: 'Back to Home', settings: 'Settings',
   modes: {
@@ -28,6 +29,7 @@ const en = {
 };
 type Copy = typeof en;
 const pl: Copy = {
+  hideBorders: 'Ukryj granice', showBorders: 'Pokaż granice',
   tagline: 'Odkrywaj · Ucz się · Graj', chooseMode: 'Wybierz sposób odkrywania', europe: 'Europa',
   offline: '47 państw · Mapa offline', back: 'Wróć do strony głównej', settings: 'Ustawienia',
   modes: {

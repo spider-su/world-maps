@@ -38,7 +38,7 @@ export function HomeScreen() {
         </Pressable>
       </View>
       <View style={styles.hero}>
-        <EuropeMap results={noResults} revealedIds={[]} showNames={false} onSelect={() => undefined} language={language} preview />
+        <EuropeMap results={noResults} revealedIds={[]} showNames={false} onSelect={() => undefined} language={language} preview atlas />
         <View style={styles.heroCopy}><Ionicons name="earth-outline" size={21} color={theme.brand} /><Text style={styles.region}>{c.europe}</Text><Text style={styles.offline}>{c.offline}</Text></View>
       </View>
       <ProgressStatus language={language} />

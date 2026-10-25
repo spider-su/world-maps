@@ -48,3 +48,7 @@ For each future component, replace generic status with dated evidence and the de
 - Product Settings replaces biometric/demo flows with language, voice, recent-history
   summaries and bundled data license notices. EN/PL covers controls and country names;
   speech uses the matching language, cancels queued pronunciation on blur/unmount.
+
+- `EuropeMap.atlas` / `showBorders`: optional offline relief appearance, sharing
+  the existing SVG viewBox and hit geometry; selected terrain is translucent blue.
+  Raster registration/asset checksums are tested. See docs/atlas-data.md.

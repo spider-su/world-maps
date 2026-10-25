@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
-import Svg, { Circle, Path, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, ClipPath, Defs, Image as SvgImage, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { Ionicons } from '@expo/vector-icons';
 import type { Language } from '../../ui/i18n';
 import { europeShapes, europeContextShapes } from './europe';
@@ -11,6 +11,7 @@ import { CountryMarker } from './CountryMarker';
 import { mapLabels } from './mapLabels';
 import { frame, INITIAL_VIEWPORT, normalize, pan, zoomAt, focusPoint, type Viewport } from './viewport';
 import { CLUE_COLORS, SEA, LAND } from './mapColors';
+import atlasImage from '../../../assets/maps/europe-atlas.jpg';
 import { countryName } from './countryFacts';
 import { gameCopy } from './copy';
 
@@ -23,10 +24,12 @@ interface Props {
   enabled?: boolean;
   preview?: boolean;
   targetId?: string;
+  atlas?: boolean;
+  showBorders?: boolean;
 }
 
 /** Shared, offline renderer. Country geometry remains authoritative for taps. */
-export function EuropeMap({ results, revealedIds, showNames, onSelect, language, enabled = true, preview = false, targetId }: Props) {
+export function EuropeMap({ results, revealedIds, showNames, onSelect, language, enabled = true, preview = false, targetId, atlas = false, showBorders = true }: Props) {
   const { width } = useWindowDimensions();
   const [measuredWidth, setMeasuredWidth] = useState(0);
   const mapWidth = measuredWidth || Math.max(280, Math.min(width - 32, 840));
@@ -83,9 +86,10 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
     <View {...(!preview ? responder.panHandlers : {})} collapsable={false}>
       <Svg width={mapWidth} height={mapHeight} viewBox={`${visible.x} ${visible.y} ${visible.w} ${visible.h}`} accessibilityRole={preview ? 'image' : 'none'} accessibilityLabel={c.europe}>
         <Rect width="864" height="570" fill={SEA} />
-        {europeContextShapes.map(shape => <Path key={shape.id} d={shape.path} fill="#CAD5DE" stroke="#70889A" strokeWidth={0.6 / viewport.zoom} />)}
+        {atlas && <><Defs><ClipPath id="atlas-land">{[...europeShapes, ...europeContextShapes].map(shape => <Path key={shape.id} d={shape.path} fillRule="evenodd" clipRule="evenodd" />)}</ClipPath></Defs><SvgImage href={atlasImage} x={0} y={0} width={864} height={570} clipPath="url(#atlas-land)" preserveAspectRatio="none" pointerEvents="none" /></>}
+        {europeContextShapes.map(shape => <Path key={shape.id} d={shape.path} fill={atlas ? 'transparent' : '#CAD5DE'} stroke={atlas ? showBorders ? '#FFFFFF' : 'transparent' : '#70889A'} strokeWidth={0.6 / viewport.zoom} />)}
         {europeShapes.map((shape, index) => {
-          const props = { d: shape.path, fill: shape.id === targetId ? '#F5AD18' : results.has(shape.id) ? CLUE_COLORS[results.get(shape.id)!] : LAND, stroke: '#637F90', strokeWidth: Math.max(0.35, 1 / viewport.zoom) };
+          const props = { d: shape.path, fill: shape.id === targetId ? '#F5AD18' : results.has(shape.id) ? atlas ? 'rgba(37,99,235,0.35)' : CLUE_COLORS[results.get(shape.id)!] : atlas ? 'transparent' : LAND, stroke: atlas ? showBorders ? '#FFFFFF' : 'transparent' : '#637F90', strokeWidth: Math.max(0.35, 1 / viewport.zoom) };
           return preview || !enabled ? <Path key={shape.id} {...props} /> : <CountryPath key={shape.id} {...props} accessibilityLabel={`${c.mapCountry} ${index + 1}`} onSelect={() => onSelect(shape.id)} />;
         })}
         {!preview && labels.map(location => <SvgText key={location.id} x={location.labelX} y={location.labelY}

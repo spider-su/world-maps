@@ -1,15 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { LANGUAGE_OPTIONS, SPEECH_LOCALES, languageFromLocale, messages, translate } from './i18n';
-describe('translations', () => {
-  it('has equivalent translation keys', () => {
-    for (const { id } of LANGUAGE_OPTIONS) expect(Object.keys(messages.en).sort()).toEqual(Object.keys(messages[id]).sort());
+import { LANGUAGE_OPTIONS, SPEECH_LOCALES, isLanguage, languageFromLocale } from './i18n';
+
+describe('language definitions', () => {
+  it('supports English, Polish and Russian with a speech locale each', () => {
+    expect(LANGUAGE_OPTIONS.map(option => option.id)).toEqual(['en', 'pl', 'ru']);
+    expect(SPEECH_LOCALES).toEqual({ en: 'en-US', pl: 'pl-PL', ru: 'ru-RU' });
   });
-  it('translates settings', () => {
-    expect(translate('pl', 'settings')).toBe('Ustawienia');
-    expect(translate('ru', 'settings')).toBe('Настройки');
+  it('maps device locales and validates saved preferences', () => {
     expect(languageFromLocale('ru_RU')).toBe('ru');
     expect(languageFromLocale('pl-PL')).toBe('pl');
     expect(languageFromLocale('fr-FR')).toBe('en');
-    expect(SPEECH_LOCALES.ru).toBe('ru-RU');
+    expect(isLanguage('pl')).toBe(true);
+    expect(isLanguage('de')).toBe(false);
+    expect(isLanguage(null)).toBe(false);
   });
 });

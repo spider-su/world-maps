@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { europePack } from './europe';
 import { europeBorderDistanceKm } from './borderDistance';
-import { guess, startRound } from './engine';
+import { classifyGuess, guess, startRoundFor } from './engine';
 
 const get = (id: string) => europePack.locations.find(location => location.id === id)!;
 
@@ -12,11 +12,20 @@ describe('European border distances', () => {
     expect(europeBorderDistanceKm(get('ESP'), get('UKR'))).toBeGreaterThan(1000);
   });
   it('never treats zero-distance neighbours as the secret country', () => {
-    const round = startRound(europePack, () => (europePack.locations.findIndex(location => location.id === 'POL') + 0.5) / europePack.locations.length);
+    const round = startRoundFor(europePack, 'POL');
     expect(round.targetId).toBe('POL');
     const wrong = guess(europePack, round, 'DEU', () => 0);
     expect(wrong.result).not.toBe('correct');
     expect(wrong.round.completedAt).toBeUndefined();
+  });
+  it('classifies real adjacent countries for map colors exactly as guess() does', () => {
+    const round = startRoundFor(europePack, 'POL', 1);
+    for (const id of ['DEU', 'CZE', 'UKR', 'ESP', 'POL']) {
+      const shared = classifyGuess(europePack, 'POL', id, europeBorderDistanceKm);
+      expect(shared.result).toBe(guess(europePack, round, id, europeBorderDistanceKm, 2).result);
+    }
+    expect(classifyGuess(europePack, 'POL', 'DEU', europeBorderDistanceKm).result).toBe('very-close');
+    expect(classifyGuess(europePack, 'POL', 'POL', europeBorderDistanceKm).result).toBe('correct');
   });
 });
 

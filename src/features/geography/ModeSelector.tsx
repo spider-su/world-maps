@@ -3,16 +3,20 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { worldMapsTheme as theme } from '../../ui/worldMapsTheme';
 import { gameCopy } from './copy';
 import type { Language } from '../../ui/i18n';
-import { MODE_DEFINITIONS, type GameMode } from './modes';
+import { MODE_DEFINITIONS, type FindClue, type GameMode, type NameAnswer } from './modes';
 
 interface Props {
   value?: GameMode;
   language?: Language;
   onChange: (mode: GameMode) => void;
+  findClue?: FindClue;
+  onFindClue?: (value: FindClue) => void;
+  nameAnswer?: NameAnswer;
+  onNameAnswer?: (value: NameAnswer) => void;
 }
 
 /** Reusable country/city game-mode cards; no game state is stored here. */
-export function ModeSelector({ value, onChange, language = 'en' }: Props) {
+export function ModeSelector({ value, onChange, language = 'en', findClue = 'mixed', onFindClue, nameAnswer = 'country', onNameAnswer }: Props) {
   const c = gameCopy[language];
   return (
     <View style={styles.wrapper}>
@@ -39,10 +43,39 @@ export function ModeSelector({ value, onChange, language = 'en' }: Props) {
           );
         })}
       </View>
+      {onFindClue && <View style={styles.variants}>
+        <Text style={styles.variantLabel}>{c.clueType}</Text>
+        <View style={styles.variantRow}>
+          {(['name', 'capital', 'flag', 'mixed'] as const).map(clue => (
+            <Pressable key={clue} accessibilityRole="button" accessibilityState={{ selected: findClue === clue }}
+              style={[styles.variant, findClue === clue && styles.variantSelected]} onPress={() => onFindClue(clue)}>
+              <Text style={[styles.variantText, findClue === clue && styles.variantSelectedText]}>{c.findClues[clue]}</Text>
+            </Pressable>
+          ))}
+        </View>
+      </View>}
+      {onNameAnswer && <View style={styles.variants}>
+        <Text style={styles.variantLabel}>{c.answerType}</Text>
+        <View style={styles.variantRow}>
+          {(['country', 'capital'] as const).map(answer => (
+            <Pressable key={answer} accessibilityRole="button" accessibilityState={{ selected: nameAnswer === answer }}
+              style={[styles.variant, nameAnswer === answer && styles.variantSelected]} onPress={() => onNameAnswer(answer)}>
+              <Text style={[styles.variantText, nameAnswer === answer && styles.variantSelectedText]}>{c.nameAnswers[answer]}</Text>
+            </Pressable>
+          ))}
+        </View>
+      </View>}
     </View>
   );
 }
 const styles = StyleSheet.create({
+  variants: { gap: 6, marginTop: 4 },
+  variantLabel: { fontSize: 12, fontWeight: '700', color: theme.muted },
+  variantRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  variant: { minHeight: 38, paddingHorizontal: 12, justifyContent: 'center', borderRadius: 10, backgroundColor: '#E8F0F9' },
+  variantSelected: { backgroundColor: theme.brandDark },
+  variantText: { color: theme.brandDark, fontWeight: '700', fontSize: 12 },
+  variantSelectedText: { color: '#FFF' },
   wrapper: { gap: 8 },
   header: { fontSize: 11, fontWeight: '800', color: theme.muted, letterSpacing: 1.3, marginLeft: 4 },
   container: { gap: 8 },

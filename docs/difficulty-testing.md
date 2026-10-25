@@ -26,7 +26,24 @@ Natural Earth map and name visibility are retained; no duplicate cherry-pick.
 - Focused tests cover nested pools, every eligible target and its four answer
   choices, rejection of excluded guesses, legacy history, level-separated scores,
   and serialized score/preference persistence.
-- Web/native smoke evidence is recorded below after execution.
+- Production web export: PASS at 390×844. Interactive outlines count 7/34/41
+  (Difficult additionally has six small-country controls); radio checked state,
+  Easy reload persistence, unrestricted Learn, four unique Easy Name It choices,
+  keyboard quiz completion and separate Normal/Easy history verified. No horizontal
+  overflow. SVG bounding-box center clicks can land in sea; keyboard selection was
+  used for the automated completion check.
+- Android: PASS on emulator-5554, API 35, 1080×2400, gesture navigation. Installed
+  fresh standalone arm64 APK over the POC; Normal default, level selection, Easy
+  Name It, force-stop/relaunch preference persistence, Difficult small-country
+  controls and unrestricted Learn at Easy verified.
+- Screenshots and result JSON: `artifacts/evidence/difficulty-*` (local, ignored).
+  This focused smoke does not repeat every previous navigation/accessibility case.
+
+APK source: `4d962307865224ebc7b9541da64e7489d768a43d` (documentation follows).
+SHA-256: `adf7cf2e036926c6cc7195db07ccb9cc39d7dc67258b15de0d63f521a8904a70`.
+`artifacts/world-maps-preview.apk` embeds JS and uses development signing;
+`artifacts/preview-metadata.json` records provenance. The previous POC APK is
+preserved locally as `artifacts/world-maps-preview-poc-original.apk`.
 
 Physical Android and iOS testing remain pending. Earlier POC evidence describes
 an earlier APK; it does not establish testing of these difficulty controls.

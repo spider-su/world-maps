@@ -82,3 +82,14 @@ Stage results and any remaining gates are appended as implementation proceeds.
   notices. First POC intentionally uses one light theme; no false dark-mode promise.
 - Browser: Polish settings + relaunch + Learn card PASS; completed Name It score
   survives relaunch PASS. Pure store regressions cover write ordering/read/save failure.
+
+### Stage 6 — delivered preview and evidence
+
+- Standalone arm64 preview built/installed and verified against its installed hash;
+  JavaScript is embedded. Production web export also built and smoke-tested.
+- Android API 35 emulator: offline startup, mode flows, saved state, real APK update,
+  gestures/buttons, navigation/insets and large text PASS. Browser operational
+  read/write fault injection and recovery PASS. Details: `docs/poc-testing.md`.
+- All implementation stages are committed. POC source/local preview are ready for
+  a personal trial with the explicit remaining physical-device, audio, pinch and
+  iOS gates above. No store publication, production signing or merge performed.

@@ -37,3 +37,7 @@ For each future component, replace generic status with dated evidence and the de
   `EuropeMap` shares offline geometry, gestures and controls with Home preview.
   `ModeSelector` accepts EN/PL copy and optional selected mode. Existing branding
   branch was integrated, including its app-specific icon and theme tokens.
+
+- `CountryInfoCard`: app-owned offline flag/name/capital/pronunciation card, EN/PL.
+  All 47 map IDs covered by a pinned derived country dataset and SVG flag artwork;
+  attribution and full licenses in `docs/country-data.md` and `docs/licenses/`.

@@ -85,7 +85,7 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
         {europeContextShapes.map(shape => <Path key={shape.id} d={shape.path} fill="#CAD5DE" stroke="#70889A" strokeWidth={0.6 / viewport.zoom} />)}
         {europeShapes.map((shape, index) => {
           const props = { d: shape.path, fill: shape.id === targetId ? '#F5AD18' : results.has(shape.id) ? CLUE_COLORS[results.get(shape.id)!] : LAND, stroke: '#637F90', strokeWidth: Math.max(0.35, 1 / viewport.zoom) };
-          return preview || !enabled ? <Path key={shape.id} {...props} /> : <CountryPath key={shape.id} {...props} accessibilityLabel={`${c.marker} ${index + 1}`} onSelect={() => onSelect(shape.id)} />;
+          return preview || !enabled ? <Path key={shape.id} {...props} /> : <CountryPath key={shape.id} {...props} accessibilityLabel={`${c.mapCountry} ${index + 1}`} onSelect={() => onSelect(shape.id)} />;
         })}
         {!preview && labels.map(location => <SvgText key={location.id} x={location.labelX} y={location.labelY}
           fontSize={11 * visible.w / mapWidth} fontFamily="sans-serif" fontWeight="700" textAnchor="middle" fill="#17364A" pointerEvents="none">{location.name}</SvgText>)}

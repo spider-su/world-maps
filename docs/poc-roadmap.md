@@ -63,3 +63,10 @@ Stage results and any remaining gates are appended as implementation proceeds.
   Malta/Italy, Andorra/France, Monaco/France and Vatican/Italy plus symmetry.
 - `npm run ci`: PASS (44 unit + 3 setup tests). Browser checks: target highlight,
   no Name It label leak and keyboard country selection PASS.
+
+### Stage 4 — offline Learn
+
+- Country information card and bundled SVG flags/capitals cover all 47 IDs in EN/PL.
+  Data sources, pinned revisions, regeneration and licenses are documented.
+- `npm run ci`: PASS (46 unit + 3 setup tests). Browser Learn/Andorra: capital,
+  flag and no scored attempts PASS. Flags render via existing SVG dependency.

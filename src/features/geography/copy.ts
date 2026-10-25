@@ -14,7 +14,7 @@ const en = {
   attempts: 'Attempts', correct: 'Country found!', retry: 'Not quite. Try again.',
   next: 'Next country', restart: 'New round', hear: 'Hear name', mute: 'Mute voice', unmute: 'Enable voice',
   showNames: 'Show names', hideNames: 'Hide names', smallCountries: 'Small countries',
-  marker: 'Country marker', allCountries: 'Choose on map or from the list',
+  marker: 'Small country marker', mapCountry: 'Map country', allCountries: 'Choose on map or from the list',
   lastSelection: 'Last selection', startHint: 'Tap a country for your first clue.',
   proximity: { correct: 'Found', 'very-close': 'Very close', close: 'Close', far: 'Far', 'very-far': 'Very far' },
   resetMap: 'Show all Europe', zoomIn: 'Zoom in', zoomOut: 'Zoom out',
@@ -26,7 +26,7 @@ const en = {
   mapSource: 'Map: Natural Earth · Approximate distance clues', capital: 'Capital', countryDetails: 'Country details',
   learnHint: 'Tap any country to discover its name and capital.', flag: 'Flag',
 };
-type Copy = { [K in keyof typeof en]: typeof en[K] extends string ? string : typeof en[K] extends object ? { [P in keyof typeof en[K]]: typeof en[K][P] extends string ? string : { [Q in keyof typeof en[K][P]]: string } } : never };
+type Copy = typeof en;
 const pl: Copy = {
   tagline: 'Odkrywaj · Ucz się · Graj', chooseMode: 'Wybierz sposób odkrywania', europe: 'Europa',
   offline: '47 państw · Mapa offline', back: 'Wróć do strony głównej', settings: 'Ustawienia',
@@ -41,7 +41,7 @@ const pl: Copy = {
   attempts: 'Próby', correct: 'Państwo odnalezione!', retry: 'Nie tym razem. Spróbuj ponownie.',
   next: 'Następne państwo', restart: 'Nowa runda', hear: 'Posłuchaj nazwy', mute: 'Wyłącz głos', unmute: 'Włącz głos',
   showNames: 'Pokaż nazwy', hideNames: 'Ukryj nazwy', smallCountries: 'Małe państwa',
-  marker: 'Znacznik państwa', allCountries: 'Wybierz na mapie lub z listy',
+  marker: 'Znacznik małego państwa', mapCountry: 'Państwo na mapie', allCountries: 'Wybierz na mapie lub z listy',
   lastSelection: 'Ostatni wybór', startHint: 'Dotknij państwa, aby otrzymać wskazówkę.',
   proximity: { correct: 'Odnalezione', 'very-close': 'Bardzo blisko', close: 'Blisko', far: 'Daleko', 'very-far': 'Bardzo daleko' },
   resetMap: 'Pokaż całą Europę', zoomIn: 'Przybliż', zoomOut: 'Oddal',

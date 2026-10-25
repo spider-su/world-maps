@@ -6,6 +6,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import * as Speech from 'expo-speech';
 import { useLanguage } from '../ui/LanguageContext';
 import { worldMapsTheme as theme } from '../ui/worldMapsTheme';
+import { CountryInfoCard } from '../features/geography/CountryInfoCard';
 import { EuropeMap } from '../features/geography/EuropeMap';
 import { gameCopy } from '../features/geography/copy';
 import { CLUE_COLORS } from '../features/geography/mapColors';
@@ -164,14 +165,14 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
           disabled={completed || round.guesses.includes(option.id) || !progressLoaded} onPress={() => selectAnswer(option.id)}
           style={[styles.option, round.guesses.includes(option.id) && styles.optionUsed]}><Text style={styles.optionText}>{option.name}</Text></Pressable>)}
       </View>}
-      <View style={styles.feedback} accessibilityLiveRegion="polite">
+      {mode === 'learn' && feedback ? <CountryInfoCard id={europePack.locations.find(location => location.name === feedback.name)!.id} language={language} onSpeak={() => speak(feedback.name)} /> : <View style={styles.feedback} accessibilityLiveRegion="polite">
         <View style={styles.feedbackCopy}>
           <Text style={styles.feedbackTitle}>{feedback?.name ?? (mode === 'learn' ? c.countryDetails : c.modes[mode].title)}</Text>
           <Text style={styles.feedbackText}>{feedback ? (mode === 'hot-cold' ? c.proximity[feedback.result] : mode === 'learn' ? c.learnHint : feedback.result === 'correct' ? c.correct : c.retry) : mode === 'learn' ? c.learnHint : c.modes[mode].description}</Text>
         </View>
         {(feedback || mode === 'find-it') && <Pressable accessibilityRole="button" accessibilityLabel={c.hear}
           onPress={() => speak(feedback?.name ?? target.name)} style={styles.iconButton}><Ionicons name="volume-high-outline" size={24} color={theme.brand} /></Pressable>}
-      </View>
+      </View>}
       {mode === 'hot-cold' && <View style={styles.legend}>
         {(['very-far', 'far', 'close', 'very-close', 'correct'] as const).map(result => <View key={result} style={styles.legendItem}>
           <View style={[styles.swatch, { backgroundColor: CLUE_COLORS[result] }]} /><Text style={styles.legendText}>{c.proximity[result]}</Text>

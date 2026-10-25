@@ -37,6 +37,7 @@ const en = {
   learnHint: 'Tap any country to discover its name and capital.', flag: 'Flag',
   capitalFindPrompt: 'Find the country whose capital is:', capitalNamePrompt: 'What is the capital of this country?',
   capitalFeedback: 'Capital of',
+  clueType: 'Find It clue', answerType: 'Name It answer', findClues: { name: 'Name', capital: 'Capital', flag: 'Flag', mixed: 'Mixed' }, nameAnswers: { country: 'Country', capital: 'Capital' }, flagPrompt: 'Find the country with this flag',
 };
 type Copy = typeof en;
 const pl: Copy = {
@@ -76,6 +77,7 @@ const pl: Copy = {
   learnHint: 'Dotknij państwa, aby poznać jego nazwę i stolicę.', flag: 'Flaga',
   capitalFindPrompt: 'Znajdź państwo, którego stolicą jest:', capitalNamePrompt: 'Jaka jest stolica tego państwa?',
   capitalFeedback: 'Stolica państwa',
+  clueType: 'Podpowiedź: znajdź', answerType: 'Odpowiedź: nazwij', findClues: { name: 'Nazwa', capital: 'Stolica', flag: 'Flaga', mixed: 'Mieszane' }, nameAnswers: { country: 'Państwo', capital: 'Stolica' }, flagPrompt: 'Znajdź państwo z tą flagą',
 };
 const ru: Copy = {
   learningProgress: 'Прогресс обучения', practiced: 'Изучено', mastered: 'Освоено', needsPractice: 'Нужна практика', accuracy: 'Точность',
@@ -113,5 +115,6 @@ const ru: Copy = {
   learnHint: 'Нажмите на страну, чтобы узнать её название и столицу.', flag: 'Флаг',
   capitalFindPrompt: 'Найдите страну, столица которой:', capitalNamePrompt: 'Какова столица этой страны?',
   capitalFeedback: 'Столица страны',
+  clueType: 'Подсказка: найти', answerType: 'Ответ: назвать', findClues: { name: 'Название', capital: 'Столица', flag: 'Флаг', mixed: 'Смешанный' }, nameAnswers: { country: 'Страна', capital: 'Столица' }, flagPrompt: 'Найдите страну с этим флагом',
 };
 export const gameCopy: Record<Language, Copy> = { en, pl, ru };

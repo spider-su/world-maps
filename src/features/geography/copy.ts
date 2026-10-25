@@ -38,6 +38,7 @@ const en = {
   capitalFindPrompt: 'Find the country whose capital is:', capitalNamePrompt: 'What is the capital of this country?',
   capitalFeedback: 'Capital of',
   clueType: 'Find It clue', answerType: 'Name It answer', findClues: { name: 'Name', capital: 'Capital', flag: 'Flag', mixed: 'Mixed' }, nameAnswers: { country: 'Country', capital: 'Capital' }, flagPrompt: 'Find the country with this flag',
+  quickChallenge: 'Quick Challenge', quickHint: '10 questions · no timer', quickSkip: 'Skip question', quickNext: 'Next question', quickCorrect: 'Correct on first try!', quickReview: 'Correct country', quickResults: 'Your results', quickAgain: 'Play again', quickDone: 'Back to home', quickAccuracy: 'Accuracy', quickToReview: 'To review', quickStart: 'Start Quick Challenge',
 };
 type Copy = typeof en;
 const pl: Copy = {
@@ -78,6 +79,7 @@ const pl: Copy = {
   capitalFindPrompt: 'Znajdź państwo, którego stolicą jest:', capitalNamePrompt: 'Jaka jest stolica tego państwa?',
   capitalFeedback: 'Stolica państwa',
   clueType: 'Podpowiedź: znajdź', answerType: 'Odpowiedź: nazwij', findClues: { name: 'Nazwa', capital: 'Stolica', flag: 'Flaga', mixed: 'Mieszane' }, nameAnswers: { country: 'Państwo', capital: 'Stolica' }, flagPrompt: 'Znajdź państwo z tą flagą',
+  quickChallenge: 'Szybki quiz', quickHint: '10 pytań · bez limitu czasu', quickSkip: 'Pomiń pytanie', quickNext: 'Następne pytanie', quickCorrect: 'Dobrze za pierwszym razem!', quickReview: 'Poprawne państwo', quickResults: 'Twój wynik', quickAgain: 'Zagraj ponownie', quickDone: 'Powrót do strony głównej', quickAccuracy: 'Trafność', quickToReview: 'Do powtórki', quickStart: 'Rozpocznij szybki quiz',
 };
 const ru: Copy = {
   learningProgress: 'Прогресс обучения', practiced: 'Изучено', mastered: 'Освоено', needsPractice: 'Нужна практика', accuracy: 'Точность',
@@ -116,5 +118,6 @@ const ru: Copy = {
   capitalFindPrompt: 'Найдите страну, столица которой:', capitalNamePrompt: 'Какова столица этой страны?',
   capitalFeedback: 'Столица страны',
   clueType: 'Подсказка: найти', answerType: 'Ответ: назвать', findClues: { name: 'Название', capital: 'Столица', flag: 'Флаг', mixed: 'Смешанный' }, nameAnswers: { country: 'Страна', capital: 'Столица' }, flagPrompt: 'Найдите страну с этим флагом',
+  quickChallenge: 'Быстрый тест', quickHint: '10 вопросов · без таймера', quickSkip: 'Пропустить', quickNext: 'Следующий вопрос', quickCorrect: 'Верно с первого раза!', quickReview: 'Правильная страна', quickResults: 'Ваш результат', quickAgain: 'Играть снова', quickDone: 'На главную', quickAccuracy: 'Точность', quickToReview: 'Повторить', quickStart: 'Начать быстрый тест',
 };
 export const gameCopy: Record<Language, Copy> = { en, pl, ru };

@@ -46,7 +46,7 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
   Map tools disclose zoom and directional controls without removing keyboard or
   non-gesture access. `viewport` helpers accept optional height/width aspect ratio.
 - `OptionsSheet`: shared dismissible, scrollable modal for secondary play controls;
-  owns its bottom safe area and handles Android Back. It does not persist settings.
+  owns its modal safe areas and handles Android Back. It does not persist settings.
 - `ModeSelector` / `QuizOptions`: mode cards stay on Home; existing clue and answer
   variants are composed separately inside Home's play-options sheet. Difficulty
   and practice selectors use the same saved progress contract as before.

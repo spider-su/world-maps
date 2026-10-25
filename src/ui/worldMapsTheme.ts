@@ -14,6 +14,9 @@ export const worldMapsTheme = {
   warm: '#F59E0B',
   cool: '#2563EB',
   success: '#22C55E',
+  answerWrong: '#FEE2E2',
+  answerRight: '#DCFCE7',
+  error: '#AA3131',
   mode: {
     'hot-cold': { foreground: '#DF3441', tint: '#FEE2E2', icon: 'thermometer-outline' },
     'find-it': { foreground: '#2563EB', tint: '#DBEAFE', icon: 'locate-outline' },
@@ -38,6 +41,9 @@ export const darkWorldMapsTheme = {
   border: '#57738A',
   muted: '#B0C2D3',
   success: '#59DB93',
+  answerWrong: '#633341',
+  answerRight: '#214C3A',
+  error: '#FF9D9D',
   mode: {
     'hot-cold': { ...worldMapsTheme.mode['hot-cold'], foreground: '#FF7F8C', tint: '#542A38' },
     'find-it': { ...worldMapsTheme.mode['find-it'], foreground: '#9CC6FF', tint: '#273F67' },

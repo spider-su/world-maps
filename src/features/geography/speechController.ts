@@ -16,7 +16,14 @@ export function createSpeechController(adapter: Adapter, onUnavailable: (failed:
         try {
           await adapter.stop();
           if (turn !== epoch) return;
-          const voices = await adapter.voices();
+          // Some web engines never resolve voice discovery when no voice exists.
+          let timer: ReturnType<typeof setTimeout> | undefined;
+          let voices: Voice[];
+          try {
+            voices = await Promise.race([adapter.voices(), new Promise<Voice[]>(resolve => {
+              timer = setTimeout(() => resolve([]), 2000);
+            })]);
+          } finally { if (timer !== undefined) clearTimeout(timer); }
           if (turn !== epoch) return;
           const locale = SPEECH_LOCALES[language];
           const voice = voices.find(v => v.language.toLowerCase().replace('_', '-') === locale.toLowerCase())

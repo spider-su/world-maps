@@ -3,7 +3,7 @@
 ## Start of every task
 1. Read `AGENTS.md`, `docs/architecture.md`, `docs/component-catalog.md` and the files relevant to the request.
 2. Inspect `git status`, branch, recent commits and existing tests. Preserve uncommitted changes and never rewrite history without permission.
-3. Restate acceptance criteria in a short implementation plan. Identify whether the change belongs to the **template** or a **downstream app**.
+3. Restate acceptance criteria in a short implementation plan. Identify the owning World Maps feature or platform layer.
 4. Search for an existing component, service and test before writing a new one. Prefer the smallest implementation.
 
 ## Implementation loop

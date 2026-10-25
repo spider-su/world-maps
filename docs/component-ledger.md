@@ -80,7 +80,7 @@ For each future component, replace generic status with dated evidence and the de
   target and rejects IDs outside the active pack; `classifyGuess` is the pure
   proximity result shared by `guess()` and map colors (zero-distance neighbours stay
   non-correct). `modePackId` owns the stored IDs (`europe-countries` for Hot & Cold,
-  `europe-countries:<mode>` otherwise). Tabs are typed by `TabParamList`. All app
+  `europe-countries:<mode>` otherwise). Tabs are typed by `TabParamList`. Shell and gameplay
   text, including tab labels, lives in `gameCopy`; `src/ui/i18n.ts` keeps only
   language and speech-locale definitions.
 

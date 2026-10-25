@@ -11,7 +11,7 @@ export default function App() {
       <AppErrorBoundary>
         <LanguageProvider><ProgressProvider><AppNavigation /></ProgressProvider></LanguageProvider>
       </AppErrorBoundary>
-      <StatusBar style="dark" />
+      <StatusBar style="auto" />
     </SafeAreaProvider>
   );
 }

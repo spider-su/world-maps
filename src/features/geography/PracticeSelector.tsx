@@ -1,11 +1,13 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } useColorScheme } from 'react-native';
 import type { Language } from '../../ui/i18n';
-import { worldMapsTheme as theme } from '../../ui/worldMapsTheme';
+import { themeForScheme, type WorldMapsPalette } from '../../ui/worldMapsTheme';
 import { gameCopy } from './copy';
 import { useProgress } from './ProgressContext';
 
 export function PracticeSelector({ language }: { language: Language }) {
   const { progress, status, update } = useProgress();
+  const theme = themeForScheme(useColorScheme());
+  const styles = makeStyles(theme);
   const c = gameCopy[language];
   const disabled = status === 'loading' || status === 'read-error';
   return <View style={styles.container}>
@@ -17,8 +19,8 @@ export function PracticeSelector({ language }: { language: Language }) {
     </Pressable>)}</View><Text style={styles.hint}>{c.practiceHint}</Text>
   </View>;
 }
-const styles = StyleSheet.create({
+const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
   container: { gap: 8 }, title: { color: theme.navy, fontSize: 16, fontWeight: '700' }, options: { flexDirection: 'row', gap: 8 },
-  option: { flex: 1, minHeight: 44, padding: 10, borderRadius: 12, backgroundColor: '#FFF', borderWidth: 1, borderColor: '#A6C5E5', alignItems: 'center', justifyContent: 'center' }, selected: { backgroundColor: theme.brand },
+  option: { flex: 1, minHeight: 44, padding: 10, borderRadius: 12, backgroundColor: theme.surface, borderWidth: 1, borderColor: theme.border, alignItems: 'center', justifyContent: 'center' }, selected: { backgroundColor: theme.brand },
   label: { color: theme.navy, fontWeight: '700' }, selectedLabel: { color: '#FFF' }, hint: { color: theme.muted, fontSize: 11, lineHeight: 17 },
 });

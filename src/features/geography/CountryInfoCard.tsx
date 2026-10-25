@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } useColorScheme } from 'react-native';
+import { Pressable, StyleSheet, Text, View, useColorScheme } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import { Ionicons } from '@expo/vector-icons';
 import type { Language } from '../../ui/i18n';

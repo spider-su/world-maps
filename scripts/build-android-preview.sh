@@ -10,5 +10,5 @@ npx expo prebuild --platform android --no-install
 )
 mkdir -p artifacts
 cp android/app/build/outputs/apk/release/app-release.apk artifacts/world-maps-preview.apk
-unzip -Z1 artifacts/world-maps-preview.apk | rg '^assets/index.android.bundle$' > /dev/null
+unzip -Z1 artifacts/world-maps-preview.apk | grep -Fx 'assets/index.android.bundle' > /dev/null
 node scripts/preview-metadata.mjs

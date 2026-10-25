@@ -30,8 +30,8 @@ export function HomeScreen() {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   useEffect(() => {
-    navigation.setOptions({ tabBarStyle: mode ? { display: 'none' } : { ...getTabBarMetrics(insets.bottom) } });
-  }, [mode, navigation, insets.bottom]);
+    navigation.setOptions({ tabBarStyle: mode ? { display: 'none' } : { ...getTabBarMetrics(insets.bottom), backgroundColor: theme.surface, borderTopColor: theme.border } });
+  }, [mode, navigation, insets.bottom, theme.surface, theme.border]);
   useFocusEffect(useCallback(() => {
     if (!mode) return;
     const listener = BackHandler.addEventListener('hardwareBackPress', () => { setMode(null); return true; });

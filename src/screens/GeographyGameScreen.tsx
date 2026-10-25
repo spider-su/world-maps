@@ -19,7 +19,7 @@ import { ProgressStatus } from '../features/geography/ProgressStatus';
 import { useCountrySpeech } from '../features/geography/useCountrySpeech';
 import { countryName } from '../features/geography/countryFacts';
 import { practiceTarget, recordPractice } from '../features/geography/learning';
-import { canRevealNames, answerChoices, nameItAnswer, type GameMode } from '../features/geography/modes';
+import { canRevealNames, replayCountryId, answerChoices, nameItAnswer, type GameMode } from '../features/geography/modes';
 
 export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: () => void }) {
   const { language } = useLanguage();
@@ -119,6 +119,7 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
 
   const completedIds = mode === 'learn' ? [...resultById.keys()] : round.guesses;
   const canShowNames = canRevealNames(mode, completed);
+  const replayId = replayCountryId(mode, target.id, feedback?.id);
   const modeStyle = theme.mode[mode];
   const prompt = completed ? c.correct : mode === 'find-it' ? `${c.findPrompt} ${countryName(target.id, language)}` : mode === 'name-it' ? c.namePrompt : mode === 'learn' ? c.learnPrompt : c.hiddenPrompt;
   return <SafeAreaView edges={['top', 'bottom']} style={styles.screen}>
@@ -156,8 +157,8 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
           <Text style={styles.feedbackTitle}>{(feedback ? countryName(feedback.id, language) : null) ?? (mode === 'learn' ? c.countryDetails : c.modes[mode].title)}</Text>
           <Text style={styles.feedbackText}>{feedback ? (mode === 'hot-cold' ? c.proximity[feedback.result] : mode === 'learn' ? c.learnHint : feedback.result === 'correct' ? c.correct : c.retry) : mode === 'learn' ? c.learnHint : c.modes[mode].description}</Text>
         </View>
-        {(feedback || mode === 'find-it') && <Pressable accessibilityRole="button" accessibilityLabel={c.hear}
-          onPress={() => speak(countryName(feedback?.id ?? target.id, language))} style={styles.iconButton}><Ionicons name="volume-high-outline" size={24} color={theme.brand} /></Pressable>}
+        {replayId && <Pressable accessibilityRole="button" accessibilityLabel={c.hear}
+          onPress={() => speak(countryName(replayId, language))} style={styles.iconButton}><Ionicons name="volume-high-outline" size={24} color={theme.brand} /></Pressable>}
       </View>}
       {mode === 'hot-cold' && <View style={styles.legend}>
         {(['very-far', 'far', 'close', 'very-close', 'correct'] as const).map(result => <View key={result} style={styles.legendItem}>

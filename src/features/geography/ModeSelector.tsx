@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Pressable, StyleSheet, Text, View } useColorScheme } from 'react-native';
+import { Pressable, StyleSheet, Text, View, useColorScheme } from 'react-native';
 import { themeForScheme, type WorldMapsPalette } from '../../ui/worldMapsTheme';
 import { gameCopy } from './copy';
 import type { Language } from '../../ui/i18n';

@@ -25,7 +25,7 @@ export const worldMapsTheme = {
 } as const;
 
 /** System-driven product palette. Never persist a duplicate theme preference. */
-export const darkWorldMapsTheme: typeof worldMapsTheme = {
+export const darkWorldMapsTheme = {
   ...worldMapsTheme,
   brand: '#82B5FF',
   brandDark: '#28599D',
@@ -47,6 +47,6 @@ export const darkWorldMapsTheme: typeof worldMapsTheme = {
     learn: { ...worldMapsTheme.mode.learn, foreground: '#81EAA5', tint: '#254A3F' },
   },
 };
-export type WorldMapsPalette = typeof worldMapsTheme;
+export type WorldMapsPalette = typeof worldMapsTheme | typeof darkWorldMapsTheme;
 export const themeForScheme = (scheme: 'light' | 'dark' | null | undefined): WorldMapsPalette =>
   scheme === 'dark' ? darkWorldMapsTheme : worldMapsTheme;

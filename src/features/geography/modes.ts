@@ -1,11 +1,20 @@
 import type { GeographyLocation, GeographyPack, Round } from './engine';
 export type GameMode = 'hot-cold' | 'find-it' | 'name-it' | 'capital-find' | 'capital-name' | 'learn';
+export type FindClue = 'name' | 'capital' | 'flag' | 'mixed';
+export type NameAnswer = 'country' | 'capital';
+
+export function findClueForRound(clue: FindClue, index: number): Exclude<FindClue, 'mixed'> {
+  return clue === 'mixed' ? (['name', 'capital', 'flag'] as const)[index % 3]! : clue;
+}
+
+/** Legacy capital mode IDs remain valid for existing saved progress. */
+export function publicMode(mode: GameMode): GameMode {
+  return mode === 'capital-find' ? 'find-it' : mode === 'capital-name' ? 'name-it' : mode;
+}
 export const MODE_DEFINITIONS: { id: GameMode; title: string; description: string }[] = [
   { id: 'hot-cold', title: 'Hot & Cold', description: 'Find a hidden country using distance colors' },
   { id: 'find-it', title: 'Find It', description: 'Read the name and tap its country on the map' },
   { id: 'name-it', title: 'Name It', description: 'Identify the highlighted country from four names' },
-  { id: 'capital-find', title: 'Find by Capital', description: 'Given a capital, locate its country on the map' },
-  { id: 'capital-name', title: 'Name the Capital', description: 'Choose the capital of a highlighted country' },
   { id: 'learn', title: 'Learn', description: 'Explore freely, without a score or secret target' },
 ];
 

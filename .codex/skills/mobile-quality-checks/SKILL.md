@@ -1,6 +1,6 @@
 ---
 name: mobile-quality-checks
-description: Validate the Expo React Native template with TypeScript, ESLint, Vitest and Expo Doctor. Use before proposing or merging shared template changes.
+description: Validate World Maps with TypeScript, ESLint, Vitest and Expo Doctor. Use before proposing or merging changes.
 ---
 
 # Mobile quality checks

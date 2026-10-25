@@ -1,5 +1,7 @@
 import type { GeographyLocation, GeographyPack, Round } from './engine';
-export type GameMode = 'hot-cold' | 'find-it' | 'name-it' | 'capital-find' | 'capital-name' | 'learn';
+/** Public Home modes; legacy capital IDs remain valid in saved progress. */
+export const GAME_MODES = ['hot-cold', 'find-it', 'name-it', 'learn'] as const;
+export type GameMode = typeof GAME_MODES[number] | 'capital-find' | 'capital-name';
 export type FindClue = 'name' | 'capital' | 'flag' | 'mixed';
 export type NameAnswer = 'country' | 'capital';
 
@@ -10,23 +12,6 @@ export function findClueForRound(clue: FindClue, index: number): Exclude<FindClu
 /** Legacy capital mode IDs remain valid for existing saved progress. */
 export function publicMode(mode: GameMode): GameMode {
   return mode === 'capital-find' ? 'find-it' : mode === 'capital-name' ? 'name-it' : mode;
-}
-export const MODE_DEFINITIONS: { id: GameMode; title: string; description: string }[] = [
-  { id: 'hot-cold', title: 'Hot & Cold', description: 'Find a hidden country using distance colors' },
-  { id: 'find-it', title: 'Find It', description: 'Read the name and tap its country on the map' },
-  { id: 'name-it', title: 'Name It', description: 'Identify the highlighted country from four names' },
-  { id: 'learn', title: 'Learn', description: 'Explore freely, without a score or secret target' },
-];
-
-export function modePrompt(mode: GameMode, countryName: string): string {
-  switch (mode) {
-    case 'hot-cold': return 'Find the hidden country';
-    case 'find-it': return `Find: ${countryName}`;
-    case 'name-it': return 'Which country is highlighted?';
-    case 'capital-find': return 'Find the country for the capital';
-    case 'capital-name': return 'Which capital belongs to this country?';
-    case 'learn': return 'Tap any country to discover its name';
-  }
 }
 
 export function answerChoices(pack: GeographyPack, targetId: string, random: () => number = Math.random): GeographyLocation[] {

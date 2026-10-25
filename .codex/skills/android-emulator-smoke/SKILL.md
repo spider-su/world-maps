@@ -1,6 +1,6 @@
 ---
 name: android-emulator-smoke
-description: Run an Android emulator smoke test for the Expo mobile template, validating navigation, safe areas and resilience UI. Use when a running emulator and a fresh build are available.
+description: Run an Android emulator smoke test for World Maps, validating navigation, safe areas and resilience UI. Use when a running emulator and a fresh build are available.
 ---
 
 # Android emulator smoke test
@@ -14,4 +14,4 @@ description: Run an Android emulator smoke test for the Expo mobile template, va
 7. Capture dated screenshots and results for each case. Document skipped cases and restore any changed settings.
 8. Do not claim iOS, real-device or release-build validation from Android emulator evidence.
 
-Downstream apps must add their own app identity, reproducible fixture and product-specific regression plan.
+Also check all four modes, offline launch and update-over-install with the previous APK when relevant.

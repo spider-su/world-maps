@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View, useColorScheme } from 'react-native'
 import { themeForScheme, type WorldMapsPalette } from '../../ui/worldMapsTheme';
 import { gameCopy } from './copy';
 import type { Language } from '../../ui/i18n';
-import { MODE_DEFINITIONS, type FindClue, type GameMode, type NameAnswer } from './modes';
+import { GAME_MODES, type FindClue, type GameMode, type NameAnswer } from './modes';
 
 interface Props {
   value?: GameMode;
@@ -24,21 +24,21 @@ export function ModeSelector({ value, onChange, language = 'en', findClue = 'mix
     <View style={styles.wrapper}>
       <Text style={styles.header}>{c.chooseMode.toUpperCase()}</Text>
       <View style={styles.container}>
-        {MODE_DEFINITIONS.map(item => {
-          const colors = theme.mode[item.id];
-          const selected = item.id === value;
+        {GAME_MODES.map(id => {
+          const colors = theme.mode[id];
+          const selected = id === value;
           return (
-            <Pressable key={item.id} accessibilityRole="button"
-              accessibilityLabel={`${c.modes[item.id].title}. ${c.modes[item.id].description}`}
+            <Pressable key={id} accessibilityRole="button"
+              accessibilityLabel={`${c.modes[id].title}. ${c.modes[id].description}`}
               accessibilityState={{ selected }}
               style={[styles.option, selected && styles.selected]}
-              onPress={() => onChange(item.id)}>
+              onPress={() => onChange(id)}>
               <View style={[styles.iconTile, { backgroundColor: colors.tint }]}>
                 <Ionicons name={colors.icon} size={23} color={colors.foreground} />
               </View>
               <View style={styles.copy}>
-                <Text style={[styles.label, selected && styles.selectedLabel]}>{c.modes[item.id].title}</Text>
-                <Text style={[styles.description, selected && styles.selectedDescription]} numberOfLines={2}>{c.modes[item.id].description}</Text>
+                <Text style={[styles.label, selected && styles.selectedLabel]}>{c.modes[id].title}</Text>
+                <Text style={[styles.description, selected && styles.selectedDescription]} numberOfLines={2}>{c.modes[id].description}</Text>
               </View>
               <Ionicons name="chevron-forward" size={16} color={selected ? theme.surface : theme.muted} />
             </Pressable>

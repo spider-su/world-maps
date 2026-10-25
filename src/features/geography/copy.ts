@@ -1,6 +1,9 @@
 import type { Language } from '../../ui/i18n';
 
 const en = {
+  learningProgress: 'Learning progress', practiced: 'Practiced', mastered: 'Mastered', needsPractice: 'Needs practice', accuracy: 'Accuracy',
+  practice: 'Practice', practiceModes: { adaptive: 'Adaptive', random: 'Random' }, practiceHint: 'Adaptive favors recent misses and revisits older practice. No immediate repeats.',
+  masteryHint: 'Mastered: three first-try successes in one mode and the last three answers correct.', showProgress: 'Show country progress', hideProgress: 'Hide country progress', notPracticed: 'Not practiced yet',
   tagline: 'Explore · Learn · Play', chooseMode: 'Choose how to explore', europe: 'Europe',
   offline: '47 countries · Offline map', back: 'Back to Home', settings: 'Settings',
   modes: {
@@ -28,6 +31,9 @@ const en = {
 };
 type Copy = typeof en;
 const pl: Copy = {
+  learningProgress: 'Postępy w nauce', practiced: 'Ćwiczone', mastered: 'Opanowane', needsPractice: 'Do powtórki', accuracy: 'Trafność',
+  practice: 'Ćwiczenie', practiceModes: { adaptive: 'Adaptacyjne', random: 'Losowe' }, practiceHint: 'Tryb adaptacyjny częściej wybiera ostatnie błędy i starsze powtórki. Bez powtórzeń z rzędu.',
+  masteryHint: 'Opanowane: trzy sukcesy w pierwszej próbie w jednym trybie i ostatnie trzy odpowiedzi poprawne.', showProgress: 'Pokaż postępy państw', hideProgress: 'Ukryj postępy państw', notPracticed: 'Jeszcze niećwiczone',
   tagline: 'Odkrywaj · Ucz się · Graj', chooseMode: 'Wybierz sposób odkrywania', europe: 'Europa',
   offline: '47 państw · Mapa offline', back: 'Wróć do strony głównej', settings: 'Ustawienia',
   modes: {

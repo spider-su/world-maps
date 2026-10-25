@@ -48,3 +48,8 @@ For each future component, replace generic status with dated evidence and the de
 - Product Settings replaces biometric/demo flows with language, voice, recent-history
   summaries and bundled data license notices. EN/PL covers controls and country names;
   speech uses the matching language, cancels queued pronunciation on blur/unmount.
+
+- `learning.ts`: schema-2 country/mode counters, one-time score migration,
+  deterministic adaptive/random target sampling, and learning summaries.
+- `LearningOverview` / `PracticeSelector`: app-owned saved practice controls and
+  expandable country progress; reused on Home/Settings. See country-learning.md.

@@ -45,3 +45,11 @@ Completed scores and voice/language preferences survive relaunch; unfinished rou
 are intentionally not restored. Statistics describe the most recent 100 completed
 rounds. One light theme is supported in this POC. Learning data is bundled and its
 licenses are available in Settings and [data attribution](docs/country-data.md).
+
+### Country learning
+
+Home offers Adaptive or Random practice. Adaptive revisits recent misses and older
+practice while reducing repeats of mastered countries. Home/Settings show local
+Europe learning statistics and per-country accuracy. Existing scores migrate once
+without being reset; misses from unfinished rounds are retained. See
+[learning model and migration](docs/country-learning.md).

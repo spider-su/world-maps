@@ -1,4 +1,5 @@
 import type { Round } from './engine';
+import { migrateLearning, parseLearning, type LearningProgress, type PracticeMode } from './learning';
 
 export const MAX_HISTORY = 100;
 
@@ -12,11 +13,14 @@ export interface CompletedSession {
 }
 
 export interface GameProgress {
+  schemaVersion: 2;
+  learning: LearningProgress;
+  practiceMode: PracticeMode;
   sessions: CompletedSession[];
   voiceEnabled: boolean;
 }
 
-export const initialProgress: GameProgress = { sessions: [], voiceEnabled: true };
+export const initialProgress: GameProgress = { sessions: [], voiceEnabled: true, schemaVersion: 2, learning: {}, practiceMode: 'adaptive' };
 
 export function scoreRound(guesses: number): number {
   if (!Number.isFinite(guesses) || guesses < 1) return 0;
@@ -72,11 +76,17 @@ export function parseProgress(raw: string | null): GameProgress {
     const value: unknown = JSON.parse(raw);
     if (!value || typeof value !== 'object') return initialProgress;
     const candidate = value as Partial<GameProgress>;
+    if (typeof (candidate as { schemaVersion?: number }).schemaVersion === 'number' && candidate.schemaVersion! > 2) throw new Error('Unsupported progress version');
+    const sessions = Array.isArray(candidate.sessions) ? candidate.sessions.filter(isSession).slice(-MAX_HISTORY) : [];
     return {
+      schemaVersion: 2,
+      practiceMode: candidate.practiceMode === 'random' ? 'random' : 'adaptive',
+      learning: candidate.schemaVersion === 2 ? parseLearning(candidate.learning) : migrateLearning(sessions),
       voiceEnabled: typeof candidate.voiceEnabled === 'boolean' ? candidate.voiceEnabled : true,
-      sessions: Array.isArray(candidate.sessions) ? candidate.sessions.filter(isSession).slice(-MAX_HISTORY) : [],
+      sessions,
     };
-  } catch {
+  } catch (error) {
+    if (error instanceof Error && error.message === 'Unsupported progress version') throw error;
     return initialProgress;
   }
 }

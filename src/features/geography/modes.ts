@@ -48,3 +48,8 @@ export function nameItAnswer(round: Round, chosenId: string, now = Date.now()): 
 export function canRevealNames(mode: GameMode, completed: boolean): boolean {
   return mode === 'learn' || completed;
 }
+
+/** Find It replay remains the prompt, even after a wrong selection. */
+export function replayCountryId(mode: GameMode, targetId: string, selectedId?: string): string | undefined {
+  return mode === 'find-it' ? targetId : selectedId;
+}

@@ -1,3 +1,4 @@
+import { replayCountryId } from './modes';
 import { canRevealNames } from './modes';
 import { describe, expect, it } from 'vitest';
 import { answerChoices, modePrompt, nameItAnswer, MODE_DEFINITIONS } from './modes';
@@ -43,3 +44,10 @@ it('keeps names hidden in every active quiz and permits exploration after comple
   }
   expect(canRevealNames('learn', false)).toBe(true);
 });
+
+ it('replays the Find It prompt after mistakes without revealing hidden targets in other modes', () => {
+  expect(replayCountryId('find-it', 'POL', 'DEU')).toBe('POL');
+  expect(replayCountryId('hot-cold', 'POL', 'DEU')).toBe('DEU');
+  expect(replayCountryId('hot-cold', 'POL')).toBeUndefined();
+  expect(replayCountryId('learn', 'POL', 'ITA')).toBe('ITA');
+ });

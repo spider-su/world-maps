@@ -1,5 +1,6 @@
 import type { Round } from './engine';
 import { DEFAULT_DIFFICULTY, isDifficulty, type Difficulty } from './difficulty';
+import { migrateLearning, parseLearning, type LearningProgress, type PracticeMode } from './learning';
 
 export const MAX_HISTORY = 100;
 
@@ -10,16 +11,19 @@ export interface CompletedSession {
   startedAt: number;
   completedAt: number;
   score: number;
-  difficulty?: Difficulty; // Older sessions used every country (Difficult).
+  difficulty?: Difficulty;
 }
 
 export interface GameProgress {
+  difficulty: Difficulty;
+  schemaVersion: 2;
+  learning: LearningProgress;
+  practiceMode: PracticeMode;
   sessions: CompletedSession[];
   voiceEnabled: boolean;
-  difficulty: Difficulty;
 }
 
-export const initialProgress: GameProgress = { sessions: [], voiceEnabled: true, difficulty: DEFAULT_DIFFICULTY };
+export const initialProgress: GameProgress = { sessions: [], voiceEnabled: true, difficulty: DEFAULT_DIFFICULTY, schemaVersion: 2, learning: {}, practiceMode: 'adaptive' };
 
 export function scoreRound(guesses: number): number {
   if (!Number.isFinite(guesses) || guesses < 1) return 0;
@@ -77,12 +81,18 @@ export function parseProgress(raw: string | null): GameProgress {
     const value: unknown = JSON.parse(raw);
     if (!value || typeof value !== 'object') return initialProgress;
     const candidate = value as Partial<GameProgress>;
+    if (typeof (candidate as { schemaVersion?: number }).schemaVersion === 'number' && candidate.schemaVersion! > 2) throw new Error('Unsupported progress version');
+    const sessions = Array.isArray(candidate.sessions) ? candidate.sessions.filter(isSession).slice(-MAX_HISTORY) : [];
     return {
       difficulty: isDifficulty(candidate.difficulty) ? candidate.difficulty : DEFAULT_DIFFICULTY,
+      schemaVersion: 2,
+      practiceMode: candidate.practiceMode === 'random' ? 'random' : 'adaptive',
+      learning: candidate.schemaVersion === 2 ? parseLearning(candidate.learning) : migrateLearning(sessions),
       voiceEnabled: typeof candidate.voiceEnabled === 'boolean' ? candidate.voiceEnabled : true,
-      sessions: Array.isArray(candidate.sessions) ? candidate.sessions.filter(isSession).slice(-MAX_HISTORY) : [],
+      sessions,
     };
-  } catch {
+  } catch (error) {
+    if (error instanceof Error && error.message === 'Unsupported progress version') throw error;
     return initialProgress;
   }
 }

@@ -18,6 +18,7 @@ import { useProgress } from '../features/geography/ProgressContext';
 import { ProgressStatus } from '../features/geography/ProgressStatus';
 import { useCountrySpeech } from '../features/geography/useCountrySpeech';
 import { countryName } from '../features/geography/countryFacts';
+import { practiceTarget, recordPractice } from '../features/geography/learning';
 import { canRevealNames, answerChoices, nameItAnswer, type GameMode } from '../features/geography/modes';
 
 export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: () => void }) {
@@ -26,8 +27,13 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
   const { progress, status, update } = useProgress();
   const difficulty = progress.difficulty;
   const pack = useMemo(() => mode === 'learn' ? europePack : difficultyPack(difficulty), [mode, difficulty]);
+  const practiceId = mode === 'hot-cold' ? europePack.id : `${europePack.id}:${mode}`;
+  const newRound = (previousId?: string) => {
+    const id = practiceTarget(pack, progress.learning, practiceId, progress.practiceMode, previousId);
+    return startRound(pack, () => (pack.locations.findIndex(l => l.id === id) + 0.5) / pack.locations.length);
+  };
   const [showNames, setShowNames] = useState(false);
-  const [round, setRound] = useState<Round>(() => startRound(pack));
+  const [round, setRound] = useState<Round>(() => newRound());
   const [feedback, setFeedback] = useState<{ id: string; result: GuessResult } | null>(null);
   const progressLoaded = status !== 'loading' && status !== 'read-error';
   const soundEnabled = progress.voiceEnabled;
@@ -39,7 +45,7 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
   const { speak, stop, failed: speechFailed } = useCountrySpeech(soundEnabled && progressLoaded, language);
   const restart = () => {
     stop();
-    setRound(startRound(pack));
+    setRound(newRound(round.targetId));
     setFeedback(null);
     setShowNames(false);
   };
@@ -64,6 +70,7 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
     if (round.completedAt !== undefined) return;
     try {
       const picked = guess(pack, round, id, distanceResolver);
+      if (!picked.repeated) update(current => ({ ...current, learning: recordPractice(current.learning, practiceId, round, id, Date.now()) }));
       setRound(picked.round);
       setFeedback({ id: picked.location.id, result: picked.result });
       if (!picked.repeated && picked.round.completedAt !== undefined) completeRound(picked.round);
@@ -71,18 +78,19 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
     } catch {
       // Reject invalid country IDs without losing game state.
     }
-  }, [round, mode, progressLoaded, distanceResolver, completeRound, speak, language, pack]);
+  }, [round, mode, progressLoaded, distanceResolver, completeRound, speak, language, update, practiceId, pack]);
 
   const selectAnswer = useCallback((id: string) => {
     if (mode !== 'name-it' || !progressLoaded || completed) return;
     const answer = nameItAnswer(round, id);
     const location = pack.locations.find(item => item.id === id);
     if (!location) return;
+    if (!answer.repeated) update(current => ({ ...current, learning: recordPractice(current.learning, practiceId, round, id, Date.now()) }));
     setRound(answer.round);
     setFeedback({ id: location.id, result: answer.correct ? 'correct' : 'far' });
     if (answer.correct && !answer.repeated) completeRound(answer.round);
     speak(countryName(location.id, language));
-  }, [mode, round, completed, progressLoaded, completeRound, speak, language, pack]);
+  }, [mode, round, completed, progressLoaded, completeRound, speak, language, update, practiceId, pack]);
 
   const resultById = useMemo(() => {
     const results = new Map<string, GuessResult>();

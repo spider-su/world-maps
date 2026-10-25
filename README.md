@@ -58,3 +58,11 @@ the selected pool. Learn always includes every country.
 The level is saved with preferences and completed rounds; quiz history is filtered
 by mode and level. Older rounds remain intact and count as Difficult because they
 used the full pool. See [difficulty validation](docs/difficulty-testing.md).
+
+### Country learning
+
+Home offers Adaptive or Random practice. Adaptive revisits recent misses and older
+practice while reducing repeats of mastered countries. Home/Settings show local
+Europe learning statistics and per-country accuracy. Existing scores migrate once
+without being reset; misses from unfinished rounds are retained. See
+[learning model and migration](docs/country-learning.md).

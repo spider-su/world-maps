@@ -61,3 +61,8 @@ For each future component, replace generic status with dated evidence and the de
   marker-only countries and outlines below 700 map-area units. `createSelectionGuard`
   suppresses guesses during/just after movement. Distances are an offline table
   generated from shared geometry; see `docs/p0-geography-gameplay.md`.
+
+- `learning.ts`: schema-2 country/mode counters, one-time score migration,
+  deterministic adaptive/random target sampling, and learning summaries.
+- `LearningOverview` / `PracticeSelector`: app-owned saved practice controls and
+  expandable country progress; reused on Home/Settings. See country-learning.md.

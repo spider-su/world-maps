@@ -9,6 +9,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   slug,
   version: process.env.APP_VERSION ?? '1.0.0',
   orientation: 'portrait',
+  web: { ...config.web, favicon: './assets/icon.png' },
   icon: './assets/icon.png',
   userInterfaceStyle: 'light',
   ios: {

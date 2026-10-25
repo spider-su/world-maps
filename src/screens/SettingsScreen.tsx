@@ -48,7 +48,7 @@ export function SettingsScreen() {
       </View>
       <View style={styles.card}>
         <Text style={styles.cardTitle}>{c.about}</Text><Text style={styles.hint}>{c.privacy}</Text><Text style={styles.hint}>{c.mapSource}</Text>
-        <Pressable accessibilityRole="button" style={styles.row} onPress={() => setShowLicenses(true)}><Text style={styles.link}>{c.licenses}</Text><Ionicons name="chevron-forward" size={18} color={theme.brand} /></Pressable>
+        <Pressable accessibilityRole="button" accessibilityLabel={c.licenses} style={styles.row} onPress={() => setShowLicenses(true)}><Text style={styles.link}>{c.licenses}</Text><Ionicons name="chevron-forward" size={18} color={theme.brand} /></Pressable>
       </View>
     </ScrollView>
     <Modal visible={showLicenses} animationType="slide" onRequestClose={() => setShowLicenses(false)}>

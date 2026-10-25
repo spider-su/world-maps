@@ -11,7 +11,7 @@ export function DifficultySelector({ language }: { language: Language }) {
   const disabled = status === 'loading' || status === 'read-error';
   return <View style={styles.container}>
     <Text style={styles.title}>{c.difficulty}</Text>
-    <View style={styles.options}>{DIFFICULTIES.map(level => <Pressable key={level} accessibilityRole="radio"
+    <View accessibilityRole="radiogroup" accessibilityLabel={c.difficulty} style={styles.options}>{DIFFICULTIES.map(level => <Pressable key={level} accessibilityRole="radio" aria-checked={progress.difficulty === level}
       accessibilityState={{ checked: progress.difficulty === level, disabled }} disabled={disabled}
       onPress={() => update(current => ({ ...current, difficulty: level }))}
       style={[styles.option, progress.difficulty === level && styles.selected]}>

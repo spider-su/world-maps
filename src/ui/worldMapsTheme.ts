@@ -23,3 +23,30 @@ export const worldMapsTheme = {
     learn: { foreground: '#15803D', tint: '#DCFCE7', icon: 'book-outline' },
   },
 } as const;
+
+/** System-driven product palette. Never persist a duplicate theme preference. */
+export const darkWorldMapsTheme: typeof worldMapsTheme = {
+  ...worldMapsTheme,
+  brand: '#82B5FF',
+  brandDark: '#28599D',
+  navy: '#F1F6FF',
+  ocean: '#183B5F',
+  oceanDeep: '#294D73',
+  land: '#2C513F',
+  paper: '#0B1422',
+  surface: '#17283D',
+  border: '#57738A',
+  muted: '#B0C2D3',
+  success: '#59DB93',
+  mode: {
+    'hot-cold': { ...worldMapsTheme.mode['hot-cold'], foreground: '#FF7F8C', tint: '#542A38' },
+    'find-it': { ...worldMapsTheme.mode['find-it'], foreground: '#9CC6FF', tint: '#273F67' },
+    'name-it': { ...worldMapsTheme.mode['name-it'], foreground: '#FFD07C', tint: '#554229' },
+    'capital-find': { ...worldMapsTheme.mode['capital-find'], foreground: '#C4A5FF', tint: '#44315F' },
+    'capital-name': { ...worldMapsTheme.mode['capital-name'], foreground: '#FFB794', tint: '#583B30' },
+    learn: { ...worldMapsTheme.mode.learn, foreground: '#81EAA5', tint: '#254A3F' },
+  },
+};
+export type WorldMapsPalette = typeof worldMapsTheme;
+export const themeForScheme = (scheme: 'light' | 'dark' | null | undefined): WorldMapsPalette =>
+  scheme === 'dark' ? darkWorldMapsTheme : worldMapsTheme;

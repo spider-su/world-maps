@@ -31,4 +31,17 @@ describe('country pronunciation queue', () => {
     const broken = createSpeechController({ stop: async () => { throw new Error('unavailable'); }, voices, speak }, failed);
     await broken.speak('Polska', 'pl'); expect(failed).toHaveBeenLastCalledWith(true);
   });
+  it('reports voice discovery that never resolves instead of blocking replay forever', async () => {
+    vi.useFakeTimers();
+    try {
+      const failed = vi.fn(); const speak = vi.fn();
+      const lookup = vi.fn().mockImplementationOnce(() => new Promise(() => undefined)).mockResolvedValue(await voices());
+      const controller = createSpeechController({ stop: async () => undefined, voices: lookup, speak }, failed);
+      const pending = controller.speak('Polska', 'pl');
+      await vi.advanceTimersByTimeAsync(2000); await pending;
+      expect(failed).toHaveBeenLastCalledWith(true);
+      await controller.speak('Polska', 'pl'); expect(speak).toHaveBeenCalledOnce();
+    } finally { vi.useRealTimers(); }
+  });
+
 });

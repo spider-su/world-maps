@@ -21,6 +21,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run ci
+      - run: npx expo-doctor
 
   android-apk:
     needs: checks
@@ -44,15 +45,14 @@ jobs:
         with:
           packages: 'platform-tools'
       - run: npm ci
-      - name: Generate Android project locally
-        run: npx expo prebuild --platform android --clean
-      - name: Assemble debug APK locally
-        working-directory: android
-        run: ./gradlew --no-daemon assembleDebug
+      - name: Build standalone development-signed preview
+        run: npm run build:android:preview
       - name: Upload installable APK
         uses: actions/upload-artifact@v4
         with:
-          name: world-maps-debug-apk
-          path: android/app/build/outputs/apk/debug/*.apk
+          name: world-maps-preview-apk
+          path: |
+            artifacts/world-maps-preview.apk
+            artifacts/preview-metadata.json
           if-no-files-found: error
           retention-days: 14

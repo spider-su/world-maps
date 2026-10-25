@@ -13,7 +13,8 @@
     "test": "vitest run",
     "ci": "npm run typecheck && npm run lint && npm test && npm run test:setup",
     "init:app": "node scripts/init-app.mjs",
-    "test:setup": "node --test scripts/init-app.test.mjs"
+    "test:setup": "node --test scripts/init-app.test.mjs",
+    "build:android:preview": "bash scripts/build-android-preview.sh"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",

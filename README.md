@@ -78,3 +78,10 @@ clean political map. [Source, license and regeneration](docs/atlas-data.md).
 Choose English, Polish or Russian in Settings. All country names/capitals and game
 prompts update without changing scores. Pronunciation uses installed device voices;
 missing voices produce an inline message. See [speech behavior](docs/languages-and-speech.md).
+
+### P0–P1 validation
+
+The [delivery report](docs/p0-p1-delivery.md) records the focused feature PRs,
+combined branch, 73 source/setup tests, offline Android APK provenance and emulator
+evidence, including selection of all 47 countries. Physical-phone, audible speech
+and iOS validation remain separate pending gates.

@@ -41,3 +41,9 @@ Reuse the current primitive when its behavior matches. Extend it when at least t
 - `features/geography/DifficultySelector`: saved EN/PL Home level selection.
   `difficultyPack` supplies eligible quiz locations; `EuropeMap.selectableIds`
   restricts interactions while retaining geographic context.
+- `features/geography/learning`: per-country/mode attempt records, schema migration,
+  adaptive/random sampling and pure summaries. `LearningOverview` is reused by
+  Home/Settings; `PracticeSelector` saves the sampling preference.
+- `EuropeMap.atlas` / `showBorders`: bundled relief registered to the shared viewBox.
+- `speechController`: serialized pronunciation with installed-voice matching,
+  cancellation and bounded voice discovery. EN/PL/RU share `LANGUAGE_OPTIONS`.

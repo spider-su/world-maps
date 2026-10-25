@@ -53,3 +53,13 @@ Stage results and any remaining gates are appended as implementation proceeds.
 - EN/PL added for new UI. `npm run ci`: PASS (42 unit + 3 setup tests).
 - Browser 390×844: Home entry, Back and mode entry PASS. Name It answers and primary
   action fit without scrolling. Zero browser errors; existing pointerEvents warning.
+
+### Stage 3 — gameplay completion
+
+- Small Name It targets initialize at useful zoom; amber highlight and halo remain
+  separate from green correct-answer feedback. Country labels remain hidden.
+- Web country paths support keyboard Enter/Space without native responder props.
+- Small-country proximity now measures marker to polygon outline. Regressions cover
+  Malta/Italy, Andorra/France, Monaco/France and Vatican/Italy plus symmetry.
+- `npm run ci`: PASS (44 unit + 3 setup tests). Browser checks: target highlight,
+  no Name It label leak and keyboard country selection PASS.

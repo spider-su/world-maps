@@ -12,7 +12,7 @@ import { CLUE_COLORS } from '../features/geography/mapColors';
 import { europePack } from '../features/geography/europe';
 import { europeBorderDistanceKm } from '../features/geography/borderDistance';
 import { microstates } from '../features/geography/microstates';
-import { distanceKm, guess, startRound, type GuessResult, type Round } from '../features/geography/engine';
+import { guess, startRound, type GuessResult, type Round } from '../features/geography/engine';
 import { initialProgress, recordSession, scoreRound, sessionFromRound, summary, type GameProgress } from '../features/geography/progress';
 import { loadProgress, saveProgress } from '../features/geography/progressStorage';
 import { canRevealNames, answerChoices, nameItAnswer, type GameMode } from '../features/geography/modes';
@@ -59,10 +59,7 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
 
   useFocusEffect(useCallback(() => () => { void Speech.stop().catch(() => undefined); }, []));
 
-  const distanceResolver = useCallback((a: (typeof europePack.locations)[number], b: (typeof europePack.locations)[number]) =>
-    microstates.some(state => state.id === a.id || state.id === b.id)
-      ? distanceKm(a, b)
-      : europeBorderDistanceKm(a, b), []);
+  const distanceResolver = europeBorderDistanceKm;
 
   const speak = useCallback((name: string) => {
     if (!soundEnabled) return;
@@ -152,7 +149,7 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
         <Text style={styles.prompt}>{progressLoaded ? prompt : c.loading}</Text>
         {mode !== 'learn' && <View style={styles.attempts}><Text style={styles.attemptLabel}>{c.attempts}</Text><Text style={styles.attemptValue}>{round.guesses.length}</Text></View>}
       </View>
-      <EuropeMap results={resultById} revealedIds={completedIds} showNames={showNames && canShowNames}
+      <EuropeMap key={`${mode}:${round.startedAt}:${round.targetId}`} results={resultById} revealedIds={completedIds} showNames={showNames && canShowNames}
         onSelect={selectCountry} enabled={progressLoaded && mode !== 'name-it'} language={language} targetId={mode === 'name-it' ? target.id : undefined} />
       {mode !== 'name-it' && <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.markers}>
         <Text style={styles.markerLabel}>{c.smallCountries}</Text>
@@ -184,7 +181,7 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
         <Text style={styles.secondaryText}>{showNames ? c.hideNames : c.showNames}</Text>
       </Pressable>}
       {completed && <Text style={styles.score}>+{scoreRound(round.guesses.length)} {c.score}</Text>}
-      {mode !== 'learn' && <Pressable accessibilityRole="button" disabled={!progressLoaded} style={styles.primary} onPress={restart}>
+      {mode !== 'learn' && <Pressable accessibilityRole="button" disabled={!progressLoaded} style={styles.primary} accessibilityLabel={completed ? c.next : c.restart} onPress={restart}>
         <Ionicons name="refresh-outline" size={20} color="#FFF" /><Text style={styles.primaryText}>{completed ? c.next : c.restart}</Text>
       </Pressable>}
       {storageWarning && <Text accessibilityRole="alert" style={styles.warning}>{c.saveError}</Text>}

@@ -8,9 +8,15 @@ describe('web country paths', () => {
     const onSelect = vi.fn();
     const element = CountryPath({ ...props, onSelect });
     expect(element.type).toBe('path');
-    expect(element.props).toEqual({ ...props, strokeLinejoin: 'round', onClick: onSelect });
+    expect(element.props).toMatchObject({ ...props, strokeLinejoin: 'round', onClick: onSelect, role: 'button', tabIndex: 0 });
+    expect(element.props).not.toHaveProperty('onPress');
+    expect(element.props).not.toHaveProperty('onResponderGrant');
     element.props.onClick();
     expect(onSelect).toHaveBeenCalledOnce();
+    const preventDefault = vi.fn();
+    element.props.onKeyDown({ key: 'Enter', preventDefault });
+    expect(onSelect).toHaveBeenCalledTimes(2);
+    expect(preventDefault).toHaveBeenCalledOnce();
   });
 
 });

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
-import Svg, { Path, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { Ionicons } from '@expo/vector-icons';
 import type { Language } from '../../ui/i18n';
 import { europeShapes, europeContextShapes } from './europe';
@@ -9,7 +9,7 @@ import type { GuessResult } from './engine';
 import { CountryPath } from './CountryPath';
 import { CountryMarker } from './CountryMarker';
 import { mapLabels } from './mapLabels';
-import { frame, INITIAL_VIEWPORT, normalize, pan, zoomAt, type Viewport } from './viewport';
+import { frame, INITIAL_VIEWPORT, normalize, pan, zoomAt, focusPoint, type Viewport } from './viewport';
 import { CLUE_COLORS, SEA, LAND } from './mapColors';
 import { gameCopy } from './copy';
 
@@ -25,12 +25,19 @@ interface Props {
 }
 
 /** Shared, offline renderer. Country geometry remains authoritative for taps. */
-export function EuropeMap({ results, revealedIds, showNames, onSelect, language, enabled = true, preview = false }: Props) {
+export function EuropeMap({ results, revealedIds, showNames, onSelect, language, enabled = true, preview = false, targetId }: Props) {
   const { width } = useWindowDimensions();
   const [measuredWidth, setMeasuredWidth] = useState(0);
   const mapWidth = measuredWidth || Math.max(280, Math.min(width - 32, 840));
   const mapHeight = mapWidth * 570 / 864;
-  const [viewport, setViewport] = useState<Viewport>(INITIAL_VIEWPORT);
+  const [viewport, setViewport] = useState<Viewport>(() => {
+    const small = microstates.find(location => location.id === targetId);
+    const shape = europeShapes.find(location => location.id === targetId);
+    return small ? focusPoint({ x: small.x, y: small.y }, 4) : shape && shape.area < 700
+      ? focusPoint({ x: shape.labelX, y: shape.labelY }, 3) : INITIAL_VIEWPORT;
+  });
+  const targetPoint = microstates.find(location => location.id === targetId)
+    ?? europeShapes.find(location => location.id === targetId);
   const current = useRef(viewport);
   const gesture = useRef({ viewport, pinchDistance: 0 });
   useEffect(() => { current.current = viewport; }, [viewport]);
@@ -73,18 +80,21 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
   ] as const;
   return <View style={styles.map} onLayout={event => setMeasuredWidth(event.nativeEvent.layout.width)}>
     <View {...(!preview ? responder.panHandlers : {})} collapsable={false}>
-      <Svg width={mapWidth} height={mapHeight} viewBox={`${visible.x} ${visible.y} ${visible.w} ${visible.h}`} accessibilityLabel={c.europe}>
+      <Svg width={mapWidth} height={mapHeight} viewBox={`${visible.x} ${visible.y} ${visible.w} ${visible.h}`} accessibilityRole={preview ? 'image' : 'none'} accessibilityLabel={c.europe}>
         <Rect width="864" height="570" fill={SEA} />
         {europeContextShapes.map(shape => <Path key={shape.id} d={shape.path} fill="#CAD5DE" stroke="#70889A" strokeWidth={0.6 / viewport.zoom} />)}
-        {europeShapes.map(shape => {
-          const props = { d: shape.path, fill: results.has(shape.id) ? CLUE_COLORS[results.get(shape.id)!] : LAND, stroke: '#637F90', strokeWidth: Math.max(0.35, 1 / viewport.zoom) };
-          return preview ? <Path key={shape.id} {...props} /> : <CountryPath key={shape.id} {...props} onSelect={() => { if (enabled) onSelect(shape.id); }} />;
+        {europeShapes.map((shape, index) => {
+          const props = { d: shape.path, fill: shape.id === targetId ? '#F5AD18' : results.has(shape.id) ? CLUE_COLORS[results.get(shape.id)!] : LAND, stroke: '#637F90', strokeWidth: Math.max(0.35, 1 / viewport.zoom) };
+          return preview || !enabled ? <Path key={shape.id} {...props} /> : <CountryPath key={shape.id} {...props} accessibilityLabel={`${c.marker} ${index + 1}`} onSelect={() => onSelect(shape.id)} />;
         })}
         {!preview && labels.map(location => <SvgText key={location.id} x={location.labelX} y={location.labelY}
           fontSize={11 * visible.w / mapWidth} fontFamily="sans-serif" fontWeight="700" textAnchor="middle" fill="#17364A" pointerEvents="none">{location.name}</SvgText>)}
         {!preview && microstates.map(state => <CountryMarker key={state.id} cx={state.x} cy={state.y} r={Math.max(2, 6 / viewport.zoom)}
-          fill={results.has(state.id) ? CLUE_COLORS[results.get(state.id)!] : '#FFF'} stroke="#17364A" strokeWidth={1 / viewport.zoom}
+          fill={state.id === targetId ? '#F5AD18' : results.has(state.id) ? CLUE_COLORS[results.get(state.id)!] : '#FFF'} stroke="#17364A" strokeWidth={1 / viewport.zoom}
           onSelect={() => { if (enabled) onSelect(state.id); }} />)}
+        {targetPoint && <Circle cx={'labelX' in targetPoint ? targetPoint.labelX : targetPoint.x}
+          cy={'labelY' in targetPoint ? targetPoint.labelY : targetPoint.y} r={12 * visible.w / mapWidth}
+          fill="none" stroke="#B66D00" strokeWidth={2 * visible.w / mapWidth} pointerEvents="none" />}
         {!preview && microstates.map((state, index) => <SvgText key={`${state.id}-number`} x={state.x} y={state.y + 2 / viewport.zoom}
           fontSize={6 / viewport.zoom} textAnchor="middle" fill="#17364A" pointerEvents="none">{index + 1}</SvgText>)}
       </Svg>

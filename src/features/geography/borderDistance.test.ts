@@ -19,3 +19,11 @@ describe('European border distances', () => {
     expect(wrong.round.completedAt).toBeUndefined();
   });
 });
+
+it('uses marker-to-outline proximity for small countries', () => {
+  expect(europeBorderDistanceKm(get('MLT'), get('ITA'))).toBeLessThan(250);
+  expect(europeBorderDistanceKm(get('AND'), get('FRA'))).toBeLessThan(50);
+  expect(europeBorderDistanceKm(get('MCO'), get('FRA'))).toBeLessThan(50);
+  expect(europeBorderDistanceKm(get('VAT'), get('ITA'))).toBeLessThan(100);
+  expect(europeBorderDistanceKm(get('MLT'), get('ITA'))).toBe(europeBorderDistanceKm(get('ITA'), get('MLT')));
+});

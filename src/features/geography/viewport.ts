@@ -52,3 +52,8 @@ export function zoomAt(viewport: Viewport, factor: number, focal: Point, screenW
     },
   });
 }
+
+/** Small highlighted targets need a useful initial view, including microstates. */
+export function focusPoint(point: Point, zoom: number): Viewport {
+  return normalize({ zoom, center: point });
+}

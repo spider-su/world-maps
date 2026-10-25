@@ -1,6 +1,6 @@
 # Local-first state consistency recipe
 
-The template's `createStorage` is a small key-value abstraction, not a transaction database. Use the following pattern only when the app needs multi-step local data mutations.
+World Maps persists progress through AsyncStorage (`progressStorage.ts`) behind a serialized store (`progressStore.ts`); it is not a transaction database. This recipe was inherited from mobile_template. Use the following pattern only when the app needs multi-step local data mutations.
 
 ## One source of truth
 - Persist the primary facts (records, timestamps, effective periods); derive totals and badges from the same pure functions everywhere.

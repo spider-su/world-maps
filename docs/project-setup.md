@@ -1,5 +1,7 @@
 # App project setup
 
+> **Historical reference.** This document comes from mobile_template and describes how the starter was turned into an app. World Maps has already completed that step (`world-maps` / `com.spidersu.worldmaps`); the external-services and project-files tables still apply.
+
 Use this checklist when turning the starter into an app. Set up only the external services required by the product and release plan.
 
 ## Clone, fork, or use as a template

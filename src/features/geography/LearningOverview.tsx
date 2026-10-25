@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View, useColorScheme } from 'react-native';
 import type { Language } from '../../ui/i18n';
-import { worldMapsTheme as theme } from '../../ui/worldMapsTheme';
+import { themeForScheme, type WorldMapsPalette } from '../../ui/worldMapsTheme';
 import { countryName } from './countryFacts';
 import { gameCopy } from './copy';
 import { europePack } from './europe';
@@ -10,6 +10,8 @@ import { useProgress } from './ProgressContext';
 
 export function LearningOverview({ language }: { language: Language }) {
   const { progress, status } = useProgress();
+  const theme = themeForScheme(useColorScheme());
+  const styles = makeStyles(theme);
   const [expanded, setExpanded] = useState(false);
   const c = gameCopy[language];
   const totals = useMemo(() => learningSummary(progress.learning, europePack.id, europePack.locations.map(l => l.id)), [progress.learning]);
@@ -30,8 +32,8 @@ export function LearningOverview({ language }: { language: Language }) {
     })}
   </View>;
 }
-const styles = StyleSheet.create({
-  card: { padding: 14, borderRadius: 18, backgroundColor: '#FFF', gap: 10, borderColor: '#E0EAF3', borderWidth: 1 },
+const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
+  card: { padding: 14, borderRadius: 18, backgroundColor: theme.surface, gap: 10, borderColor: theme.border, borderWidth: 1 },
   title: { color: theme.navy, fontWeight: '800', fontSize: 16 }, metrics: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 }, metric: { minWidth: '42%', flexGrow: 1 },
   value: { color: theme.brand, fontSize: 21, fontWeight: '800' }, label: { color: theme.muted, fontSize: 11 }, hint: { color: theme.muted, fontSize: 11, lineHeight: 17 },
   action: { minHeight: 44, justifyContent: 'center' }, link: { color: theme.brand, fontSize: 13, fontWeight: '700' }, country: { flexDirection: 'row', justifyContent: 'space-between', gap: 10, paddingVertical: 5 }, countryName: { color: theme.navy, fontSize: 13, flexShrink: 1 },

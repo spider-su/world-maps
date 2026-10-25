@@ -1,5 +1,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
+import { useColorScheme } from 'react-native';
+import { themeForScheme } from './ui/worldMapsTheme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HomeScreen } from './screens/HomeScreen';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,12 +13,15 @@ const Tab = createBottomTabNavigator();
 
 function Tabs() {
   const { t } = useLanguage();
+  const theme = themeForScheme(useColorScheme());
   const insets = useSafeAreaInsets();
   const tabBar = getTabBarMetrics(insets.bottom);
   return (
     <Tab.Navigator screenOptions={{
       headerShown: false,
-      tabBarStyle: { height: tabBar.height, paddingTop: tabBar.paddingTop, paddingBottom: tabBar.paddingBottom }
+      tabBarActiveTintColor: theme.brand,
+      tabBarInactiveTintColor: theme.muted,
+      tabBarStyle: { ...tabBar, backgroundColor: theme.surface, borderTopColor: theme.border, height: tabBar.height, paddingTop: tabBar.paddingTop, paddingBottom: tabBar.paddingBottom },
     }}>
       <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: t("home"), tabBarIcon: ({ color, size }) => <Ionicons name="earth-outline" color={color} size={size} /> }} />
       <Tab.Screen name="Settings" component={SettingsScreen} options={{ tabBarLabel: t("settings"), tabBarIcon: ({ color, size }) => <Ionicons name="settings-outline" color={color} size={size} /> }} />
@@ -25,5 +30,7 @@ function Tabs() {
 }
 
 export function AppNavigation() {
-  return <NavigationContainer theme={DefaultTheme}><Tabs /></NavigationContainer>;
+  const theme = themeForScheme(useColorScheme());
+  const base = useColorScheme() === 'dark' ? DarkTheme : DefaultTheme;
+  return <NavigationContainer theme={{ ...base, colors: { ...base.colors, background: theme.paper, card: theme.surface, text: theme.navy, border: theme.border, primary: theme.brand } }}><Tabs /></NavigationContainer>;
 }

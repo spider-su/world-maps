@@ -1,10 +1,10 @@
 import { useCallback, useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { SvgXml } from 'react-native-svg';
 import { useLanguage } from '../ui/LanguageContext';
-import { worldMapsTheme as theme } from '../ui/worldMapsTheme';
+import { themeForScheme, type WorldMapsPalette } from '../ui/worldMapsTheme';
 import { CountryInfoCard } from '../features/geography/CountryInfoCard';
 import { EuropeMap } from '../features/geography/EuropeMap';
 import { gameCopy } from '../features/geography/copy';
@@ -24,6 +24,8 @@ import { canRevealNames, replayCountryId, answerChoices, nameItAnswer, type Game
 
 export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnswer = 'country' }: { mode: GameMode; onBack: () => void; findClue?: FindClue; nameAnswer?: NameAnswer }) {
   const { language } = useLanguage();
+  const theme = themeForScheme(useColorScheme());
+  const styles = makeStyles(theme);
   const c = gameCopy[language];
   const { progress, status, update } = useProgress();
   const difficulty = progress.difficulty;
@@ -191,8 +193,8 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
     </ScrollView>
   </SafeAreaView>;
 }
-const styles = StyleSheet.create({
-  flagPrompt: { backgroundColor: '#FFF', borderRadius: 14, padding: 12, alignItems: 'center', justifyContent: 'center', minHeight: 108 },
+const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
+  flagPrompt: { backgroundColor: theme.surface, borderRadius: 14, padding: 12, alignItems: 'center', justifyContent: 'center', minHeight: 108 },
   screen: { flex: 1, backgroundColor: theme.paper },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, paddingVertical: 4, borderBottomWidth: 1, borderBottomColor: '#E1EAF3' },
   iconButton: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
@@ -202,14 +204,14 @@ const styles = StyleSheet.create({
   prompt: { flex: 1, color: theme.navy, fontSize: 20, fontWeight: '800' },
   attempts: { alignItems: 'center', minWidth: 54 }, attemptLabel: { color: theme.muted, fontSize: 10 }, attemptValue: { fontSize: 21, fontWeight: '800', color: theme.navy },
   markers: { gap: 5, alignItems: 'center' }, markerLabel: { color: theme.muted, fontSize: 10, marginRight: 2 },
-  marker: { minWidth: 40, minHeight: 44, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 8, backgroundColor: '#FFF', borderRadius: 10, borderWidth: 1, borderColor: '#D5E2EC' },
+  marker: { minWidth: 40, minHeight: 44, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 8, backgroundColor: theme.surface, borderRadius: 10, borderWidth: 1, borderColor: theme.border },
   markerText: { fontSize: 11, color: theme.brandDark, fontWeight: '700' },
-  options: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 }, option: { flexGrow: 1, flexBasis: '46%', minHeight: 48, padding: 12, justifyContent: 'center', backgroundColor: '#FFF', borderRadius: 12, borderWidth: 1, borderColor: '#A6C5E5' },
-  optionWrong: { backgroundColor: '#FEE2E2', borderColor: '#DC2626' }, optionCorrect: { backgroundColor: '#DCFCE7', borderColor: '#15803D' }, optionText: { color: theme.navy, fontWeight: '600', fontSize: 14 },
-  feedback: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF', padding: 12, borderRadius: 16, gap: 8 }, feedbackCopy: { flex: 1, gap: 4 },
+  options: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 }, option: { flexGrow: 1, flexBasis: '46%', minHeight: 48, padding: 12, justifyContent: 'center', backgroundColor: theme.surface, borderRadius: 12, borderWidth: 1, borderColor: theme.border },
+  optionWrong: { backgroundColor: theme.answerWrong, borderColor: '#F77D87' }, optionCorrect: { backgroundColor: theme.answerRight, borderColor: '#66DE96' }, optionText: { color: theme.navy, fontWeight: '600', fontSize: 14 },
+  feedback: { flexDirection: 'row', alignItems: 'center', backgroundColor: theme.surface, padding: 12, borderRadius: 16, gap: 8 }, feedbackCopy: { flex: 1, gap: 4 },
   feedbackTitle: { color: theme.navy, fontSize: 17, fontWeight: '800' }, feedbackText: { color: theme.muted, fontSize: 12, lineHeight: 18 },
   legend: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8 }, legendItem: { flexDirection: 'row', alignItems: 'center', gap: 3 }, swatch: { width: 9, height: 9, borderRadius: 5 }, legendText: { color: theme.muted, fontSize: 10 },
-  primary: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 48, borderRadius: 14, backgroundColor: theme.brand }, primaryText: { color: '#FFF', fontWeight: '700', fontSize: 15 },
+  primary: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 48, borderRadius: 14, backgroundColor: theme.brandDark }, primaryText: { color: '#FFF', fontWeight: '700', fontSize: 15 },
   secondary: { minHeight: 44, justifyContent: 'center', alignItems: 'center' }, secondaryText: { color: theme.brand, fontWeight: '700', fontSize: 13 },
-  score: { color: '#15803D', textAlign: 'center', fontWeight: '800', fontSize: 18 }, warning: { color: '#AA3131', fontSize: 12 }, history: { color: theme.muted, textAlign: 'center', fontSize: 10, lineHeight: 15 },
+  score: { color: theme.success, textAlign: 'center', fontWeight: '800', fontSize: 18 }, warning: { color: theme.error, fontSize: 12 }, history: { color: theme.muted, textAlign: 'center', fontSize: 10, lineHeight: 15 },
 });

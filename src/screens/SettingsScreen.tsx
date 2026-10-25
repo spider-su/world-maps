@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Modal, Pressable, ScrollView, StyleSheet, Switch, Text, View } useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LANGUAGE_OPTIONS } from '../ui/i18n';
 import { useLanguage } from '../ui/LanguageContext';
-import { worldMapsTheme as theme } from '../ui/worldMapsTheme';
+import { themeForScheme, type WorldMapsPalette } from '../ui/worldMapsTheme';
 import { gameCopy } from '../features/geography/copy';
 import { useProgress } from '../features/geography/ProgressContext';
 import { LearningOverview } from '../features/geography/LearningOverview';
@@ -15,6 +15,8 @@ import licenses from '../features/geography/data/licenses.json';
 
 export function SettingsScreen() {
   const { language, setLanguage, languageError, retryLanguage } = useLanguage();
+  const theme = themeForScheme(useColorScheme());
+  const styles = makeStyles(theme);
   const { progress, status, update } = useProgress();
   const [showLicenses, setShowLicenses] = useState(false);
   const c = gameCopy[language];
@@ -68,9 +70,9 @@ export function SettingsScreen() {
     </Modal>
   </SafeAreaView>;
 }
-const styles = StyleSheet.create({
+const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: theme.paper }, body: { padding: 16, gap: 16, width: '100%', maxWidth: 720, alignSelf: 'center', paddingBottom: 30 },
-  title: { color: theme.navy, fontSize: 28, fontWeight: '800' }, card: { backgroundColor: '#FFF', borderRadius: 18, padding: 16, gap: 8, borderWidth: 1, borderColor: '#E0EAF3' },
+  title: { color: theme.navy, fontSize: 28, fontWeight: '800' }, card: { backgroundColor: theme.surface, borderRadius: 18, padding: 16, gap: 8, borderWidth: 1, borderColor: theme.border },
   cardTitle: { fontSize: 16, fontWeight: '800', color: theme.navy, flexShrink: 1 }, text: { fontSize: 14, color: theme.navy }, hint: { fontSize: 12, color: theme.muted, lineHeight: 19 },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', minHeight: 48, gap: 10 }, link: { color: theme.brand, fontSize: 14, fontWeight: '700' }, error: { color: '#823C19', fontSize: 12 },
   historyRow: { paddingVertical: 8, gap: 4 }, modalHeader: { flexDirection: 'row', paddingHorizontal: 16, justifyContent: 'space-between', alignItems: 'center' }, close: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },

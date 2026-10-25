@@ -1,44 +1,30 @@
-# Reusable component catalog
+# Component catalog
 
 This is an index, not a substitute for TypeScript signatures. Inspect the linked source before modifying or consuming a component.
 
 | Component / helper | Location | Contract / when to reuse |
 |---|---|---|
-| `AppScreen` | `src/ui/primitives.tsx` | Safe-area-aware scrollable screen with shared spacing; `bottomNavigation` defaults to visible tabs, or set `hidden-tabs` when this screen owns bottom inset |
-| `AppCard` | `src/ui/primitives.tsx` | Bordered surface for grouped content |
-| `AppText` | `src/ui/primitives.tsx` | Theme-aware body/title text |
-| `AppButton` | `src/ui/primitives.tsx` | Primary/secondary action, disabled and busy states |
-| `TextField` | `src/ui/primitives.tsx` | Labeled controlled input with validation error |
-| `ToggleField` | `src/ui/primitives.tsx` | Accessible boolean setting |
-| `LoadingSpinner` | `src/ui/primitives.tsx` | Busy state with label |
-| `FeedbackBanner` | `src/ui/primitives.tsx` | Local info/error feedback; **not** an OS notification |
-| `ConfirmDialog` | `src/ui/primitives.tsx` | Confirmation before destructive actions |
-| `usePalette`, `spacing` | `src/ui/theme.ts` | Shared light/dark colors and spacing tokens |
-| `useLanguage`, `translate` | `src/ui/LanguageContext.tsx`, `i18n.ts` | EN/PL strings and saved language preference |
-| `validateDemoForm` | `src/ui/validation.ts` | Example of pure validation; replace with product rules |
-| `createStorage` | `src/services/storage.ts` | Namespaced JSON get/set/remove; returns null on corrupt JSON |
-| `nativeStorageBackend`, `webStorageBackend` | `src/services/storageBackends.ts` | Platform persistence adapters; native accepts AsyncStorage contract |
-| `parseItems`, `saveItem`, `deleteItem` | `src/services/exampleItems.ts` | Pure example CRUD model; not a database |
+| `worldMapsTheme` | `src/ui/worldMapsTheme.ts` | System-aware light/dark app colors, mode tints/icons and map palette |
+| `useLanguage`, `LANGUAGE_OPTIONS`, `SPEECH_LOCALES` | `src/ui/LanguageContext.tsx`, `i18n.ts` | EN/PL/RU language definitions, speech locales and saved preference with legacy-key fallback |
+| `gameCopy`, `gamePrompt` | `src/features/geography/copy.ts` | EN/PL/RU app text: modes, prompts, feedback, Home and Settings; prompts support country/capital/flag variants |
 | `AppErrorBoundary` | `src/components/AppErrorBoundary.tsx` | Render-crash fallback, not async error handling |
 | Safe-area helpers | `src/platform/safeArea.ts` | Single-inset ownership for visible/hidden tabs and modals |
-| Biometrics | `src/ui/biometrics.ts` | Optional identity prompt, **not** authorization or credential storage |
-| Notifications | `src/ui/notifications.ts` | Optional contract; no automatic push permission or delivery |
-
-## Copyable implementation pattern
-
-For a new local-first feature: define the pure model in `src/services/`, add tests, create a screen in `src/screens/` using existing primitives, use `createStorage` with a unique namespace and versioned key, register navigation in `src/navigation.tsx`, add EN/PL strings, and verify restart persistence. The Examples tab demonstrates this composition. Keep domain code in the receiving app rather than adding it to the shared starter.
+| `ProgressProvider` / `progressStore` | `src/features/geography/ProgressContext.tsx`, `progressStore.ts` | Serialized progress writes; read failure blocks mutation; save failure keeps the snapshot and offers retry |
 
 ## Extension decision
 
-Reuse the current primitive when its behavior matches. Extend it when at least two flows need the same generic behavior and tests can cover it. Keep app-specific widgets inside the app. Add new dependencies only after checking native compatibility and documenting why existing primitives are insufficient. Update `docs/component-ledger.md` for shared contract changes.
+Reuse an existing component when its behavior matches. Keep pure rules in feature modules with tests. Add new dependencies only after checking native compatibility and documenting why existing code is insufficient. Update `docs/component-ledger.md` when a contract changes.
 
 ## World Maps app components
 
 - `features/geography/EuropeMap`: shared interactive renderer and noninteractive
   Home preview; takes guess results, revealed IDs, label visibility and selection.
-- `features/geography/ModeSelector`: four icon-led mode cards, EN/PL, no round state.
+  Small countries are drawn as non-interactive markers and selected through
+  `selectionAlternatives` buttons.
+- `features/geography/ModeSelector`: four icon-led mode cards in `GAME_MODES`
+  order, localized through `gameCopy`, no round state.
 - `screens/GeographyGameScreen`: one game mode/round, compact prompt and answers.
-- `features/geography/DifficultySelector`: saved EN/PL Home level selection.
+- `features/geography/DifficultySelector`: saved Home level selection.
   `difficultyPack` supplies eligible quiz locations; `EuropeMap.selectableIds`
   restricts interactions while retaining geographic context.
 - `features/geography/learning`: per-country/mode attempt records, schema migration,
@@ -47,3 +33,8 @@ Reuse the current primitive when its behavior matches. Extend it when at least t
 - `EuropeMap.atlas` / `showBorders`: bundled relief registered to the shared viewBox.
 - `speechController`: serialized pronunciation with installed-voice matching,
   cancellation and bounded voice discovery. EN/PL/RU share `LANGUAGE_OPTIONS`.
+
+- `CountryInfoCard` / `CountryAtlasPortrait`: offline selected-country card with
+  bundled atlas crop, localized capital, region, coordinates and optional landmark.
+- `GAME_MODES` contains four public Home modes; `GameMode` also accepts legacy
+  capital mode IDs for stored progress. `modePackId` preserves all existing IDs.

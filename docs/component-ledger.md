@@ -30,7 +30,7 @@ For each future component, replace generic status with dated evidence and the de
 - `src/features/geography/CountryPath`: app-owned SVG path adapter. Web uses a DOM `onClick`; native uses `react-native-svg` `onPress`. No new dependencies. Regression test covers web event routing; browser smoke verified selection, repeat guesses, completion, restart, zoom/pan and tab navigation on 2026-10-24. Native runtime remains unverified.
 - `HotColdScreen` owns the top safe-area edge; visible tabs own the bottom edge.
 
-- Europe map views: bundled 1:50m country/context geometry and collision-filtered labels share the existing 864×570 coordinates. `mapLabels` exposes names only when explicitly enabled or already guessed. `CountryMarker` uses native SVG press events and DOM click events on web, matching `CountryPath`. No dependencies added. Web evidence and current native limitations are recorded in `docs/europe-map-assets.md`.
+- Europe map views: bundled 1:50m country/context geometry and collision-filtered labels share the existing 864×570 coordinates. `mapLabels` exposes names only when explicitly enabled or already guessed. (Historical: an interactive `CountryMarker` adapter existed here; markers are now non-interactive and small countries are selected via `selectionAlternatives`, so it was removed.) No dependencies added. Web evidence and current native limitations are recorded in `docs/europe-map-assets.md`.
 
 - POC shell: `HomeScreen` owns mode entry; `GeographyGameScreen` owns one mounted
   round. Game hides tabs and owns top/bottom insets; Home/Settings own only top.
@@ -75,3 +75,16 @@ For each future component, replace generic status with dated evidence and the de
 - `speechController`: serialized stop/speak queue, installed-voice matching, stale
   callback guards and recoverable unavailable state. Hook stops on blur, mute,
   language change and unmount. Physical audible speech remains a separate gate.
+
+- Gameplay internals: `startRoundFor` starts a round for an explicit adaptive/random
+  target and rejects IDs outside the active pack; `classifyGuess` is the pure
+  proximity result shared by `guess()` and map colors (zero-distance neighbours stay
+  non-correct). `modePackId` owns the stored IDs (`europe-countries` for Hot & Cold,
+  `europe-countries:<mode>` otherwise). Tabs are typed by `TabParamList`. Shell and gameplay
+  text, including tab labels, lives in `gameCopy`; `src/ui/i18n.ts` keeps only
+  language and speech-locale definitions.
+
+- Cleanup integration review: `gamePrompt` accepts resolved Find It clues and
+  Name It answer types, including legacy capital modes. ModeSelector retains the
+  current system-aware icon tints while using the four public `GAME_MODES` IDs.
+  Theme and richer Learn components from develop remain intact.

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { distanceKm, guess, proximity, startRound, type GeographyPack } from './engine';
+import { classifyGuess, distanceKm, guess, proximity, startRound, startRoundFor, type GeographyPack } from './engine';
 
 const pack: GeographyPack = {
   id: 'sample',
@@ -39,5 +39,32 @@ describe('geography engine', () => {
   });
   it('rejects empty packs', () => {
     expect(() => startRound({ ...pack, locations: [] })).toThrow();
+  });
+  it('starts a round for an explicit target in the active pack', () => {
+    expect(startRoundFor(pack, 'warsaw', 42)).toEqual({ packId: 'sample', targetId: 'warsaw', guesses: [], startedAt: 42 });
+    expect(() => startRoundFor(pack, 'berlin')).toThrow('Target is not in this map pack');
+    expect(() => startRoundFor({ ...pack, locations: [] }, 'krakow')).toThrow();
+    const smaller = { ...pack, locations: [pack.locations[0]!] };
+    expect(() => startRoundFor(smaller, 'warsaw')).toThrow();
+  });
+  it('classifies selections without starting or mutating a round', () => {
+    const zero = () => 0;
+    expect(classifyGuess(pack, 'krakow', 'krakow', zero)).toMatchObject({ result: 'correct', distanceKm: 0 });
+    // A neighbour at zero border distance is very close, never the target.
+    expect(classifyGuess(pack, 'krakow', 'warsaw', zero)).toMatchObject({ result: 'very-close', distanceKm: 0 });
+    expect(classifyGuess(pack, 'krakow', 'warsaw', () => 2000).result).toBe('very-far');
+    expect(() => classifyGuess(pack, 'krakow', 'berlin')).toThrow();
+    expect(() => classifyGuess(pack, 'berlin', 'krakow')).toThrow();
+  });
+  it('reports the same feedback from guess(), including repeated guesses', () => {
+    const round = startRoundFor(pack, 'krakow', 1);
+    const first = guess(pack, round, 'warsaw', distanceKm, 2);
+    expect(first.result).toBe(classifyGuess(pack, 'krakow', 'warsaw').result);
+    const again = guess(pack, first.round, 'warsaw', distanceKm, 3);
+    expect(again).toMatchObject({ repeated: true, result: first.result, round: first.round });
+    const solved = guess(pack, again.round, 'krakow', distanceKm, 4).round;
+    expect(solved).toMatchObject({ guesses: ['warsaw', 'krakow'], completedAt: 4 });
+    expect(guess(pack, solved, 'warsaw').round).toBe(solved);
+    expect(() => guess({ ...pack, id: 'other' }, solved, 'warsaw')).toThrow();
   });
 });

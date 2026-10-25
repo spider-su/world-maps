@@ -20,8 +20,9 @@ npx expo start --web --host lan --port 8081
 
 See [POC stages and evidence](docs/poc-roadmap.md),
 [map data and attribution](docs/europe-map-assets.md), and
-[game rules](docs/geography-game-draft.md). The original template documents remain
-as development references; game-specific source and the POC roadmap take priority.
+[game rules](docs/geography-game-draft.md). Unused template code (demo screens,
+generic adapters and the init script) has been removed; remaining template-era
+documents are labelled historical. Game source and the POC roadmap take priority.
 
 The app identity is `world-maps` / `com.spidersu.worldmaps`. Optional environment
 overrides are listed in `.env.example`; never reuse another app's signing or IDs.
@@ -85,3 +86,7 @@ The [delivery report](docs/p0-p1-delivery.md) records the focused feature PRs,
 combined branch, 73 source/setup tests, offline Android APK provenance and emulator
 evidence, including selection of all 47 countries. Physical-phone, audible speech
 and iOS validation remain separate pending gates.
+
+The shell and game prompts share `gameCopy` / `gamePrompt` for EN/PL/RU. Find It
+clues support country, capital and flag; Name It supports country or capital answers.
+Legacy capital mode storage IDs remain compatible with saved progress.

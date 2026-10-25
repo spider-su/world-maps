@@ -1,4 +1,4 @@
-/** Product-only geography colors; no changes to the shared template primitives. */
+/** World Maps light/dark geography colors and semantic surfaces. */
 export const worldMapsTheme = {
   brand: '#2563EB',
   brandDark: '#123E70',

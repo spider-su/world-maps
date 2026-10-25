@@ -1,4 +1,4 @@
 interface:
   display_name: "Android Emulator Smoke"
-  short_description: "Check Android starter UI on emulator"
+  short_description: "Check World Maps on Android emulator"
   default_prompt: "Run an Android emulator smoke test on the current checkout and report evidence and gaps."

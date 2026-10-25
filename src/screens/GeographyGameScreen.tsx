@@ -7,20 +7,20 @@ import { useLanguage } from '../ui/LanguageContext';
 import { themeForScheme, type WorldMapsPalette } from '../ui/worldMapsTheme';
 import { CountryInfoCard } from '../features/geography/CountryInfoCard';
 import { EuropeMap } from '../features/geography/EuropeMap';
-import { gameCopy } from '../features/geography/copy';
+import { gamePrompt, gameCopy } from '../features/geography/copy';
 import { CLUE_COLORS } from '../features/geography/mapColors';
 import { difficultyPack } from '../features/geography/difficulty';
 import { europePack } from '../features/geography/europe';
 import { europeBorderDistanceKm } from '../features/geography/borderDistance';
 import { selectionAlternatives } from '../features/geography/selection';
-import { guess, startRound, type GuessResult, type Round } from '../features/geography/engine';
+import { classifyGuess, guess, startRoundFor, type GuessResult, type Round } from '../features/geography/engine';
 import { recordSession, scoreRound, sessionFromRound, summary } from '../features/geography/progress';
 import { useProgress } from '../features/geography/ProgressContext';
 import { ProgressStatus } from '../features/geography/ProgressStatus';
 import { useCountrySpeech } from '../features/geography/useCountrySpeech';
 import { capitalName, countryName, countryFacts } from '../features/geography/countryFacts';
 import { practiceTarget, recordPractice } from '../features/geography/learning';
-import { canRevealNames, replayCountryId, answerChoices, nameItAnswer, type GameMode, type FindClue, type NameAnswer, findClueForRound } from '../features/geography/modes';
+import { canRevealNames, replayCountryId, answerChoices, modePackId, nameItAnswer, type GameMode, type FindClue, type NameAnswer, findClueForRound } from '../features/geography/modes';
 
 export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnswer = 'country' }: { mode: GameMode; onBack: () => void; findClue?: FindClue; nameAnswer?: NameAnswer }) {
   const { language } = useLanguage();
@@ -30,11 +30,9 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
   const { progress, status, update } = useProgress();
   const difficulty = progress.difficulty;
   const pack = useMemo(() => mode === 'learn' ? europePack : difficultyPack(difficulty), [mode, difficulty]);
-  const practiceId = mode === 'hot-cold' ? europePack.id : `${europePack.id}:${mode}`;
-  const newRound = (previousId?: string) => {
-    const id = practiceTarget(pack, progress.learning, practiceId, progress.practiceMode, previousId);
-    return startRound(pack, () => (pack.locations.findIndex(l => l.id === id) + 0.5) / pack.locations.length);
-  };
+  const practiceId = modePackId(europePack.id, mode);
+  const newRound = (previousId?: string) =>
+    startRoundFor(pack, practiceTarget(pack, progress.learning, practiceId, progress.practiceMode, previousId));
   const [showBorders, setShowBorders] = useState(true);
   const [showNames, setShowNames] = useState(false);
   const [round, setRound] = useState<Round>(() => newRound());
@@ -44,7 +42,7 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
   const [feedback, setFeedback] = useState<{ id: string; result: GuessResult } | null>(null);
   const progressLoaded = status !== 'loading' && status !== 'read-error';
   const soundEnabled = progress.voiceEnabled;
-  const stats = useMemo(() => summary(progress, mode === 'hot-cold' ? europePack.id : `${europePack.id}:${mode}`, difficulty), [progress, mode, difficulty]);
+  const stats = useMemo(() => summary(progress, practiceId, difficulty), [progress, practiceId, difficulty]);
   const completed = mode !== 'learn' && round.completedAt !== undefined;
   const target = europePack.locations.find(item => item.id === round.targetId)!;
   const choices = useMemo(() => mode === 'name-it' || mode === 'capital-name' ? answerChoices(pack, round.targetId) : [], [mode, round.targetId, pack]);
@@ -61,7 +59,7 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
   const completeRound = useCallback((nextRound: Round) => {
     if (nextRound.completedAt !== undefined && progressLoaded) {
       const session = sessionFromRound(nextRound, difficulty);
-      update(current => recordSession(current, { ...session, packId: mode === 'hot-cold' ? session.packId : `${session.packId}:${mode}` }));
+      update(current => recordSession(current, { ...session, packId: modePackId(session.packId, mode) }));
     }
   }, [progressLoaded, update, mode, difficulty]);
 
@@ -117,10 +115,7 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
       for (const id of round.guesses) results.set(id, id === round.targetId ? 'correct' : 'far');
       return results;
     }
-    for (const id of round.guesses) {
-      const picked = guess(pack, { ...round, guesses: [], completedAt: undefined }, id, distanceResolver);
-      results.set(id, picked.result);
-    }
+    for (const id of round.guesses) results.set(id, classifyGuess(pack, round.targetId, id, distanceResolver).result);
     return results;
   }, [round, mode, feedback, distanceResolver, pack]);
 
@@ -128,11 +123,7 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
   const canShowNames = canRevealNames(mode, completed);
   const replayId = replayCountryId(mode, target.id, feedback?.id);
   const modeStyle = theme.mode[mode];
-  const prompt = completed ? c.correct
-    : mode === 'find-it' ? clue === 'flag' ? c.flagPrompt : clue === 'capital' ? `${c.capitalFindPrompt} ${capitalName(target.id, language)}` : `${c.findPrompt} ${countryName(target.id, language)}`
-    : mode === 'capital-find' ? `${c.capitalFindPrompt} ${capitalName(target.id, language)}`
-    : mode === 'capital-name' ? `${c.capitalNamePrompt} ${countryName(target.id, language)}`
-    : mode === 'name-it' ? answerType === 'capital' ? `${c.capitalNamePrompt} ${countryName(target.id, language)}` : c.namePrompt : mode === 'learn' ? c.learnPrompt : c.hiddenPrompt;
+  const prompt = gamePrompt(language, mode, target.id, completed, clue, answerType);
   return <SafeAreaView edges={['top', 'bottom']} style={styles.screen}>
     <View style={styles.header}>
       <Pressable accessibilityRole="button" accessibilityLabel={c.back} onPress={onBack} style={styles.iconButton}><Ionicons name="arrow-back" size={22} color={theme.navy} /></Pressable>

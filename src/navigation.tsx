@@ -8,11 +8,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { getTabBarMetrics } from './platform/safeArea';
 import { useLanguage } from './ui/LanguageContext';
+import { gameCopy } from './features/geography/copy';
 
-const Tab = createBottomTabNavigator();
+export type TabParamList = { Home: undefined; Settings: undefined };
+const Tab = createBottomTabNavigator<TabParamList>();
 
 function Tabs() {
-  const { t } = useLanguage();
+  const { language } = useLanguage();
+  const c = gameCopy[language];
   const theme = themeForScheme(useColorScheme());
   const insets = useSafeAreaInsets();
   const tabBar = getTabBarMetrics(insets.bottom);
@@ -23,8 +26,8 @@ function Tabs() {
       tabBarInactiveTintColor: theme.muted,
       tabBarStyle: { ...tabBar, backgroundColor: theme.surface, borderTopColor: theme.border, height: tabBar.height, paddingTop: tabBar.paddingTop, paddingBottom: tabBar.paddingBottom },
     }}>
-      <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: t("home"), tabBarIcon: ({ color, size }) => <Ionicons name="earth-outline" color={color} size={size} /> }} />
-      <Tab.Screen name="Settings" component={SettingsScreen} options={{ tabBarLabel: t("settings"), tabBarIcon: ({ color, size }) => <Ionicons name="settings-outline" color={color} size={size} /> }} />
+      <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: c.home, tabBarIcon: ({ color, size }) => <Ionicons name="earth-outline" color={color} size={size} /> }} />
+      <Tab.Screen name="Settings" component={SettingsScreen} options={{ tabBarLabel: c.settings, tabBarIcon: ({ color, size }) => <Ionicons name="settings-outline" color={color} size={size} /> }} />
     </Tab.Navigator>
   );
 }

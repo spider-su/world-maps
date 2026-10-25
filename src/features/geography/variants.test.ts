@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { findClueForRound, publicMode, MODE_DEFINITIONS } from './modes';
+import { findClueForRound, publicMode, GAME_MODES } from './modes';
 import { europePack } from './europe';
 import { countryFacts } from './countryFacts';
 
@@ -11,7 +11,7 @@ describe('quiz variants', () => {
   it('keeps old progress identifiers but removes duplicate home cards', () => {
     expect(publicMode('capital-find')).toBe('find-it');
     expect(publicMode('capital-name')).toBe('name-it');
-    expect(MODE_DEFINITIONS.map(m => m.id)).toEqual(['hot-cold', 'find-it', 'name-it', 'learn']);
+    expect(GAME_MODES).toEqual(['hot-cold', 'find-it', 'name-it', 'learn']);
   });
   it('has an offline flag and capital for each selectable country', () => {
     for (const location of europePack.locations) {

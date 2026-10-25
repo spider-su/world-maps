@@ -18,6 +18,8 @@ export const worldMapsTheme = {
     'hot-cold': { foreground: '#DF3441', tint: '#FEE2E2', icon: 'thermometer-outline' },
     'find-it': { foreground: '#2563EB', tint: '#DBEAFE', icon: 'locate-outline' },
     'name-it': { foreground: '#D78B00', tint: '#FEF3C7', icon: 'list-outline' },
+    'capital-find': { foreground: '#7C3AED', tint: '#EDE9FE', icon: 'location-outline' },
+    'capital-name': { foreground: '#C2410C', tint: '#FFEDD5', icon: 'school-outline' },
     learn: { foreground: '#15803D', tint: '#DCFCE7', icon: 'book-outline' },
   },
 } as const;

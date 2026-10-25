@@ -48,3 +48,11 @@ For each future component, replace generic status with dated evidence and the de
 - Product Settings replaces biometric/demo flows with language, voice, recent-history
   summaries and bundled data license notices. EN/PL covers controls and country names;
   speech uses the matching language, cancels queued pronunciation on blur/unmount.
+
+- `DifficultySelector`: app-owned EN/PL Home radio buttons using the shared progress
+  store; blocks changes while loading or after failed reads. `difficultyPack`
+  filters quiz targets, guesses and Name It distractors by projected outline area.
+- `EuropeMap.selectableIds`: optional eligible country IDs; omitted for unrestricted
+  Learn/preview. Excluded outlines are muted and noninteractive; excluded markers
+  are hidden. Quiz score summaries accept a difficulty filter; legacy rounds count
+  as Difficult. See `docs/difficulty-testing.md` for current evidence.

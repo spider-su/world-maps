@@ -2,6 +2,9 @@ import type { Language } from '../../ui/i18n';
 
 const en = {
   tagline: 'Explore · Learn · Play', chooseMode: 'Choose how to explore', europe: 'Europe',
+  difficulty: 'Difficulty', levels: { easy: 'Easy', normal: 'Normal', difficult: 'Difficult' },
+  levelHints: { easy: '7 largest map outlines', normal: '34 large and medium countries', difficult: 'All 47 countries' },
+  learnAll: 'Learn always includes all 47 countries.',
   offline: '47 countries · Offline map', back: 'Back to Home', settings: 'Settings',
   modes: {
     'hot-cold': { title: 'Hot & Cold', description: 'Find a hidden country using distance clues.' },
@@ -29,6 +32,9 @@ const en = {
 type Copy = typeof en;
 const pl: Copy = {
   tagline: 'Odkrywaj · Ucz się · Graj', chooseMode: 'Wybierz sposób odkrywania', europe: 'Europa',
+  difficulty: 'Poziom trudności', levels: { easy: 'Łatwy', normal: 'Normalny', difficult: 'Trudny' },
+  levelHints: { easy: '7 największych obszarów na mapie', normal: '34 duże i średnie państwa', difficult: 'Wszystkie 47 państw' },
+  learnAll: 'Nauka zawsze obejmuje wszystkie 47 państw.',
   offline: '47 państw · Mapa offline', back: 'Wróć do strony głównej', settings: 'Ustawienia',
   modes: {
     'hot-cold': { title: 'Ciepło–zimno', description: 'Odkryj ukryte państwo dzięki wskazówkom o odległości.' },

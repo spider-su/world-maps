@@ -16,11 +16,12 @@ describe('serialized progress persistence', () => {
     } });
     await store.load();
     store.update(progress => recordSession(progress, session));
-    store.update(progress => ({ ...progress, voiceEnabled: false }));
+    store.update(progress => ({ ...progress, voiceEnabled: false, difficulty: 'easy' }));
     await store.flush();
     const latest = JSON.parse(saved.at(-1)!);
     expect(latest.sessions).toEqual([session]);
     expect(latest.voiceEnabled).toBe(false);
+    expect(latest.difficulty).toBe('easy');
     expect(store.getSnapshot().status).toBe('ready');
   });
   it('blocks writes after a failed read and retries the read before mutations', async () => {

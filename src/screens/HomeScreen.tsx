@@ -5,6 +5,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { ModeSelector } from '../features/geography/ModeSelector';
 import { EuropeMap } from '../features/geography/EuropeMap';
+import { useProgress } from '../features/geography/ProgressContext';
+import { DifficultySelector } from '../features/geography/DifficultySelector';
 import { ProgressStatus } from '../features/geography/ProgressStatus';
 import { gameCopy } from '../features/geography/copy';
 import type { GameMode } from '../features/geography/modes';
@@ -15,6 +17,7 @@ import { GeographyGameScreen } from './GeographyGameScreen';
 
 const noResults = new Map();
 export function HomeScreen() {
+  const { progress } = useProgress();
   const [mode, setMode] = useState<GameMode | null>(null);
   const { language } = useLanguage();
   const c = gameCopy[language];
@@ -28,7 +31,7 @@ export function HomeScreen() {
     const listener = BackHandler.addEventListener('hardwareBackPress', () => { setMode(null); return true; });
     return () => listener.remove();
   }, [mode]));
-  if (mode) return <GeographyGameScreen key={mode} mode={mode} onBack={() => setMode(null)} />;
+  if (mode) return <GeographyGameScreen key={`${mode}:${progress.difficulty}`} mode={mode} onBack={() => setMode(null)} />;
   return <SafeAreaView edges={['top']} style={styles.screen}>
     <ScrollView contentContainerStyle={styles.body}>
       <View style={styles.top}>
@@ -42,6 +45,7 @@ export function HomeScreen() {
         <View style={styles.heroCopy}><Ionicons name="earth-outline" size={21} color={theme.brand} /><Text style={styles.region}>{c.europe}</Text><Text style={styles.offline}>{c.offline}</Text></View>
       </View>
       <ProgressStatus language={language} />
+      <DifficultySelector language={language} />
       <ModeSelector onChange={setMode} language={language} />
       <Text style={styles.source}>{c.mapSource}</Text>
     </ScrollView>

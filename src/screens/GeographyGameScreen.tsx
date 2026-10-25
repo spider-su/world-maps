@@ -11,7 +11,7 @@ import { CLUE_COLORS } from '../features/geography/mapColors';
 import { difficultyPack } from '../features/geography/difficulty';
 import { europePack } from '../features/geography/europe';
 import { europeBorderDistanceKm } from '../features/geography/borderDistance';
-import { microstates } from '../features/geography/microstates';
+import { selectionAlternatives } from '../features/geography/selection';
 import { guess, startRound, type GuessResult, type Round } from '../features/geography/engine';
 import { recordSession, scoreRound, sessionFromRound, summary } from '../features/geography/progress';
 import { useProgress } from '../features/geography/ProgressContext';
@@ -131,7 +131,7 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
         selectableIds={mode === 'learn' ? undefined : pack.locations.map(location => location.id)} onSelect={selectCountry} enabled={progressLoaded && mode !== 'name-it'} language={language} targetId={mode === 'name-it' && !completed ? target.id : undefined} />
       {mode !== 'name-it' && (mode === 'learn' || difficulty === 'difficult') && <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.markers}>
         <Text style={styles.markerLabel}>{c.smallCountries}</Text>
-        {microstates.map((country, index) => <Pressable key={country.id} accessibilityRole="button"
+        {selectionAlternatives.map((country, index) => <Pressable key={country.id} accessibilityRole="button"
           accessibilityLabel={showNames || completedIds.includes(country.id) ? countryName(country.id, language) : `${c.marker} ${index + 1}`}
           disabled={!progressLoaded} onPress={() => selectCountry(country.id)} style={styles.marker}>
           <Text style={styles.markerText}>#{index + 1}{showNames || completedIds.includes(country.id) ? ` ${countryName(country.id, language)}` : ''}</Text>
@@ -140,7 +140,7 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
       {mode === 'name-it' && <View style={styles.options}>
         {choices.map(option => <Pressable key={option.id} accessibilityRole="button" accessibilityState={{ disabled: completed || round.guesses.includes(option.id) || !progressLoaded }}
           disabled={completed || round.guesses.includes(option.id) || !progressLoaded} onPress={() => selectAnswer(option.id)}
-          style={[styles.option, round.guesses.includes(option.id) && styles.optionUsed]}><Text style={styles.optionText}>{countryName(option.id, language)}</Text></Pressable>)}
+          style={[styles.option, round.guesses.includes(option.id) && (option.id === round.targetId ? styles.optionCorrect : styles.optionWrong)]}><Text style={styles.optionText}>{countryName(option.id, language)}</Text></Pressable>)}
       </View>}
       {mode === 'learn' && feedback ? <CountryInfoCard id={feedback.id} language={language} onSpeak={() => speak(countryName(feedback.id, language))} /> : <View style={styles.feedback} accessibilityLiveRegion="polite">
         <View style={styles.feedbackCopy}>
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
   marker: { minWidth: 40, minHeight: 44, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 8, backgroundColor: '#FFF', borderRadius: 10, borderWidth: 1, borderColor: '#D5E2EC' },
   markerText: { fontSize: 11, color: theme.brandDark, fontWeight: '700' },
   options: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 }, option: { flexGrow: 1, flexBasis: '46%', minHeight: 48, padding: 12, justifyContent: 'center', backgroundColor: '#FFF', borderRadius: 12, borderWidth: 1, borderColor: '#A6C5E5' },
-  optionUsed: { opacity: 0.45 }, optionText: { color: theme.navy, fontWeight: '600', fontSize: 14 },
+  optionWrong: { backgroundColor: '#FEE2E2', borderColor: '#DC2626' }, optionCorrect: { backgroundColor: '#DCFCE7', borderColor: '#15803D' }, optionText: { color: theme.navy, fontWeight: '600', fontSize: 14 },
   feedback: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF', padding: 12, borderRadius: 16, gap: 8 }, feedbackCopy: { flex: 1, gap: 4 },
   feedbackTitle: { color: theme.navy, fontSize: 17, fontWeight: '800' }, feedbackText: { color: theme.muted, fontSize: 12, lineHeight: 18 },
   legend: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8 }, legendItem: { flexDirection: 'row', alignItems: 'center', gap: 3 }, swatch: { width: 9, height: 9, borderRadius: 5 }, legendText: { color: theme.muted, fontSize: 10 },

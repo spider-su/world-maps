@@ -8,7 +8,7 @@ describe('web country paths', () => {
     const onSelect = vi.fn();
     const element = CountryPath({ ...props, onSelect });
     expect(element.type).toBe('path');
-    expect(element.props).toMatchObject({ ...props, strokeLinejoin: 'round', onClick: onSelect, role: 'button', tabIndex: 0 });
+    expect(element.props).toMatchObject({ ...props, strokeLinejoin: 'round', fillRule: 'evenodd', onClick: onSelect, role: 'button', tabIndex: 0 });
     expect(element.props).not.toHaveProperty('onPress');
     expect(element.props).not.toHaveProperty('onResponderGrant');
     element.props.onClick();

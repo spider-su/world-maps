@@ -56,3 +56,8 @@ For each future component, replace generic status with dated evidence and the de
   Learn/preview. Excluded outlines are muted and noninteractive; excluded markers
   are hidden. Quiz score summaries accept a difficulty filter; legacy rounds count
   as Difficult. See `docs/difficulty-testing.md` for current evidence.
+
+- P0 map stabilization: even-odd multipart paths; `selectionAlternatives` covers
+  marker-only countries and outlines below 700 map-area units. `createSelectionGuard`
+  suppresses guesses during/just after movement. Distances are an offline table
+  generated from shared geometry; see `docs/p0-geography-gameplay.md`.

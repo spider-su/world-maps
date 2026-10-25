@@ -1,4 +1,4 @@
-# Mobile template Codex workflows
+# World Maps Codex workflows
 
 Reusable workflow manifests are stored in `.codex/skills/`.
 

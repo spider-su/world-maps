@@ -18,13 +18,9 @@
 
 Report: goal and scope; files/components reused vs added; tests and exact commands/results; screenshots or emulator evidence; migration/config changes; known limitations; any remaining work. Open a focused PR against the agreed branch; do not merge without human approval. Keep CI green before marking READY.
 
-## Prompt template for a new app
-
-> Build [app goal] from this starter. First inspect AGENTS.md, docs/architecture.md, docs/component-catalog.md and docs/project-setup.md. Preserve the existing navigation, safe-area and theme contracts. Replace demo screens only as needed. Implement [feature list] with reusable primitives, local-first persistence where appropriate, EN/PL text, unit tests, and Android/iOS simulator evidence when available. Keep third-party services opt-in. Run quality checks, document unverified scenarios, and create a reviewable PR; do not merge.
-
 ## Prompt template for a feature
 
-> Implement [user story] in [screen/area]. Inspect existing primitives and storage adapters before adding dependencies. Acceptance criteria: [observable behaviors], [error/empty/loading states], [restart behavior], [EN/PL and accessibility], [tests]. Update documentation only for changed contracts. Run npm run ci and relevant simulator skill; report evidence and open a PR.
+> Implement [user story] in [screen/area]. Inspect existing feature modules, progress storage and copy before adding dependencies. Acceptance criteria: [observable behaviors], [error/empty/loading states], [restart and update-over-install behavior], [EN/PL/RU and accessibility], [tests]. Update documentation only for changed contracts. Run npm run ci and relevant simulator skill; report evidence and open a PR.
 
 ## Prompt template for review
 

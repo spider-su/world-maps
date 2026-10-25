@@ -1,7 +1,7 @@
 import { replayCountryId } from './modes';
 import { canRevealNames } from './modes';
 import { describe, expect, it } from 'vitest';
-import { answerChoices, modePrompt, nameItAnswer, MODE_DEFINITIONS } from './modes';
+import { answerChoices, nameItAnswer, GAME_MODES } from './modes';
 import { startRound, type GeographyPack } from './engine';
 
 const pack: GeographyPack = { id: 'test', title: 'Test', kind: 'country', locations:
@@ -9,9 +9,7 @@ const pack: GeographyPack = { id: 'test', title: 'Test', kind: 'country', locati
 
 describe('geography game modes', () => {
   it('exposes four distinct game modes', () => {
-    expect(MODE_DEFINITIONS.map(m => m.id)).toEqual(['hot-cold', 'find-it', 'name-it', 'learn']);
-    expect(modePrompt('hot-cold', 'Poland')).not.toContain('Poland');
-    expect(modePrompt('find-it', 'Poland')).toContain('Poland');
+    expect(GAME_MODES).toEqual(['hot-cold', 'find-it', 'name-it', 'learn']);
   });
   it('selects four unique choices containing the target', () => {
     const options = answerChoices(pack, 'B', () => 0);

@@ -1,5 +1,4 @@
 import type { GeographyLocation } from './engine';
-import { distanceKm } from './engine';
 
 /** Marker positions in the same 864x570 draft map coordinates as Europe polygons.
  * Microstates are marker-only until accurate polygons are available.
@@ -12,7 +11,3 @@ export const microstates: (GeographyLocation & { x: number; y: number })[] = [
   { id: 'VAT', name: 'Vatican City', latitude: 41.9029, longitude: 12.4534, x: 461.4, y: 451.5 },
   { id: 'MLT', name: 'Malta', latitude: 35.8992, longitude: 14.5141, x: 486.2, y: 541.5 },
 ];
-
-export function microstateDistance(a: GeographyLocation, b: GeographyLocation): number {
-  return distanceKm(a, b);
-}

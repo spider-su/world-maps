@@ -1,4 +1,0 @@
-export interface ExampleItem { id: string; title: string }
-export function parseItems(value: unknown): ExampleItem[] { if (!Array.isArray(value)) return []; return value.filter((v): v is ExampleItem => typeof v === 'object' && v !== null && typeof v.id === 'string' && typeof v.title === 'string' && !!v.title.trim()); }
-export function saveItem(items: ExampleItem[], title: string, id?: string): ExampleItem[] { const clean = title.trim(); if (!clean) throw new Error('Title is required'); if (id) return items.map(item => item.id === id ? { ...item, title: clean } : item); return [...items, { id: String(Date.now()) + Math.random().toString(36).slice(2), title: clean }]; }
-export function deleteItem(items: ExampleItem[], id: string): ExampleItem[] { return items.filter(item => item.id !== id); }

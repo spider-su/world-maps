@@ -1,3 +1,4 @@
+import { microstates } from './microstates';
 import { europeShapes } from './europe';
 import type { GeographyLocation } from './engine';
 
@@ -28,6 +29,12 @@ function segments(path: string): Segment[] {
 }
 
 const byId = new Map(europeShapes.map(shape => [shape.id, segments(shape.path)]));
+// Marker countries use their position against polygon edges, not the other
+// country's reference center (which makes Malta/Italy misleadingly distant).
+for (const state of microstates) {
+  const point = { x: state.x * X_KM_PER_MAP_UNIT, y: state.y * Y_KM_PER_MAP_UNIT };
+  byId.set(state.id, [[point, point]]);
+}
 const cache = new Map<string, number>();
 
 function dot(a: Point, b: Point): number { return a.x * b.x + a.y * b.y; }

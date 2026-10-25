@@ -1,25 +1,29 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { worldMapsTheme as theme } from '../../ui/worldMapsTheme';
+import { gameCopy } from './copy';
+import type { Language } from '../../ui/i18n';
 import { MODE_DEFINITIONS, type GameMode } from './modes';
 
 interface Props {
-  value: GameMode;
+  value?: GameMode;
+  language?: Language;
   onChange: (mode: GameMode) => void;
 }
 
 /** Reusable country/city game-mode cards; no game state is stored here. */
-export function ModeSelector({ value, onChange }: Props) {
+export function ModeSelector({ value, onChange, language = 'en' }: Props) {
+  const c = gameCopy[language];
   return (
     <View style={styles.wrapper}>
-      <Text style={styles.header}>CHOOSE HOW TO EXPLORE</Text>
+      <Text style={styles.header}>{c.chooseMode.toUpperCase()}</Text>
       <View style={styles.container}>
         {MODE_DEFINITIONS.map(item => {
           const colors = theme.mode[item.id];
           const selected = item.id === value;
           return (
             <Pressable key={item.id} accessibilityRole="button"
-              accessibilityLabel={`${item.title}. ${item.description}`}
+              accessibilityLabel={`${c.modes[item.id].title}. ${c.modes[item.id].description}`}
               accessibilityState={{ selected }}
               style={[styles.option, selected && styles.selected]}
               onPress={() => onChange(item.id)}>
@@ -27,8 +31,8 @@ export function ModeSelector({ value, onChange }: Props) {
                 <Ionicons name={colors.icon} size={23} color={colors.foreground} />
               </View>
               <View style={styles.copy}>
-                <Text style={[styles.label, selected && styles.selectedLabel]}>{item.title}</Text>
-                <Text style={[styles.description, selected && styles.selectedDescription]} numberOfLines={2}>{item.description}</Text>
+                <Text style={[styles.label, selected && styles.selectedLabel]}>{c.modes[item.id].title}</Text>
+                <Text style={[styles.description, selected && styles.selectedDescription]} numberOfLines={2}>{c.modes[item.id].description}</Text>
               </View>
               <Ionicons name="chevron-forward" size={16} color={selected ? theme.surface : theme.muted} />
             </Pressable>

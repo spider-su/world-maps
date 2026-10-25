@@ -1,3 +1,4 @@
+import { canRevealNames } from './modes';
 import { describe, expect, it } from 'vitest';
 import { answerChoices, modePrompt, nameItAnswer, MODE_DEFINITIONS } from './modes';
 import { startRound, type GeographyPack } from './engine';
@@ -33,4 +34,12 @@ describe('geography game modes', () => {
     expect(() => answerChoices(pack, 'X')).toThrow();
     expect(() => answerChoices({ ...pack, locations: pack.locations.slice(0, 3) }, 'A')).toThrow();
   });
+});
+
+it('keeps names hidden in every active quiz and permits exploration after completion', () => {
+  for (const mode of ['hot-cold', 'find-it', 'name-it'] as const) {
+    expect(canRevealNames(mode, false)).toBe(false);
+    expect(canRevealNames(mode, true)).toBe(true);
+  }
+  expect(canRevealNames('learn', false)).toBe(true);
 });

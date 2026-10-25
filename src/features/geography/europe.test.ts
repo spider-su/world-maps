@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { europePack, europeShapes } from './europe';
+import { europePack, europeShapes, europeContextShapes } from './europe';
 import { microstates } from './microstates';
 import { guess, startRound } from './engine';
 
@@ -11,6 +11,24 @@ describe('Europe Hot & Cold map pack', () => {
     expect(new Set(europePack.locations.map(location => location.id)).size).toBe(europePack.locations.length);
     expect(microstates).toHaveLength(6);
     expect(europeShapes.every(shape => /^M\d/.test(shape.path))).toBe(true);
+  });
+  it('keeps islands and geographic context while including missing countries', () => {
+    const italy = europeShapes.find(shape => shape.id === 'ITA')!;
+    expect(italy.path.split('M').length).toBeGreaterThan(3);
+    expect(europeShapes.some(shape => shape.id === 'LUX')).toBe(true);
+    expect(europeShapes.some(shape => shape.id === 'CYP')).toBe(true);
+    expect(europeContextShapes.some(shape => shape.id === 'DZA')).toBe(true);
+    expect(europePack.locations.some(location => location.id === 'DZA')).toBe(false);
+  });
+  it('keeps generated coordinates inside the shared map viewport', () => {
+    for (const shape of [...europeShapes, ...europeContextShapes]) {
+      const coordinates = shape.path.match(/-?\d+(?:\.\d+)?/g)!.map(Number);
+      expect(coordinates.length % 2).toBe(0);
+      coordinates.forEach((coordinate, index) => {
+        expect(coordinate).toBeGreaterThanOrEqual(0);
+        expect(coordinate).toBeLessThanOrEqual(index % 2 === 0 ? 864 : 570);
+      });
+    }
   });
   it('allows the target to stay hidden until the correct guess', () => {
     const initial = startRound(europePack, () => 0, 1);

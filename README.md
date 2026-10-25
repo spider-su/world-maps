@@ -1,30 +1,47 @@
 # World Maps
 
-Offline-first geography learning game built with Expo and React Native, bootstrapped from [spider-su/mobile_template](https://github.com/spider-su/mobile_template).
+Offline Europe geography learning game built with Expo / React Native from
+[mobile_template](https://github.com/spider-su/mobile_template).
 
-## Current status
+Four modes share one bundled vector map with 47 selectable locations (41 polygons
+and six small-country markers): Hot & Cold, Find It, Name It and Learn. Completed
+quiz scores and voice preference are stored locally. No API or account required.
 
-**Europe Hot & Cold playable draft.** The Play tab renders simplified Europe country outlines and lets users discover a hidden country through distance-colored guesses and spoken country names. See [game design and remaining work](docs/geography-game-draft.md).
-
-The current milestone implements **Hot & Cold** guessing: a hidden country, approximate border proximity colored on the map, names revealed on selection, and text-to-speech pronunciation. Small microstates, accurate high-resolution borders, gesture zoom/pan, and persistent progress are still future work. Next modes: Find It, Name It and Learn. Future map packs: South America countries and Poland cities.
-
-## Local checks
+Quiz map names stay hidden until guessed/completed. Learn supports freely shown
+labels. Pan/zoom, small-country controls and pronunciation are available. Distance
+clues approximate border proximity; they are not authoritative measurements.
 
 ```sh
 npm ci
 npm run ci
 npx expo-doctor
-npm start
+npx expo start --web --host lan --port 8081
 ```
 
-## App identity
+See [POC stages and evidence](docs/poc-roadmap.md),
+[map data and attribution](docs/europe-map-assets.md), and
+[game rules](docs/geography-game-draft.md). The original template documents remain
+as development references; game-specific source and the POC roadmap take priority.
 
-The default slug and identifiers are `world-maps` and `com.spidersu.worldmaps`. Copy `.env.example` to `.env` only if overrides are needed. Do not reuse another application's EAS project or signing credentials.
+The app identity is `world-maps` / `com.spidersu.worldmaps`. Optional environment
+overrides are listed in `.env.example`; never reuse another app's signing or IDs.
 
-## Upstream template
+Web SVG country paths and markers use DOM click events; native uses SVG press
+handlers. Preserve the `.web.tsx` adapters to avoid native responder errors on DOM
+nodes. CI/source checks do not establish native or store readiness.
 
-For future starter infrastructure changes, compare the [upstream template](https://github.com/spider-su/mobile_template) and port only relevant updates. The template and this game are separate projects; this repository owns gameplay and app-specific code.
+## Standalone POC preview
 
-## Development guidance
+Use JDK 17 / Android SDK, then `npm run build:android:preview`. The generated
+`artifacts/world-maps-preview.apk` embeds JavaScript and uses development signing.
+It does not require Metro. The local verified preview is arm64-v8a; CI defaults to
+arm64-v8a + x86_64. This is not a store build.
 
-See [AGENTS.md](AGENTS.md), [architecture reference](docs/architecture.md), and [draft game plan](docs/geography-game-draft.md). The original template's reusable reference documents remain available under `docs/`.
+2026-10-25 validation: 53 tests, Expo Doctor 21/21, Android API 35 emulator and
+production web smoke pass. Physical Android, audible speech and iOS remain pending.
+See [exact build/device evidence and limitations](docs/poc-testing.md).
+
+Completed scores and voice/language preferences survive relaunch; unfinished rounds
+are intentionally not restored. Statistics describe the most recent 100 completed
+rounds. One light theme is supported in this POC. Learning data is bundled and its
+licenses are available in Settings and [data attribution](docs/country-data.md).

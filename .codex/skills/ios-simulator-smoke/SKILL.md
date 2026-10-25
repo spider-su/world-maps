@@ -1,6 +1,6 @@
 ---
 name: ios-simulator-smoke
-description: Run a reproducible iOS Simulator smoke test for World Maps on macOS with Xcode, validating navigation, safe areas, theme and local persistence. Use when an iOS Simulator is available.
+description: Run a reproducible iOS Simulator smoke test for the Expo React Native template on macOS with Xcode, validating navigation, safe areas, theme and local persistence. Use when an iOS Simulator is available.
 ---
 
 # iOS Simulator smoke test
@@ -9,7 +9,7 @@ description: Run a reproducible iOS Simulator smoke test for World Maps on macOS
 1. Require macOS, Xcode and Xcode command line tools. Check `xcodebuild -version`, `xcrun simctl list devices available` and `xcrun simctl list runtimes`. On Linux/Windows report **BLOCKED: macOS/Xcode required**; do not claim iOS verification.
 2. Record git branch, commit, working-tree status, Xcode version, iOS runtime, simulator model and UDID. Preserve uncommitted work.
 3. Choose an available **simulator** UDID explicitly. Confirm it appears in `xcrun simctl list devices available` before any boot/install/reset action. Never erase, reset or install to a physical iPhone. Never use personal signing identities or credentials.
-4. Check the current app identity from `app.config.ts` and local configuration. Use the World Maps bundle identifier; do not reuse another app's IDs.
+4. Check the current app identity from `app.config.ts` and local configuration. Use a template-only bundle identifier; do not reuse downstream app IDs.
 
 ## Build and launch
 5. Run `npm ci`, `npm run ci`, and `npx expo-doctor` and record results. Fix blockers before claiming success.
@@ -27,4 +27,4 @@ description: Run a reproducible iOS Simulator smoke test for World Maps on macOS
 ## Evidence and cleanup
 14. Capture screenshots using `xcrun simctl io <UDID> screenshot <path>`; keep paths and test notes in a dated, ignored or external evidence directory. Record each scenario as PASS / FAIL / SKIPPED / BLOCKED with simulator OS, UDID, build commit and command.
 15. Restore appearance/accessibility settings you changed. Stop only the simulator you started, if appropriate. Do not erase user data unless explicitly authorized.
-16. Report that iOS Simulator evidence does **not** establish real-iPhone, TestFlight, signing, App Store or release-build readiness. Record product-specific regressions in the PR.
+16. Report that iOS Simulator evidence does **not** establish real-iPhone, TestFlight, signing, App Store or release-build readiness. Downstream apps must add their own fixtures and product-specific regression checks.

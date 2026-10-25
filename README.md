@@ -72,3 +72,9 @@ without being reset; misses from unfinished rounds are retained. See
 Home/Learn use bundled Natural Earth shaded relief, registered to the same SVG
 country geometry used for taps. Learn offers a border toggle; quizzes keep the
 clean political map. [Source, license and regeneration](docs/atlas-data.md).
+
+### Languages and pronunciation
+
+Choose English, Polish or Russian in Settings. All country names/capitals and game
+prompts update without changing scores. Pronunciation uses installed device voices;
+missing voices produce an inline message. See [speech behavior](docs/languages-and-speech.md).

@@ -70,3 +70,8 @@ For each future component, replace generic status with dated evidence and the de
 - `EuropeMap.atlas` / `showBorders`: optional offline relief appearance, sharing
   the existing SVG viewBox and hit geometry; selected terrain is translucent blue.
   Raster registration/asset checksums are tested. See docs/atlas-data.md.
+
+- `LANGUAGE_OPTIONS`, `SPEECH_LOCALES`: shared EN/PL/RU language/voice locale contract.
+- `speechController`: serialized stop/speak queue, installed-voice matching, stale
+  callback guards and recoverable unavailable state. Hook stops on blur, mute,
+  language change and unmount. Physical audible speech remains a separate gate.

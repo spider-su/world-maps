@@ -1,4 +1,11 @@
-export type Language = 'en' | 'pl';
+export const LANGUAGE_OPTIONS = [{ id: 'en', label: 'English' }, { id: 'pl', label: 'Polski' }, { id: 'ru', label: 'Русский' }] as const;
+export type Language = typeof LANGUAGE_OPTIONS[number]['id'];
+export const SPEECH_LOCALES: Record<Language, string> = { en: 'en-US', pl: 'pl-PL', ru: 'ru-RU' };
+export function isLanguage(value: unknown): value is Language { return LANGUAGE_OPTIONS.some(option => option.id === value); }
+export function languageFromLocale(locale: string): Language {
+  const prefix = locale.toLowerCase().split(/[-_]/)[0];
+  return isLanguage(prefix) ? prefix : 'en';
+}
 export const messages = {
   "en": {
     "settings": "Settings",
@@ -50,7 +57,8 @@ export const messages = {
     "invalidEmail": "Enter a valid email",
     "positiveAmount": "Enter a positive number",
     "maxAmount": "Maximum is 1,000,000",
-    "biometricInfo": "Verification uses the device prompt. No credentials are stored by this demo."
+    "biometricInfo": "Verification uses the device prompt. No credentials are stored by this demo.",
+    "russian": "Русский"
   },
   "pl": {
     "settings": "Ustawienia",
@@ -102,7 +110,61 @@ export const messages = {
     "invalidEmail": "Wpisz poprawny adres e-mail",
     "positiveAmount": "Wpisz dodatnią liczbę",
     "maxAmount": "Maksymalna wartość to 1 000 000",
-    "biometricInfo": "Weryfikacja korzysta z zabezpieczeń urządzenia. Demo nie zapisuje danych logowania."
+    "biometricInfo": "Weryfikacja korzysta z zabezpieczeń urządzenia. Demo nie zapisuje danych logowania.",
+    "russian": "Русский"
+  },
+  "ru": {
+    "settings": "Настройки",
+    "about": "О приложении",
+    "language": "Язык",
+    "english": "English",
+    "polish": "Polski",
+    "russian": "Русский",
+    "biometrics": "Проверка биометрии",
+    "biometricUnavailable": "Биометрия недоступна на этом устройстве.",
+    "biometricSuccess": "Личность подтверждена.",
+    "biometricFailed": "Проверка отменена или не выполнена.",
+    "check": "Проверить биометрию",
+    "aboutText": "Примеры мобильных компонентов.",
+    "privacy": "Это приложение не собирает и не отправляет личные данные.",
+    "home": "Главная",
+    "welcome": "Добро пожаловать! Изучите компоненты ниже.",
+    "intro": "Простое приложение без аккаунта и сервера.",
+    "actions": "Кнопки и сообщения",
+    "showMessage": "Показать сообщение",
+    "openConfirm": "Открыть подтверждение",
+    "showAlert": "Показать уведомление",
+    "disabled": "Недоступное действие",
+    "loadingStates": "Загрузка и состояния",
+    "stopSpinner": "Остановить индикатор",
+    "showSpinner": "Показать индикатор",
+    "loadingExample": "Пример загрузки",
+    "ready": "Готово",
+    "form": "Форма с проверкой",
+    "name": "Имя",
+    "email": "Электронная почта",
+    "amount": "Сумма",
+    "preference": "Пример настройки",
+    "validate": "Проверить форму",
+    "clear": "Очистить форму",
+    "notifications": "Уведомления",
+    "notificationsInfo": "Уведомления в приложении доступны выше. Системные уведомления требуют отдельного подключения и разрешений.",
+    "confirmTitle": "Подтвердить действие?",
+    "confirmed": "Подтверждено.",
+    "cancel": "Отмена",
+    "confirm": "Подтвердить",
+    "correctFields": "Исправьте выделенные поля.",
+    "validated": "Проверка пройдена (пример, данные не отправлены).",
+    "cleared": "Форма очищена.",
+    "actionDone": "Действие выполнено.",
+    "alertTitle": "Пример уведомления",
+    "alertMessage": "Это локальное уведомление.",
+    "requiredName": "Укажите имя",
+    "shortName": "Введите минимум 2 символа",
+    "invalidEmail": "Введите корректный адрес почты",
+    "positiveAmount": "Введите положительное число",
+    "maxAmount": "Максимум 1 000 000",
+    "biometricInfo": "Проверка использует системное окно. Учётные данные не сохраняются."
   }
 } as const;
 export type TranslationKey = keyof typeof messages.en;

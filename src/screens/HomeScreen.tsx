@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { ModeSelector } from '../features/geography/ModeSelector';
 import { EuropeMap } from '../features/geography/EuropeMap';
+import { ProgressStatus } from '../features/geography/ProgressStatus';
 import { gameCopy } from '../features/geography/copy';
 import type { GameMode } from '../features/geography/modes';
 import { useLanguage } from '../ui/LanguageContext';
@@ -40,6 +41,7 @@ export function HomeScreen() {
         <EuropeMap results={noResults} revealedIds={[]} showNames={false} onSelect={() => undefined} language={language} preview />
         <View style={styles.heroCopy}><Ionicons name="earth-outline" size={21} color={theme.brand} /><Text style={styles.region}>{c.europe}</Text><Text style={styles.offline}>{c.offline}</Text></View>
       </View>
+      <ProgressStatus language={language} />
       <ModeSelector onChange={setMode} language={language} />
       <Text style={styles.source}>{c.mapSource}</Text>
     </ScrollView>

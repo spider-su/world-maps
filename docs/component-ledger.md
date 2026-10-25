@@ -41,3 +41,10 @@ For each future component, replace generic status with dated evidence and the de
 - `CountryInfoCard`: app-owned offline flag/name/capital/pronunciation card, EN/PL.
   All 47 map IDs covered by a pinned derived country dataset and SVG flag artwork;
   attribution and full licenses in `docs/country-data.md` and `docs/licenses/`.
+
+- `ProgressProvider` uses one feature-owned serialized store for Home/game/Settings.
+  Failed reads block mutations; failed saves retain the latest in-memory snapshot
+  and expose retry. Tests cover interleaved updates, read failure and save retry.
+- Product Settings replaces biometric/demo flows with language, voice, recent-history
+  summaries and bundled data license notices. EN/PL covers controls and country names;
+  speech uses the matching language, cancels queued pronunciation on blur/unmount.

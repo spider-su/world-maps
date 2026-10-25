@@ -10,7 +10,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   version: process.env.APP_VERSION ?? '1.0.0',
   orientation: 'portrait',
   icon: './assets/icon.png',
-  userInterfaceStyle: 'automatic',
+  userInterfaceStyle: 'light',
   ios: {
     ...config.ios,
     supportsTablet: false,
@@ -20,7 +20,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ...config.android,
     package: process.env.ANDROID_PACKAGE ?? 'com.spidersu.worldmaps'
   },
-  plugins: ['expo-system-ui', ['expo-local-authentication', { faceIDPermission: 'Allow this app to verify your identity using Face ID.' }]],
+  plugins: ['expo-system-ui'],
   extra: {
     ...config.extra,
     ...(process.env.EAS_PROJECT_ID

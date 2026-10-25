@@ -11,6 +11,7 @@ import { CountryMarker } from './CountryMarker';
 import { mapLabels } from './mapLabels';
 import { frame, INITIAL_VIEWPORT, normalize, pan, zoomAt, focusPoint, type Viewport } from './viewport';
 import { CLUE_COLORS, SEA, LAND } from './mapColors';
+import { countryName } from './countryFacts';
 import { gameCopy } from './copy';
 
 interface Props {
@@ -43,7 +44,7 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
   useEffect(() => { current.current = viewport; }, [viewport]);
   const visible = frame(viewport);
   const c = gameCopy[language];
-  const labels = mapLabels(europeShapes, showNames, revealedIds, visible, mapWidth);
+  const labels = mapLabels(europeShapes.map(shape => ({ ...shape, name: countryName(shape.id, language) })), showNames, revealedIds, visible, mapWidth);
   const begin = useCallback(() => { gesture.current = { viewport: current.current, pinchDistance: 0 }; }, []);
   const move = useCallback<NonNullable<Parameters<typeof PanResponder.create>[0]['onPanResponderMove']>>((event, state) => {
     const [a, b] = event.nativeEvent.touches;

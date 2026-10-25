@@ -70,3 +70,15 @@ Stage results and any remaining gates are appended as implementation proceeds.
   Data sources, pinned revisions, regeneration and licenses are documented.
 - `npm run ci`: PASS (46 unit + 3 setup tests). Browser Learn/Andorra: capital,
   flag and no scored attempts PASS. Flags render via existing SVG dependency.
+
+### Stage 5 — dependable daily use
+
+- One serialized progress writer retains updates across score/preference changes,
+  exposes failed-save retry, and blocks writes after read failure. Existing completed
+  records and Hot & Cold pack IDs remain compatible; history is explicitly last-100.
+- English/Polish game controls, country names, capitals and speech locale integrated.
+  Language preserves legacy preferences and ignores late reads after user changes.
+- Focused Settings replaces biometric demo, includes voice/history and offline license
+  notices. First POC intentionally uses one light theme; no false dark-mode promise.
+- Browser: Polish settings + relaunch + Learn card PASS; completed Name It score
+  survives relaunch PASS. Pure store regressions cover write ordering/read/save failure.

@@ -1,3 +1,4 @@
+import { ProgressProvider } from './src/features/geography/ProgressContext';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppErrorBoundary } from './src/components/AppErrorBoundary';
@@ -8,9 +9,9 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <AppErrorBoundary>
-        <LanguageProvider><AppNavigation /></LanguageProvider>
+        <LanguageProvider><ProgressProvider><AppNavigation /></ProgressProvider></LanguageProvider>
       </AppErrorBoundary>
-      <StatusBar style="auto" />
+      <StatusBar style="dark" />
     </SafeAreaProvider>
   );
 }

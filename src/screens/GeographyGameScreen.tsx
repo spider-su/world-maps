@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { SvgXml } from 'react-native-svg';
 import { useLanguage } from '../ui/LanguageContext';
 import { worldMapsTheme as theme } from '../ui/worldMapsTheme';
 import { CountryInfoCard } from '../features/geography/CountryInfoCard';
@@ -17,11 +18,11 @@ import { recordSession, scoreRound, sessionFromRound, summary } from '../feature
 import { useProgress } from '../features/geography/ProgressContext';
 import { ProgressStatus } from '../features/geography/ProgressStatus';
 import { useCountrySpeech } from '../features/geography/useCountrySpeech';
-import { capitalName, countryName } from '../features/geography/countryFacts';
+import { capitalName, countryName, countryFacts } from '../features/geography/countryFacts';
 import { practiceTarget, recordPractice } from '../features/geography/learning';
-import { canRevealNames, replayCountryId, answerChoices, nameItAnswer, type GameMode } from '../features/geography/modes';
+import { canRevealNames, replayCountryId, answerChoices, nameItAnswer, type GameMode, type FindClue, type NameAnswer, findClueForRound } from '../features/geography/modes';
 
-export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: () => void }) {
+export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnswer = 'country' }: { mode: GameMode; onBack: () => void; findClue?: FindClue; nameAnswer?: NameAnswer }) {
   const { language } = useLanguage();
   const c = gameCopy[language];
   const { progress, status, update } = useProgress();
@@ -35,6 +36,9 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
   const [showBorders, setShowBorders] = useState(true);
   const [showNames, setShowNames] = useState(false);
   const [round, setRound] = useState<Round>(() => newRound());
+  const [roundIndex, setRoundIndex] = useState(0);
+  const clue = mode === 'capital-find' ? 'capital' : findClueForRound(findClue, roundIndex);
+  const answerType = mode === 'capital-name' ? 'capital' : nameAnswer;
   const [feedback, setFeedback] = useState<{ id: string; result: GuessResult } | null>(null);
   const progressLoaded = status !== 'loading' && status !== 'read-error';
   const soundEnabled = progress.voiceEnabled;
@@ -47,6 +51,7 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
   const restart = () => {
     stop();
     setRound(newRound(round.targetId));
+    setRoundIndex(value => value + 1);
     setFeedback(null);
     setShowNames(false);
   };
@@ -90,8 +95,8 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
     setRound(answer.round);
     setFeedback({ id: location.id, result: answer.correct ? 'correct' : 'far' });
     if (answer.correct && !answer.repeated) completeRound(answer.round);
-    speak(mode === 'capital-name' ? capitalName(location.id, language) : countryName(location.id, language));
-  }, [mode, round, completed, progressLoaded, completeRound, speak, language, update, practiceId, pack]);
+    speak(answerType === 'capital' ? capitalName(location.id, language) : countryName(location.id, language));
+  }, [mode, round, completed, progressLoaded, completeRound, speak, language, update, practiceId, pack, answerType]);
 
   const resultById = useMemo(() => {
     const results = new Map<string, GuessResult>();
@@ -122,10 +127,10 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
   const replayId = replayCountryId(mode, target.id, feedback?.id);
   const modeStyle = theme.mode[mode];
   const prompt = completed ? c.correct
-    : mode === 'find-it' ? `${c.findPrompt} ${countryName(target.id, language)}`
+    : mode === 'find-it' ? clue === 'flag' ? c.flagPrompt : clue === 'capital' ? `${c.capitalFindPrompt} ${capitalName(target.id, language)}` : `${c.findPrompt} ${countryName(target.id, language)}`
     : mode === 'capital-find' ? `${c.capitalFindPrompt} ${capitalName(target.id, language)}`
     : mode === 'capital-name' ? `${c.capitalNamePrompt} ${countryName(target.id, language)}`
-    : mode === 'name-it' ? c.namePrompt : mode === 'learn' ? c.learnPrompt : c.hiddenPrompt;
+    : mode === 'name-it' ? answerType === 'capital' ? `${c.capitalNamePrompt} ${countryName(target.id, language)}` : c.namePrompt : mode === 'learn' ? c.learnPrompt : c.hiddenPrompt;
   return <SafeAreaView edges={['top', 'bottom']} style={styles.screen}>
     <View style={styles.header}>
       <Pressable accessibilityRole="button" accessibilityLabel={c.back} onPress={onBack} style={styles.iconButton}><Ionicons name="arrow-back" size={22} color={theme.navy} /></Pressable>
@@ -141,6 +146,9 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
         <Text style={styles.prompt}>{progressLoaded ? prompt : c.loading}</Text>
         {mode !== 'learn' && <View style={styles.attempts}><Text style={styles.attemptLabel}>{c.attempts}</Text><Text style={styles.attemptValue}>{round.guesses.length}</Text></View>}
       </View>
+      {mode === 'find-it' && clue === 'flag' && <View style={styles.flagPrompt} accessible accessibilityLabel={c.flagPrompt}>
+        <SvgXml xml={countryFacts[target.id]?.flagSvg ?? ''} width={112} height={76} />
+      </View>}
       <EuropeMap key={`${mode}:${round.startedAt}:${round.targetId}`} results={resultById} revealedIds={completedIds} showNames={showNames && canShowNames}
         atlas={mode === 'learn'} showBorders={showBorders} selectableIds={mode === 'learn' ? undefined : pack.locations.map(location => location.id)} onSelect={selectCountry} enabled={progressLoaded && mode !== 'name-it' && mode !== 'capital-name'} language={language} targetId={(mode === 'name-it' || mode === 'capital-name') && !completed ? target.id : undefined} />
       {mode !== 'name-it' && mode !== 'capital-name' && (mode === 'learn' || difficulty === 'difficult') && <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.markers}>
@@ -154,7 +162,7 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
       {(mode === 'name-it' || mode === 'capital-name') && <View style={styles.options}>
         {choices.map(option => <Pressable key={option.id} accessibilityRole="button" accessibilityState={{ disabled: completed || round.guesses.includes(option.id) || !progressLoaded }}
           disabled={completed || round.guesses.includes(option.id) || !progressLoaded} onPress={() => selectAnswer(option.id)}
-          style={[styles.option, round.guesses.includes(option.id) && (option.id === round.targetId ? styles.optionCorrect : styles.optionWrong)]}><Text style={styles.optionText}>{mode === 'capital-name' ? capitalName(option.id, language) : countryName(option.id, language)}</Text></Pressable>)}
+          style={[styles.option, round.guesses.includes(option.id) && (option.id === round.targetId ? styles.optionCorrect : styles.optionWrong)]}><Text style={styles.optionText}>{answerType === 'capital' ? capitalName(option.id, language) : countryName(option.id, language)}</Text></Pressable>)}
       </View>}
       {mode === 'learn' && feedback ? <CountryInfoCard id={feedback.id} language={language} onSpeak={() => speak(countryName(feedback.id, language))} /> : <View style={styles.feedback} accessibilityLiveRegion="polite">
         <View style={styles.feedbackCopy}>
@@ -162,7 +170,7 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
           <Text style={styles.feedbackText}>{feedback ? (mode === 'hot-cold' ? c.proximity[feedback.result] : mode === 'learn' ? c.learnHint : feedback.result === 'correct' ? c.correct : c.retry) : mode === 'learn' ? c.learnHint : c.modes[mode].description}</Text>
         </View>
         {replayId && <Pressable accessibilityRole="button" accessibilityLabel={c.hear}
-          onPress={() => speak(mode === 'capital-find' ? capitalName(replayId, language) : countryName(replayId, language))} style={styles.iconButton}><Ionicons name="volume-high-outline" size={24} color={theme.brand} /></Pressable>}
+          onPress={() => speak(mode === 'capital-find' || (mode === 'find-it' && clue === 'capital') ? capitalName(replayId, language) : countryName(replayId, language))} style={styles.iconButton}><Ionicons name="volume-high-outline" size={24} color={theme.brand} /></Pressable>}
       </View>}
       {mode === 'hot-cold' && <View style={styles.legend}>
         {(['very-far', 'far', 'close', 'very-close', 'correct'] as const).map(result => <View key={result} style={styles.legendItem}>
@@ -184,6 +192,7 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
   </SafeAreaView>;
 }
 const styles = StyleSheet.create({
+  flagPrompt: { backgroundColor: '#FFF', borderRadius: 14, padding: 12, alignItems: 'center', justifyContent: 'center', minHeight: 108 },
   screen: { flex: 1, backgroundColor: theme.paper },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, paddingVertical: 4, borderBottomWidth: 1, borderBottomColor: '#E1EAF3' },
   iconButton: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },

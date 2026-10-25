@@ -1,4 +1,6 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { worldMapsTheme as theme } from '../../ui/worldMapsTheme';
 import { MODE_DEFINITIONS, type GameMode } from './modes';
 
 interface Props {
@@ -6,29 +8,51 @@ interface Props {
   onChange: (mode: GameMode) => void;
 }
 
-/** Shared picker for all geography map packs. Does not own game state. */
+/** Reusable country/city game-mode cards; no game state is stored here. */
 export function ModeSelector({ value, onChange }: Props) {
   return (
-    <View>
-      <Text style={styles.header}>CHOOSE A MODE</Text>
+    <View style={styles.wrapper}>
+      <Text style={styles.header}>CHOOSE HOW TO EXPLORE</Text>
       <View style={styles.container}>
-        {MODE_DEFINITIONS.map(item => (
-          <Pressable key={item.id} accessibilityRole="button"
-            accessibilityLabel={item.title} accessibilityState={{ selected: item.id === value }}
-            style={[styles.option, item.id === value && styles.selected]}
-            onPress={() => onChange(item.id)}>
-            <Text style={[styles.label, item.id === value && styles.selectedLabel]}>{item.title}</Text>
-          </Pressable>
-        ))}
+        {MODE_DEFINITIONS.map(item => {
+          const colors = theme.mode[item.id];
+          const selected = item.id === value;
+          return (
+            <Pressable key={item.id} accessibilityRole="button"
+              accessibilityLabel={`${item.title}. ${item.description}`}
+              accessibilityState={{ selected }}
+              style={[styles.option, selected && styles.selected]}
+              onPress={() => onChange(item.id)}>
+              <View style={[styles.iconTile, { backgroundColor: selected ? theme.surface : colors.tint }]}>
+                <Ionicons name={colors.icon} size={23} color={colors.foreground} />
+              </View>
+              <View style={styles.copy}>
+                <Text style={[styles.label, selected && styles.selectedLabel]}>{item.title}</Text>
+                <Text style={[styles.description, selected && styles.selectedDescription]} numberOfLines={2}>{item.description}</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={16} color={selected ? theme.surface : theme.muted} />
+            </Pressable>
+          );
+        })}
       </View>
     </View>
   );
 }
 const styles = StyleSheet.create({
-  header: { fontSize: 11, fontWeight: '800', color: '#47728A', letterSpacing: 1, marginLeft: 5, marginBottom: 6 },
-  container: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 },
-  option: { flexGrow: 1, paddingHorizontal: 12, paddingVertical: 11, backgroundColor: '#FFF', borderRadius: 12, alignItems: 'center' },
-  selected: { backgroundColor: '#1C567B' },
-  label: { fontSize: 13, fontWeight: '700', color: '#1C567B' },
-  selectedLabel: { color: '#FFF' },
+  wrapper: { gap: 8 },
+  header: { fontSize: 11, fontWeight: '800', color: theme.muted, letterSpacing: 1.3, marginLeft: 4 },
+  container: { gap: 8 },
+  option: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    minHeight: 66, paddingHorizontal: 12, paddingVertical: 10,
+    backgroundColor: theme.surface, borderRadius: 16,
+    borderWidth: 1, borderColor: '#DFE8F3',
+  },
+  selected: { backgroundColor: theme.brandDark, borderColor: theme.brandDark },
+  iconTile: { width: 42, height: 42, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  copy: { flex: 1, gap: 3 },
+  label: { fontSize: 15, fontWeight: '800', color: theme.navy },
+  selectedLabel: { color: theme.surface },
+  description: { fontSize: 11, color: theme.muted },
+  selectedDescription: { color: '#D6E8F7' },
 });

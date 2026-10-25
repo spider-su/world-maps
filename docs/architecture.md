@@ -4,7 +4,7 @@ Read this before adding a feature. World Maps is an offline Expo SDK 57 / React 
 
 ## Startup and runtime
 
-`App.tsx` composes the safe-area provider, error boundary, `LanguageProvider`, `ProgressProvider` and navigation. `src/navigation.tsx` owns the NavigationContainer and the Home/Settings bottom tabs. `src/screens/` contains route-level UI: `HomeScreen` (mode, difficulty and practice selection), `GeographyGameScreen` (one mounted round, tabs hidden) and `SettingsScreen` (language, voice, learning summary and data licenses). `src/features/geography/` contains the game engine, modes, map rendering, bundled data, progress persistence and speech. `src/ui/` contains language definitions, the language context and the app theme. `src/platform/` contains safe-area contracts. `app.config.ts` reads non-secret app identity from environment variables.
+`App.tsx` composes the safe-area provider, error boundary, `LanguageProvider`, `ProgressProvider` and navigation. `src/navigation.tsx` owns the NavigationContainer and the Home/Settings bottom tabs. `src/screens/` contains route-level UI: `HomeScreen` (mode cards with difficulty/practice in a modal), `GeographyGameScreen` (one mounted round, large responsive map and compact dock, tabs hidden) and `SettingsScreen` (language, voice, learning summary and data licenses). `src/features/geography/` contains the game engine, modes, map rendering, bundled data, progress persistence and speech. `src/ui/` contains language definitions, the language context and the app theme. `src/platform/` contains safe-area contracts. `app.config.ts` reads non-secret app identity from environment variables.
 
 ## Ownership rules
 

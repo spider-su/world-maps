@@ -22,10 +22,10 @@ export function ModeSelector({ value, onChange, language = 'en', findClue = 'mix
   const styles = makeStyles(theme);
   return (
     <View style={styles.wrapper}>
-      <Text style={styles.header}>{c.chooseMode.toUpperCase()}</Text>
       <View style={styles.container}>
         {GAME_MODES.map(id => {
           const colors = theme.mode[id];
+          const accent = { 'hot-cold': '#F05260', 'find-it': '#2176FF', 'name-it': '#F2A000', learn: '#20BB70' }[id];
           const selected = id === value;
           return (
             <Pressable key={id} accessibilityRole="button"
@@ -33,8 +33,8 @@ export function ModeSelector({ value, onChange, language = 'en', findClue = 'mix
               accessibilityState={{ selected }}
               style={[styles.option, selected && styles.selected]}
               onPress={() => onChange(id)}>
-              <View style={[styles.iconTile, { backgroundColor: colors.tint }]}>
-                <Ionicons name={colors.icon} size={23} color={colors.foreground} />
+              <View style={[styles.iconTile, { backgroundColor: accent }]}>
+                <Ionicons name={colors.icon} size={23} color="#FFFFFF" />
               </View>
               <View style={styles.copy}>
                 <Text style={[styles.label, selected && styles.selectedLabel]}>{c.modes[id].title}</Text>
@@ -45,6 +45,15 @@ export function ModeSelector({ value, onChange, language = 'en', findClue = 'mix
           );
         })}
       </View>
+      {(onFindClue || onNameAnswer) && <QuizOptions language={language} findClue={findClue} onFindClue={onFindClue} nameAnswer={nameAnswer} onNameAnswer={onNameAnswer} />}
+    </View>
+  );
+}
+/** The existing clue/answer choices, shown in Home's play-options sheet. */
+export function QuizOptions({ language = 'en', findClue = 'mixed', onFindClue, nameAnswer = 'country', onNameAnswer }: Pick<Props, 'language' | 'findClue' | 'onFindClue' | 'nameAnswer' | 'onNameAnswer'>) {
+  const c = gameCopy[language];
+  const styles = makeStyles(themeForScheme(useColorScheme()));
+  return <View style={styles.wrapper}>
       {onFindClue && <View style={styles.variants}>
         <Text style={styles.variantLabel}>{c.clueType}</Text>
         <View style={styles.variantRow}>
@@ -67,31 +76,30 @@ export function ModeSelector({ value, onChange, language = 'en', findClue = 'mix
           ))}
         </View>
       </View>}
-    </View>
-  );
+  </View>;
 }
 const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
   variants: { gap: 6, marginTop: 4 },
   variantLabel: { fontSize: 12, fontWeight: '700', color: theme.muted },
   variantRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  variant: { minHeight: 38, paddingHorizontal: 12, justifyContent: 'center', borderRadius: 10, backgroundColor: theme.ocean },
+  variant: { minHeight: 44, paddingHorizontal: 12, justifyContent: 'center', borderRadius: 10, backgroundColor: theme.ocean },
   variantSelected: { backgroundColor: theme.brandDark },
   variantText: { color: theme.brandDark, fontWeight: '700', fontSize: 12 },
   variantSelectedText: { color: '#FFF' },
   wrapper: { gap: 8 },
-  header: { fontSize: 11, fontWeight: '800', color: theme.muted, letterSpacing: 1.3, marginLeft: 4 },
   container: { gap: 8 },
   option: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    minHeight: 66, paddingHorizontal: 12, paddingVertical: 10,
+    minHeight: 76, paddingHorizontal: 12, paddingVertical: 10,
     backgroundColor: theme.surface, borderRadius: 16,
-    borderWidth: 1, borderColor: theme.border,
+    borderWidth: 1, borderColor: theme.paper,
+    shadowColor: '#123E70', shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, elevation: 2,
   },
   selected: { backgroundColor: theme.brandDark, borderColor: theme.brandDark },
-  iconTile: { width: 42, height: 42, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  iconTile: { width: 48, height: 48, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   copy: { flex: 1, gap: 3 },
   label: { fontSize: 15, fontWeight: '800', color: theme.navy },
   selectedLabel: { color: theme.surface },
-  description: { fontSize: 11, color: theme.muted },
+  description: { fontSize: 12, lineHeight: 17, color: theme.muted },
   selectedDescription: { color: '#D6E8F7' },
 });

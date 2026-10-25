@@ -5,55 +5,39 @@ export type Point = { x: number; y: number };
 export interface Viewport { zoom: number; center: Point }
 export const INITIAL_VIEWPORT: Viewport = { zoom: 1, center: { x: MAP_WIDTH / 2, y: MAP_HEIGHT / 2 } };
 export const clamp = (value: number, low: number, high: number) => Math.max(low, Math.min(high, value));
+const DEFAULT_ASPECT = MAP_HEIGHT / MAP_WIDTH;
 
-export function frame(viewport: Viewport) {
-  const w = MAP_WIDTH / viewport.zoom;
-  const h = MAP_HEIGHT / viewport.zoom;
-  return {
-    x: clamp(viewport.center.x - w / 2, 0, MAP_WIDTH - w),
-    y: clamp(viewport.center.y - h / 2, 0, MAP_HEIGHT - h),
-    w, h,
-  };
+/** Fit the entire geography at 1x without stretching it on portrait displays. */
+function dimensions(zoom: number, aspect: number) {
+  const w = Math.max(MAP_WIDTH, MAP_HEIGHT / aspect) / zoom;
+  return { w, h: w * aspect };
 }
-
-export function normalize(viewport: Viewport): Viewport {
+function boundedCenter(value: number, extent: number, size: number) {
+  return extent >= size ? size / 2 : clamp(value, extent / 2, size - extent / 2);
+}
+export function frame(viewport: Viewport, aspect = DEFAULT_ASPECT) {
+  const { w, h } = dimensions(viewport.zoom, aspect);
+  return { x: boundedCenter(viewport.center.x, w, MAP_WIDTH) - w / 2,
+    y: boundedCenter(viewport.center.y, h, MAP_HEIGHT) - h / 2, w, h };
+}
+export function normalize(viewport: Viewport, aspect = DEFAULT_ASPECT): Viewport {
   const zoom = clamp(viewport.zoom, 1, MAX_ZOOM);
-  const w = MAP_WIDTH / zoom;
-  const h = MAP_HEIGHT / zoom;
-  return {
-    zoom,
-    center: {
-      x: clamp(viewport.center.x, w / 2, MAP_WIDTH - w / 2),
-      y: clamp(viewport.center.y, h / 2, MAP_HEIGHT - h / 2),
-    },
-  };
+  const { w, h } = dimensions(zoom, aspect);
+  return { zoom, center: { x: boundedCenter(viewport.center.x, w, MAP_WIDTH), y: boundedCenter(viewport.center.y, h, MAP_HEIGHT) } };
 }
-
-/** Translate touch deltas in screen pixels into viewBox units. */
-export function pan(viewport: Viewport, dx: number, dy: number, screenWidth: number): Viewport {
-  const scale = MAP_WIDTH / (screenWidth * viewport.zoom);
-  return normalize({ ...viewport, center: {
-    x: viewport.center.x - dx * scale,
-    y: viewport.center.y - dy * scale,
-  } });
+/** Translate touch deltas using the same scale on both axes. */
+export function pan(viewport: Viewport, dx: number, dy: number, screenWidth: number, aspect = DEFAULT_ASPECT): Viewport {
+  const scale = frame(viewport, aspect).w / screenWidth;
+  return normalize({ ...viewport, center: { x: viewport.center.x - dx * scale, y: viewport.center.y - dy * scale } }, aspect);
 }
-
-/** Zoom around a touch focal point, keeping that location under the fingers. */
-export function zoomAt(viewport: Viewport, factor: number, focal: Point, screenWidth: number): Viewport {
-  const oldFrame = frame(viewport);
-  const pointX = oldFrame.x + focal.x / screenWidth * oldFrame.w;
-  const pointY = oldFrame.y + focal.y / screenWidth * oldFrame.w;
+/** Zoom around a screen point, keeping that geographic location under the fingers. */
+export function zoomAt(viewport: Viewport, factor: number, focal: Point, screenWidth: number, aspect = DEFAULT_ASPECT): Viewport {
+  const old = frame(viewport, aspect);
+  const point = { x: old.x + focal.x / screenWidth * old.w, y: old.y + focal.y / screenWidth * old.w };
   const zoom = clamp(viewport.zoom * factor, 1, MAX_ZOOM);
-  const newWidth = MAP_WIDTH / zoom;
-  return normalize({
-    zoom, center: {
-      x: pointX + (0.5 - focal.x / screenWidth) * newWidth,
-      y: pointY + (MAP_HEIGHT / MAP_WIDTH / 2 - focal.y / screenWidth) * newWidth,
-    },
-  });
+  const next = dimensions(zoom, aspect);
+  return normalize({ zoom, center: { x: point.x + next.w / 2 - focal.x / screenWidth * next.w,
+    y: point.y + next.h / 2 - focal.y / screenWidth * next.w } }, aspect);
 }
-
-/** Small highlighted targets need a useful initial view, including microstates. */
-export function focusPoint(point: Point, zoom: number): Viewport {
-  return normalize({ zoom, center: point });
-}
+/** Small highlighted targets need a useful initial view. */
+export function focusPoint(point: Point, zoom: number): Viewport { return normalize({ zoom, center: point }); }

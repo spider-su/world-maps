@@ -3,6 +3,7 @@ import { capitalName, countryName } from './countryFacts';
 import type { FindClue, GameMode, NameAnswer } from './modes';
 
 const en = {
+  playOptions: 'Play options', mapTools: 'Map tools', moreDetails: 'Country details', cold: 'Cold', hot: 'Hot',
   learningProgress: 'Learning progress', practiced: 'Practiced', mastered: 'Mastered', needsPractice: 'Needs practice', accuracy: 'Accuracy',
   practice: 'Practice', practiceModes: { adaptive: 'Adaptive', random: 'Random' }, practiceHint: 'Adaptive favors recent misses and revisits older practice. No immediate repeats.',
   masteryHint: 'Mastered: three first-try successes in one mode and the last three answers correct.', showProgress: 'Show country progress', hideProgress: 'Hide country progress', notPracticed: 'Not practiced yet',
@@ -42,6 +43,7 @@ const en = {
 };
 type Copy = typeof en;
 const pl: Copy = {
+  playOptions: 'Opcje gry', mapTools: 'Narzędzia mapy', moreDetails: 'Informacje o państwie', cold: 'Zimno', hot: 'Ciepło',
   learningProgress: 'Postępy w nauce', practiced: 'Ćwiczone', mastered: 'Opanowane', needsPractice: 'Do powtórki', accuracy: 'Trafność',
   practice: 'Ćwiczenie', practiceModes: { adaptive: 'Adaptacyjne', random: 'Losowe' }, practiceHint: 'Tryb adaptacyjny częściej wybiera ostatnie błędy i starsze powtórki. Bez powtórzeń z rzędu.',
   masteryHint: 'Opanowane: trzy sukcesy w pierwszej próbie w jednym trybie i ostatnie trzy odpowiedzi poprawne.', showProgress: 'Pokaż postępy państw', hideProgress: 'Ukryj postępy państw', notPracticed: 'Jeszcze niećwiczone',
@@ -80,6 +82,7 @@ const pl: Copy = {
   clueType: 'Podpowiedź: znajdź', answerType: 'Odpowiedź: nazwij', findClues: { name: 'Nazwa', capital: 'Stolica', flag: 'Flaga', mixed: 'Mieszane' }, nameAnswers: { country: 'Państwo', capital: 'Stolica' }, flagPrompt: 'Znajdź państwo z tą flagą',
 };
 const ru: Copy = {
+  playOptions: 'Настройки игры', mapTools: 'Инструменты карты', moreDetails: 'О стране', cold: 'Холодно', hot: 'Горячо',
   learningProgress: 'Прогресс обучения', practiced: 'Изучено', mastered: 'Освоено', needsPractice: 'Нужна практика', accuracy: 'Точность',
   practice: 'Практика', practiceModes: { adaptive: 'Адаптивная', random: 'Случайная' }, practiceHint: 'Адаптивный режим чаще выбирает недавние ошибки и давние задания. Без повторов подряд.',
   masteryHint: 'Освоено: три успеха с первой попытки в одном режиме и последние три ответа верны.', showProgress: 'Показать прогресс по странам', hideProgress: 'Скрыть прогресс по странам', notPracticed: 'Ещё не изучено',

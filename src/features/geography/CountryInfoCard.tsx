@@ -8,7 +8,7 @@ import { CountryAtlasPortrait } from './CountryAtlasPortrait';
 import { countryCoordinates, countryRegion, educationCopy, geographicCoordinate, landmarkName } from './countryEducation';
 import { gameCopy } from './copy';
 
-export function CountryInfoCard({ id, language, onSpeak }: { id: string; language: Language; onSpeak: () => void }) {
+export function CountryInfoCard({ id, language, onSpeak, compact = false, onDetails }: { id: string; language: Language; onSpeak: () => void; compact?: boolean; onDetails?: () => void }) {
   const facts = countryFacts[id];
   const theme = themeForScheme(useColorScheme());
   const styles = makeStyles(theme);
@@ -17,6 +17,14 @@ export function CountryInfoCard({ id, language, onSpeak }: { id: string; languag
   const coordinates = countryCoordinates(id);
   const landmark = landmarkName(id, language);
   if (!facts) return null;
+  if (compact) return <View style={styles.compact} accessibilityLiveRegion="polite">
+    <View style={styles.row}>
+      <View accessible accessibilityLabel={`${c.flag}: ${facts.name[language]}`} style={styles.flag}><SvgXml xml={facts.flagSvg} width={38} height={28} /></View>
+      <View style={styles.nameBlock}><Text style={styles.compactName}>{facts.name[language]}</Text><Text style={styles.region}>{c.capital} · {facts.capital[language]}</Text></View>
+      <Pressable accessibilityRole="button" accessibilityLabel={c.hear} style={styles.speak} onPress={onSpeak}><Ionicons name="volume-high-outline" size={22} color={theme.brand} /></Pressable>
+      {onDetails && <Pressable accessibilityRole="button" accessibilityLabel={c.moreDetails} style={styles.speak} onPress={onDetails}><Ionicons name="chevron-up" size={22} color={theme.brand} /></Pressable>}
+    </View>
+  </View>;
   return <View style={styles.card} accessibilityLiveRegion="polite">
     <CountryAtlasPortrait id={id} caption={education.atlas} />
     <View style={styles.row}>
@@ -61,6 +69,7 @@ export function CountryInfoCard({ id, language, onSpeak }: { id: string; languag
   </View>;
 }
 const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
+  compact: { paddingVertical: 4 }, compactName: { fontSize: 19, color: theme.navy, fontWeight: '800' },
   card: { padding: 12, borderRadius: 18, backgroundColor: theme.surface, gap: 14, borderWidth: 1, borderColor: theme.border },
   row: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   flag: { borderRadius: 5, overflow: 'hidden', borderWidth: 1, borderColor: theme.border },

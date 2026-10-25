@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { LANGUAGE_OPTIONS } from '../ui/i18n';
 import { useLanguage } from '../ui/LanguageContext';
 import { worldMapsTheme as theme } from '../ui/worldMapsTheme';
 import { gameCopy } from '../features/geography/copy';
@@ -21,9 +22,9 @@ export function SettingsScreen() {
       <Text style={styles.title}>{c.settings}</Text>
       <View style={styles.card}>
         <Text style={styles.cardTitle}>{c.language}</Text>
-        {(['en', 'pl'] as const).map(value => <Pressable key={value} accessibilityRole="radio" accessibilityLabel={value === 'en' ? 'English' : 'Polski'} accessibilityState={{ checked: language === value }}
+        {LANGUAGE_OPTIONS.map(({ id: value, label }) => <Pressable key={value} accessibilityRole="radio" accessibilityLabel={label} accessibilityState={{ checked: language === value }}
           style={styles.row} onPress={() => setLanguage(value)}>
-          <Text style={styles.text}>{value === 'en' ? 'English' : 'Polski'}</Text>
+          <Text style={styles.text}>{label}</Text>
           <Ionicons name={language === value ? 'radio-button-on' : 'radio-button-off'} size={22} color={theme.brand} />
         </Pressable>)}
         {languageError && <View accessibilityRole="alert"><Text style={styles.error}>{c.languageError}</Text>

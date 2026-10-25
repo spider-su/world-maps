@@ -21,6 +21,8 @@ pl_capitals={
  'ROU':'Bukareszt','RUS':'Moskwa','SMR':'San Marino','SRB':'Belgrad','SVK':'Bratysława',
  'SVN':'Lublana','SWE':'Sztokholm','UKR':'Kijów','VAT':'Watykan',
 }
+# Editorial Russian capital spellings. Stable country relationships remain sourced.
+ru_capitals={'ALB': 'Тирана', 'AND': 'Андорра-ла-Велья', 'AUT': 'Вена', 'BEL': 'Брюссель', 'BGR': 'София', 'BIH': 'Сараево', 'BLR': 'Минск', 'CHE': 'Берн', 'CYP': 'Никосия', 'CZE': 'Прага', 'DEU': 'Берлин', 'DNK': 'Копенгаген', 'ESP': 'Мадрид', 'EST': 'Таллин', 'FIN': 'Хельсинки', 'FRA': 'Париж', 'GBR': 'Лондон', 'GRC': 'Афины', 'HRV': 'Загреб', 'HUN': 'Будапешт', 'IRL': 'Дублин', 'ISL': 'Рейкьявик', 'ITA': 'Рим', 'KOS': 'Приштина', 'LIE': 'Вадуц', 'LTU': 'Вильнюс', 'LUX': 'Люксембург', 'LVA': 'Рига', 'MCO': 'Монако', 'MDA': 'Кишинёв', 'MKD': 'Скопье', 'MLT': 'Валлетта', 'MNE': 'Подгорица', 'NLD': 'Амстердам', 'NOR': 'Осло', 'POL': 'Варшава', 'PRT': 'Лиссабон', 'ROU': 'Бухарест', 'RUS': 'Москва', 'SMR': 'Сан-Марино', 'SRB': 'Белград', 'SVK': 'Братислава', 'SVN': 'Любляна', 'SWE': 'Стокгольм', 'TUR': 'Анкара', 'UKR': 'Киев', 'VAT': 'Ватикан'}
 result={}
 for row in json.loads(source.read_text()):
     country_id='KOS' if row['cca3']=='UNK' else row['cca3']
@@ -29,8 +31,8 @@ for row in json.loads(source.read_text()):
     capital=', '.join(row['capital'])
     code=row['cca2'].lower()
     result[country_id]={
-      'name':{'en':row['name']['common'],'pl':row['translations']['pol']['common']},
-      'capital':{'en':capital,'pl':pl_capitals.get(country_id,capital)},
+      'name':{'en':row['name']['common'],'pl':row['translations']['pol']['common'],'ru':row['translations']['rus']['common']},
+      'capital':{'en':capital,'pl':pl_capitals.get(country_id,capital),'ru':ru_capitals[country_id]},
       'flagCode':code.upper(), 'flagSvg':(flags/f'{code}.svg').read_text().strip(),
     }
 assert set(result)==ids, f'Missing facts: {ids-set(result)}'

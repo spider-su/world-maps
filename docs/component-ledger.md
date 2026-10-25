@@ -48,3 +48,8 @@ For each future component, replace generic status with dated evidence and the de
 - Product Settings replaces biometric/demo flows with language, voice, recent-history
   summaries and bundled data license notices. EN/PL covers controls and country names;
   speech uses the matching language, cancels queued pronunciation on blur/unmount.
+
+- `LANGUAGE_OPTIONS`, `SPEECH_LOCALES`: shared EN/PL/RU language/voice locale contract.
+- `speechController`: serialized stop/speak queue, installed-voice matching, stale
+  callback guards and recoverable unavailable state. Hook stops on blur, mute,
+  language change and unmount. Physical audible speech remains a separate gate.

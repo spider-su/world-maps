@@ -45,3 +45,9 @@ Completed scores and voice/language preferences survive relaunch; unfinished rou
 are intentionally not restored. Statistics describe the most recent 100 completed
 rounds. One light theme is supported in this POC. Learning data is bundled and its
 licenses are available in Settings and [data attribution](docs/country-data.md).
+
+### Languages and pronunciation
+
+Choose English, Polish or Russian in Settings. All country names/capitals and game
+prompts update without changing scores. Pronunciation uses installed device voices;
+missing voices produce an inline message. See [speech behavior](docs/languages-and-speech.md).

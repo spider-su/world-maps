@@ -1,29 +1,18 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import * as Speech from 'expo-speech';
 import type { Language } from '../../ui/i18n';
+import { createSpeechController } from './speechController';
 
 export function useCountrySpeech(enabled: boolean, language: Language) {
-  const epoch = useRef(0);
   const focused = useIsFocused();
   const [failed, setFailed] = useState(false);
-  useFocusEffect(useCallback(() => () => {
-    epoch.current++;
-    void Speech.stop().catch(() => undefined);
-  }, []));
-  useEffect(() => {
-    if (!enabled) { epoch.current++; void Speech.stop().catch(() => undefined); }
-  }, [enabled]);
+  const [controller] = useState(() => createSpeechController({ stop: Speech.stop, voices: Speech.getAvailableVoicesAsync, speak: Speech.speak }, setFailed));
+  useFocusEffect(useCallback(() => () => { void controller.stop(); }, [controller]));
+  useEffect(() => { void controller.stop(); }, [controller, enabled, language]);
   const speak = useCallback((name: string) => {
-    if (!enabled || !focused) return;
-    const turn = ++epoch.current;
-    setFailed(false);
-    void Speech.stop().catch(() => undefined).then(() => {
-      if (turn !== epoch.current) return;
-      Speech.speak(name, { language: language === 'pl' ? 'pl-PL' : 'en-US', rate: 0.9,
-        onError: () => { if (turn === epoch.current) setFailed(true); } });
-    }).catch(() => { if (turn === epoch.current) setFailed(true); });
-  }, [enabled, focused, language]);
-  const stop = useCallback(() => { epoch.current++; void Speech.stop().catch(() => undefined); }, []);
+    if (enabled && focused) void controller.speak(name, language);
+  }, [enabled, focused, language, controller]);
+  const stop = useCallback(() => { void controller.stop(); }, [controller]);
   return { speak, stop, failed };
 }

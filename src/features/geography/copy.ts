@@ -53,4 +53,30 @@ const pl: Copy = {
   mapSource: 'Mapa: Natural Earth · Przybliżone wskazówki o odległości', capital: 'Stolica', countryDetails: 'Informacje o państwie',
   learnHint: 'Dotknij państwa, aby poznać jego nazwę i stolicę.', flag: 'Flaga',
 };
-export const gameCopy: Record<Language, Copy> = { en, pl };
+const ru: Copy = {
+  tagline: 'Исследуй · Учись · Играй', chooseMode: 'Выберите режим', europe: 'Европа',
+  offline: '47 стран · Офлайн-карта', back: 'На главную', settings: 'Настройки',
+  modes: {
+    'hot-cold': { title: 'Горячо–холодно', description: 'Найдите скрытую страну по подсказкам о расстоянии.' },
+    'find-it': { title: 'Найди страну', description: 'Прочитайте название и найдите страну на карте.' },
+    'name-it': { title: 'Назови страну', description: 'Выберите название выделенной страны из четырёх вариантов.' },
+    learn: { title: 'Изучение', description: 'Изучайте страны, столицы и произношение.' },
+  },
+  loading: 'Загрузка прогресса…', speechError: 'Произношение недоступно. Проверьте установленные голоса устройства.', licenses: 'Источники данных и лицензии', close: 'Закрыть', languageError: 'Не удалось прочитать или сохранить язык.', hiddenPrompt: 'Найдите скрытую страну', findPrompt: 'Найдите:',
+  namePrompt: 'Какая страна выделена?', learnPrompt: 'Нажмите на страну, чтобы узнать больше',
+  attempts: 'Попытки', correct: 'Страна найдена!', retry: 'Не совсем. Попробуйте ещё раз.',
+  next: 'Следующая страна', restart: 'Новый раунд', hear: 'Послушать название', mute: 'Выключить звук', unmute: 'Включить звук',
+  showNames: 'Показать названия', hideNames: 'Скрыть названия', smallCountries: 'Малые страны',
+  marker: 'Метка малой страны', mapCountry: 'Страна на карте', allCountries: 'Выберите на карте или из списка',
+  lastSelection: 'Последний выбор', startHint: 'Нажмите на страну для первой подсказки.',
+  proximity: { correct: 'Найдено', 'very-close': 'Очень близко', close: 'Близко', far: 'Далеко', 'very-far': 'Очень далеко' },
+  resetMap: 'Показать всю Европу', zoomIn: 'Приблизить', zoomOut: 'Отдалить',
+  moveLeft: 'Сдвинуть влево', moveRight: 'Сдвинуть вправо', moveUp: 'Сдвинуть вверх', moveDown: 'Сдвинуть вниз',
+  score: 'очков', history: 'История · до 100 завершённых раундов', solved: 'Решено', best: 'Лучший результат', total: 'Очки в истории',
+  saveError: 'Последние изменения не сохранены на устройстве.', readError: 'Не удалось прочитать прогресс. Повторите перед игрой.',
+  retrySave: 'Повторить', saved: 'Сохранено на устройстве', voice: 'Произношение', voiceHint: 'Использует голоса устройства. Работа офлайн зависит от установленных голосов.',
+  language: 'Язык', about: 'О World Maps', privacy: 'Карты и прогресс хранятся на устройстве. Аккаунт и API не нужны.',
+  mapSource: 'Карта: Natural Earth · Приблизительные расстояния', capital: 'Столица', countryDetails: 'О стране',
+  learnHint: 'Нажмите на страну, чтобы узнать её название и столицу.', flag: 'Флаг',
+};
+export const gameCopy: Record<Language, Copy> = { en, pl, ru };

@@ -54,5 +54,5 @@ export const darkWorldMapsTheme = {
   },
 };
 export type WorldMapsPalette = typeof worldMapsTheme | typeof darkWorldMapsTheme;
-export const themeForScheme = (scheme: 'light' | 'dark' | null | undefined): WorldMapsPalette =>
+export const themeForScheme = (scheme: 'light' | 'dark' | 'unspecified' | null | undefined): WorldMapsPalette =>
   scheme === 'dark' ? darkWorldMapsTheme : worldMapsTheme;

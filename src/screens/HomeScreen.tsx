@@ -16,11 +16,12 @@ import { useLanguage } from '../ui/LanguageContext';
 import { worldMapsTheme as theme } from '../ui/worldMapsTheme';
 import { getTabBarMetrics } from '../platform/safeArea';
 import { GeographyGameScreen } from './GeographyGameScreen';
+import { QuickChallengeScreen } from './QuickChallengeScreen';
 
 const noResults = new Map();
 export function HomeScreen() {
   const { progress, status } = useProgress();
-  const [mode, setMode] = useState<GameMode | null>(null);
+  const [mode, setMode] = useState<GameMode | 'quick' | null>(null);
   const [findClue, setFindClue] = useState<FindClue>('mixed');
   const [nameAnswer, setNameAnswer] = useState<NameAnswer>('country');
   const { language } = useLanguage();
@@ -35,6 +36,7 @@ export function HomeScreen() {
     const listener = BackHandler.addEventListener('hardwareBackPress', () => { setMode(null); return true; });
     return () => listener.remove();
   }, [mode]));
+  if (mode === 'quick') return <QuickChallengeScreen onBack={() => setMode(null)} />;
   if (mode) return <GeographyGameScreen key={`${mode}:${progress.difficulty}:${status === 'loading' || status === 'read-error' ? 'loading' : 'loaded'}`} mode={mode} findClue={findClue} nameAnswer={nameAnswer} onBack={() => setMode(null)} />;
   return <SafeAreaView edges={['top']} style={styles.screen}>
     <ScrollView contentContainerStyle={styles.body}>
@@ -52,12 +54,23 @@ export function HomeScreen() {
       <DifficultySelector language={language} />
       <PracticeSelector language={language} />
       <ModeSelector onChange={setMode} language={language} findClue={findClue} onFindClue={setFindClue} nameAnswer={nameAnswer} onNameAnswer={setNameAnswer} />
+      <Pressable accessibilityRole="button" style={styles.challenge} onPress={() => setMode('quick')}>
+        <Ionicons name="flash-outline" size={28} color="#FFF" />
+        <View style={{ flex: 1, gap: 3 }}>
+          <Text style={styles.challengeTitle}>{c.quickChallenge}</Text>
+          <Text style={styles.challengeHint}>{c.quickHint}</Text>
+        </View>
+        <Ionicons name="chevron-forward" size={20} color="#FFF" />
+      </Pressable>
       <LearningOverview language={language} />
       <Text style={styles.source}>{c.mapSource}</Text>
     </ScrollView>
   </SafeAreaView>;
 }
 const styles = StyleSheet.create({
+  challenge: { backgroundColor: theme.brandDark, borderRadius: 16, minHeight: 78, padding: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  challengeTitle: { color: '#FFF', fontSize: 18, fontWeight: '800' },
+  challengeHint: { color: '#DCEBFF', fontSize: 12 },
   screen: { flex: 1, backgroundColor: theme.paper }, body: { padding: 16, gap: 18, maxWidth: 720, width: '100%', alignSelf: 'center', paddingBottom: 24 },
   top: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }, brand: { fontSize: 30, fontWeight: '800', color: theme.navy }, tagline: { color: theme.muted, fontSize: 13, marginTop: 5 },
   settings: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },

@@ -22,7 +22,12 @@ import { capitalName, countryName, countryFacts } from '../features/geography/co
 import { practiceTarget, recordPractice } from '../features/geography/learning';
 import { canRevealNames, replayCountryId, answerChoices, nameItAnswer, type GameMode, type FindClue, type NameAnswer, findClueForRound } from '../features/geography/modes';
 
-export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnswer = 'country' }: { mode: GameMode; onBack: () => void; findClue?: FindClue; nameAnswer?: NameAnswer }) {
+export interface ChallengeSessionProps {
+  targetId: string; index: number; total: number;
+  onAnswer: (correct: boolean, targetId: string) => void;
+  onNext: () => void;
+}
+export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnswer = 'country', challenge }: { mode: GameMode; onBack: () => void; findClue?: FindClue; nameAnswer?: NameAnswer; challenge?: ChallengeSessionProps }) {
   const { language } = useLanguage();
   const c = gameCopy[language];
   const { progress, status, update } = useProgress();
@@ -35,7 +40,8 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
   };
   const [showBorders, setShowBorders] = useState(true);
   const [showNames, setShowNames] = useState(false);
-  const [round, setRound] = useState<Round>(() => newRound());
+  const [round, setRound] = useState<Round>(() => challenge ? { ...newRound(), targetId: challenge.targetId } : newRound());
+  const [challengeResult, setChallengeResult] = useState<boolean | null>(null);
   const [roundIndex, setRoundIndex] = useState(0);
   const clue = mode === 'capital-find' ? 'capital' : findClueForRound(findClue, roundIndex);
   const answerType = mode === 'capital-name' ? 'capital' : nameAnswer;
@@ -43,12 +49,13 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
   const progressLoaded = status !== 'loading' && status !== 'read-error';
   const soundEnabled = progress.voiceEnabled;
   const stats = useMemo(() => summary(progress, mode === 'hot-cold' ? europePack.id : `${europePack.id}:${mode}`, difficulty), [progress, mode, difficulty]);
-  const completed = mode !== 'learn' && round.completedAt !== undefined;
+  const completed = mode !== 'learn' && (challenge ? challengeResult !== null : round.completedAt !== undefined);
   const target = europePack.locations.find(item => item.id === round.targetId)!;
   const choices = useMemo(() => mode === 'name-it' || mode === 'capital-name' ? answerChoices(pack, round.targetId) : [], [mode, round.targetId, pack]);
   const distanceResolver = europeBorderDistanceKm;
   const { speak, stop, failed: speechFailed } = useCountrySpeech(soundEnabled && progressLoaded, language);
   const restart = () => {
+    if (challenge) { challenge.onNext(); return; }
     stop();
     setRound(newRound(round.targetId));
     setRoundIndex(value => value + 1);
@@ -57,11 +64,11 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
   };
 
   const completeRound = useCallback((nextRound: Round) => {
-    if (nextRound.completedAt !== undefined && progressLoaded) {
+    if (!challenge && nextRound.completedAt !== undefined && progressLoaded) {
       const session = sessionFromRound(nextRound, difficulty);
       update(current => recordSession(current, { ...session, packId: mode === 'hot-cold' ? session.packId : `${session.packId}:${mode}` }));
     }
-  }, [progressLoaded, update, mode, difficulty]);
+  }, [progressLoaded, update, mode, difficulty, challenge]);
 
   const selectCountry = useCallback((id: string) => {
     if (!progressLoaded) return;
@@ -73,18 +80,23 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
       speak(countryName(location.id, language));
       return;
     }
-    if (round.completedAt !== undefined) return;
+    if (completed) return;
     try {
       const picked = guess(pack, round, id, distanceResolver);
       if (!picked.repeated) update(current => ({ ...current, learning: recordPractice(current.learning, practiceId, round, id, Date.now()) }));
+      if (challenge) {
+        const correct = id === round.targetId;
+        setChallengeResult(correct);
+        challenge.onAnswer(correct, round.targetId);
+      }
       setRound(picked.round);
       setFeedback({ id: picked.location.id, result: picked.result });
-      if (!picked.repeated && picked.round.completedAt !== undefined) completeRound(picked.round);
+      if (!challenge && !picked.repeated && picked.round.completedAt !== undefined) completeRound(picked.round);
       speak(countryName(picked.location.id, language));
     } catch {
       // Reject invalid country IDs without losing game state.
     }
-  }, [round, mode, progressLoaded, distanceResolver, completeRound, speak, language, update, practiceId, pack]);
+  }, [round, mode, progressLoaded, distanceResolver, completeRound, speak, language, update, practiceId, pack, challenge, completed]);
 
   const selectAnswer = useCallback((id: string) => {
     if ((mode !== 'name-it' && mode !== 'capital-name') || !progressLoaded || completed) return;
@@ -92,11 +104,15 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
     const location = pack.locations.find(item => item.id === id);
     if (!location) return;
     if (!answer.repeated) update(current => ({ ...current, learning: recordPractice(current.learning, practiceId, round, id, Date.now()) }));
+    if (challenge) {
+      setChallengeResult(answer.correct);
+      challenge.onAnswer(answer.correct, round.targetId);
+    }
     setRound(answer.round);
     setFeedback({ id: location.id, result: answer.correct ? 'correct' : 'far' });
-    if (answer.correct && !answer.repeated) completeRound(answer.round);
+    if (!challenge && answer.correct && !answer.repeated) completeRound(answer.round);
     speak(answerType === 'capital' ? capitalName(location.id, language) : countryName(location.id, language));
-  }, [mode, round, completed, progressLoaded, completeRound, speak, language, update, practiceId, pack, answerType]);
+  }, [mode, round, completed, progressLoaded, completeRound, speak, language, update, practiceId, pack, answerType, challenge]);
 
   const resultById = useMemo(() => {
     const results = new Map<string, GuessResult>();
@@ -113,6 +129,7 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
     }
     if (mode === 'find-it' || mode === 'capital-find') {
       for (const id of round.guesses) results.set(id, id === round.targetId ? 'correct' : 'far');
+      if (challengeResult !== null) results.set(round.targetId, 'correct');
       return results;
     }
     for (const id of round.guesses) {
@@ -120,13 +137,13 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
       results.set(id, picked.result);
     }
     return results;
-  }, [round, mode, feedback, distanceResolver, pack]);
+  }, [round, mode, feedback, distanceResolver, pack, challengeResult]);
 
   const completedIds = mode === 'learn' ? [...resultById.keys()] : round.guesses;
   const canShowNames = canRevealNames(mode, completed);
   const replayId = replayCountryId(mode, target.id, feedback?.id);
   const modeStyle = theme.mode[mode];
-  const prompt = completed ? c.correct
+  const prompt = completed ? challengeResult === false ? c.retry : c.correct
     : mode === 'find-it' ? clue === 'flag' ? c.flagPrompt : clue === 'capital' ? `${c.capitalFindPrompt} ${capitalName(target.id, language)}` : `${c.findPrompt} ${countryName(target.id, language)}`
     : mode === 'capital-find' ? `${c.capitalFindPrompt} ${capitalName(target.id, language)}`
     : mode === 'capital-name' ? `${c.capitalNamePrompt} ${countryName(target.id, language)}`
@@ -141,7 +158,8 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
       </Pressable>
     </View>
     <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
-      {mode !== 'learn' && <Text style={styles.history}>{c.levels[difficulty]} · {c.levelHints[difficulty]}</Text>}
+      {challenge && <Text style={styles.history}>{c.quickChallenge} · {challenge.index + 1}/{challenge.total}</Text>}
+      {mode !== 'learn' && !challenge && <Text style={styles.history}>{c.levels[difficulty]} · {c.levelHints[difficulty]}</Text>}
       <View style={styles.promptRow}>
         <Text style={styles.prompt}>{progressLoaded ? prompt : c.loading}</Text>
         {mode !== 'learn' && <View style={styles.attempts}><Text style={styles.attemptLabel}>{c.attempts}</Text><Text style={styles.attemptValue}>{round.guesses.length}</Text></View>}
@@ -178,16 +196,18 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
         </View>)}
       </View>}
       {mode === 'learn' && <Pressable accessibilityRole="button" accessibilityState={{ selected: showBorders }} style={styles.secondary} onPress={() => setShowBorders(value => !value)}><Text style={styles.secondaryText}>{showBorders ? c.hideBorders : c.showBorders}</Text></Pressable>}
-      {canShowNames && <Pressable accessibilityRole="button" onPress={() => setShowNames(value => !value)} style={styles.secondary}>
+      {canShowNames && !challenge && <Pressable accessibilityRole="button" onPress={() => setShowNames(value => !value)} style={styles.secondary}>
         <Text style={styles.secondaryText}>{showNames ? c.hideNames : c.showNames}</Text>
       </Pressable>}
-      {completed && <Text style={styles.score}>+{scoreRound(round.guesses.length)} {c.score}</Text>}
-      {mode !== 'learn' && <Pressable accessibilityRole="button" disabled={!progressLoaded} style={styles.primary} accessibilityLabel={completed ? c.next : c.restart} onPress={restart}>
-        <Ionicons name="refresh-outline" size={20} color="#FFF" /><Text style={styles.primaryText}>{completed ? c.next : c.restart}</Text>
+      {completed && !challenge && <Text style={styles.score}>+{scoreRound(round.guesses.length)} {c.score}</Text>}
+      {challenge && completed && <Text style={styles.score}>{challengeResult ? c.quickCorrect : `${c.quickReview}: ${countryName(target.id, language)}`}</Text>}
+      {challenge && !completed && <Pressable accessibilityRole="button" style={styles.secondary} onPress={() => { setChallengeResult(false); challenge.onAnswer(false, round.targetId); }}><Text style={styles.secondaryText}>{c.quickSkip}</Text></Pressable>}
+      {mode !== 'learn' && <Pressable accessibilityRole="button" disabled={!progressLoaded || (!!challenge && !completed)} style={styles.primary} accessibilityLabel={challenge ? c.quickNext : completed ? c.next : c.restart} onPress={restart}>
+        <Ionicons name="refresh-outline" size={20} color="#FFF" /><Text style={styles.primaryText}>{challenge ? c.quickNext : completed ? c.next : c.restart}</Text>
       </Pressable>}
       {speechFailed && <Text accessibilityRole="alert" style={styles.warning}>{c.speechError}</Text>}
-      <ProgressStatus language={language} />
-      {mode !== 'learn' && <Text style={styles.history}>{c.history} · {c.solved}: {stats.played} · {c.best}: {stats.bestScore}</Text>}
+      {!challenge && <ProgressStatus language={language} />}
+      {mode !== 'learn' && !challenge && <Text style={styles.history}>{c.history} · {c.solved}: {stats.played} · {c.best}: {stats.bestScore}</Text>}
     </ScrollView>
   </SafeAreaView>;
 }

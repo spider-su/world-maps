@@ -19,3 +19,12 @@ World Maps is a downstream app of mobile_template. It owns its geography feature
   planar distances; map coverage is a learning-pack convention.
 
 See [POC stages](poc-roadmap.md) and [map attribution](europe-map-assets.md).
+
+
+## Capital quiz expansion
+
+- **Find by Capital** (`capital-find`): show and pronounce a capital; the player taps its matching country on the same offline Europe map. The answer country remains hidden until success, and attempts are recorded.
+- **Name the Capital** (`capital-name`): highlight the country and show four randomized, localized capital names. Wrong options cannot be counted repeatedly; finishing records the session.
+- Reuse 47 existing localized capitals (English, Polish, Russian), difficulty settings, local history and adaptive practice, with independent score/progress keys per mode.
+- There is no new geographic layer or backend. Capitol location coordinates are not needed because the questions are country-based, not city-point selection.
+- Validate Android and web quiz flow, voice and CI before merging.

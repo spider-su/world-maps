@@ -9,7 +9,7 @@ const pack: GeographyPack = { id: 'test', title: 'Test', kind: 'country', locati
 
 describe('geography game modes', () => {
   it('exposes four distinct game modes', () => {
-    expect(MODE_DEFINITIONS.map(m => m.id)).toEqual(['hot-cold', 'find-it', 'name-it', 'learn']);
+    expect(MODE_DEFINITIONS.map(m => m.id)).toEqual(['hot-cold', 'find-it', 'name-it', 'capital-find', 'capital-name', 'learn']);
     expect(modePrompt('hot-cold', 'Poland')).not.toContain('Poland');
     expect(modePrompt('find-it', 'Poland')).toContain('Poland');
   });
@@ -38,7 +38,7 @@ describe('geography game modes', () => {
 });
 
 it('keeps names hidden in every active quiz and permits exploration after completion', () => {
-  for (const mode of ['hot-cold', 'find-it', 'name-it'] as const) {
+  for (const mode of ['hot-cold', 'find-it', 'name-it', 'capital-find', 'capital-name'] as const) {
     expect(canRevealNames(mode, false)).toBe(false);
     expect(canRevealNames(mode, true)).toBe(true);
   }
@@ -47,6 +47,7 @@ it('keeps names hidden in every active quiz and permits exploration after comple
 
  it('replays the Find It prompt after mistakes without revealing hidden targets in other modes', () => {
   expect(replayCountryId('find-it', 'POL', 'DEU')).toBe('POL');
+  expect(replayCountryId('capital-find', 'POL', 'DEU')).toBe('POL');
   expect(replayCountryId('hot-cold', 'POL', 'DEU')).toBe('DEU');
   expect(replayCountryId('hot-cold', 'POL')).toBeUndefined();
   expect(replayCountryId('learn', 'POL', 'ITA')).toBe('ITA');

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs><linearGradient id="night" x2="1" y2="1"><stop stop-color="#145fb9"/><stop offset="1" stop-color="#071f40"/></linearGradient>
+  <linearGradient id="sea" x2="0" y2="1"><stop stop-color="#43aae4"/><stop offset="1" stop-color="#124c98"/></linearGradient></defs>
+  <rect width="256" height="256" rx="42" fill="url(#night)"/>
+  <circle cx="126" cy="127" r="94" fill="url(#sea)" stroke="#effaff" stroke-width="7"/>
+  <path fill="#9bd45c" d="M80 84L93 70 110 73 128 86 137 105 126 128 110 133 95 123 74 137 61 119 63 98ZM139 67L149 57 165 59 166 91 181 100 178 127 167 148 146 144 136 123ZM100 143L118 140 128 158 119 181 111 194 99 185 87 166ZM51 115L65 104 69 122 64 139 52 138ZM160 157L177 151 197 165 190 187 168 189 153 176Z"/>
+  <circle cx="204" cy="199" r="40" fill="#f9fdff"/><circle cx="204" cy="199" r="33" fill="#103a77"/>
+  <path d="M204 174L215 199 204 224 193 199Z" fill="#fff"/><circle cx="204" cy="199" r="6" fill="#f35f43"/>
+  <path d="M38 49v12m-6-6h12M218 38v8m-4-4h8" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+</svg>

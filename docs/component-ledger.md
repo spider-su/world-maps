@@ -31,3 +31,9 @@ For each future component, replace generic status with dated evidence and the de
 - `HotColdScreen` owns the top safe-area edge; visible tabs own the bottom edge.
 
 - Europe map views: bundled 1:50m country/context geometry and collision-filtered labels share the existing 864×570 coordinates. `mapLabels` exposes names only when explicitly enabled or already guessed. `CountryMarker` uses native SVG press events and DOM click events on web, matching `CountryPath`. No dependencies added. Web evidence and current native limitations are recorded in `docs/europe-map-assets.md`.
+
+- POC shell: `HomeScreen` owns mode entry; `GeographyGameScreen` owns one mounted
+  round. Game hides tabs and owns top/bottom insets; Home/Settings own only top.
+  `EuropeMap` shares offline geometry, gestures and controls with Home preview.
+  `ModeSelector` accepts EN/PL copy and optional selected mode. Existing branding
+  branch was integrated, including its app-specific icon and theme tokens.

@@ -1,8 +1,8 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer, DarkTheme, DefaultTheme } from '@react-navigation/native';
-import { useColorScheme } from 'react-native';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { HotColdScreen } from './screens/HotColdScreen';
+import { HomeScreen } from './screens/HomeScreen';
+import { Ionicons } from '@expo/vector-icons';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { getTabBarMetrics } from './platform/safeArea';
 import { useLanguage } from './ui/LanguageContext';
@@ -18,13 +18,12 @@ function Tabs() {
       headerShown: false,
       tabBarStyle: { height: tabBar.height, paddingTop: tabBar.paddingTop, paddingBottom: tabBar.paddingBottom }
     }}>
-      <Tab.Screen name="Home" component={HotColdScreen} options={{ tabBarLabel: "Play" }} />
-      <Tab.Screen name="Settings" component={SettingsScreen} options={{ tabBarLabel: t("settings") }} />
+      <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: t("home"), tabBarIcon: ({ color, size }) => <Ionicons name="earth-outline" color={color} size={size} /> }} />
+      <Tab.Screen name="Settings" component={SettingsScreen} options={{ tabBarLabel: t("settings"), tabBarIcon: ({ color, size }) => <Ionicons name="settings-outline" color={color} size={size} /> }} />
     </Tab.Navigator>
   );
 }
 
 export function AppNavigation() {
-  const scheme = useColorScheme();
-  return <NavigationContainer theme={scheme === 'dark' ? DarkTheme : DefaultTheme}><Tabs /></NavigationContainer>;
+  return <NavigationContainer theme={DefaultTheme}><Tabs /></NavigationContainer>;
 }

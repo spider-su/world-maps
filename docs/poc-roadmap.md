@@ -43,3 +43,13 @@ Stage results and any remaining gates are appended as implementation proceeds.
 - npm audit reports six high-severity package entries in the dependency/tooling
   tree. No forced major SDK downgrade was applied; this remains an explicit
   dependency limitation, not a claim of a vulnerability-free release.
+
+### Stage 2 — map-first shell
+
+- Integrated existing `feature/world-maps-brand-theme` assets instead of duplicating
+  the icon, tokens or cards. Home now routes into a dedicated game with Back.
+- Shared `EuropeMap` extracted; prompt/answers/feedback sit directly around the map.
+  Game owns both insets with tabs hidden; Home retains visible-tab ownership.
+- EN/PL added for new UI. `npm run ci`: PASS (42 unit + 3 setup tests).
+- Browser 390×844: Home entry, Back and mode entry PASS. Name It answers and primary
+  action fit without scrolling. Zero browser errors; existing pointerEvents warning.

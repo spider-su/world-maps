@@ -1,0 +1,56 @@
+import type { Language } from '../../ui/i18n';
+
+const en = {
+  tagline: 'Explore · Learn · Play', chooseMode: 'Choose how to explore', europe: 'Europe',
+  offline: '47 countries · Offline map', back: 'Back to Home', settings: 'Settings',
+  modes: {
+    'hot-cold': { title: 'Hot & Cold', description: 'Find a hidden country using distance clues.' },
+    'find-it': { title: 'Find It', description: 'Read the name and find its country on the map.' },
+    'name-it': { title: 'Name It', description: 'Identify the highlighted country from four names.' },
+    learn: { title: 'Learn', description: 'Explore countries, capitals and pronunciation.' },
+  },
+  loading: 'Restoring your progress…', hiddenPrompt: 'Find the hidden country', findPrompt: 'Find:',
+  namePrompt: 'Which country is highlighted?', learnPrompt: 'Tap a country to explore',
+  attempts: 'Attempts', correct: 'Country found!', retry: 'Not quite. Try again.',
+  next: 'Next country', restart: 'New round', hear: 'Hear name', mute: 'Mute voice', unmute: 'Enable voice',
+  showNames: 'Show names', hideNames: 'Hide names', smallCountries: 'Small countries',
+  marker: 'Country marker', allCountries: 'Choose on map or from the list',
+  lastSelection: 'Last selection', startHint: 'Tap a country for your first clue.',
+  proximity: { correct: 'Found', 'very-close': 'Very close', close: 'Close', far: 'Far', 'very-far': 'Very far' },
+  resetMap: 'Show all Europe', zoomIn: 'Zoom in', zoomOut: 'Zoom out',
+  moveLeft: 'Move left', moveRight: 'Move right', moveUp: 'Move up', moveDown: 'Move down',
+  score: 'points', history: 'Recent history · up to 100 completed rounds', solved: 'Solved', best: 'Best score', total: 'Points in history',
+  saveError: 'Your latest changes are not saved on this device.', readError: 'Saved progress could not be read. Retry before playing.',
+  retrySave: 'Retry', saved: 'Saved on this device', voice: 'Pronunciation', voiceHint: 'Uses voices installed on your device. Offline availability varies.',
+  language: 'Language', about: 'About World Maps', privacy: 'Maps and progress stay on this device. No account or API is required.',
+  mapSource: 'Map: Natural Earth · Approximate distance clues', capital: 'Capital', countryDetails: 'Country details',
+  learnHint: 'Tap any country to discover its name and capital.', flag: 'Flag',
+};
+type Copy = { [K in keyof typeof en]: typeof en[K] extends string ? string : typeof en[K] extends object ? { [P in keyof typeof en[K]]: typeof en[K][P] extends string ? string : { [Q in keyof typeof en[K][P]]: string } } : never };
+const pl: Copy = {
+  tagline: 'Odkrywaj · Ucz się · Graj', chooseMode: 'Wybierz sposób odkrywania', europe: 'Europa',
+  offline: '47 państw · Mapa offline', back: 'Wróć do strony głównej', settings: 'Ustawienia',
+  modes: {
+    'hot-cold': { title: 'Ciepło–zimno', description: 'Odkryj ukryte państwo dzięki wskazówkom o odległości.' },
+    'find-it': { title: 'Znajdź je', description: 'Przeczytaj nazwę i wskaż państwo na mapie.' },
+    'name-it': { title: 'Nazwij je', description: 'Rozpoznaj zaznaczone państwo spośród czterech nazw.' },
+    learn: { title: 'Nauka', description: 'Poznawaj państwa, stolice i wymowę.' },
+  },
+  loading: 'Wczytywanie postępów…', hiddenPrompt: 'Znajdź ukryte państwo', findPrompt: 'Znajdź:',
+  namePrompt: 'Które państwo jest zaznaczone?', learnPrompt: 'Dotknij państwa, aby je poznać',
+  attempts: 'Próby', correct: 'Państwo odnalezione!', retry: 'Nie tym razem. Spróbuj ponownie.',
+  next: 'Następne państwo', restart: 'Nowa runda', hear: 'Posłuchaj nazwy', mute: 'Wyłącz głos', unmute: 'Włącz głos',
+  showNames: 'Pokaż nazwy', hideNames: 'Ukryj nazwy', smallCountries: 'Małe państwa',
+  marker: 'Znacznik państwa', allCountries: 'Wybierz na mapie lub z listy',
+  lastSelection: 'Ostatni wybór', startHint: 'Dotknij państwa, aby otrzymać wskazówkę.',
+  proximity: { correct: 'Odnalezione', 'very-close': 'Bardzo blisko', close: 'Blisko', far: 'Daleko', 'very-far': 'Bardzo daleko' },
+  resetMap: 'Pokaż całą Europę', zoomIn: 'Przybliż', zoomOut: 'Oddal',
+  moveLeft: 'Przesuń w lewo', moveRight: 'Przesuń w prawo', moveUp: 'Przesuń w górę', moveDown: 'Przesuń w dół',
+  score: 'pkt', history: 'Ostatnie wyniki · do 100 ukończonych rund', solved: 'Ukończone', best: 'Najlepszy wynik', total: 'Punkty w historii',
+  saveError: 'Ostatnie zmiany nie są zapisane na tym urządzeniu.', readError: 'Nie udało się odczytać postępów. Ponów przed grą.',
+  retrySave: 'Ponów', saved: 'Zapisano na tym urządzeniu', voice: 'Wymowa', voiceHint: 'Korzysta z głosów zainstalowanych na urządzeniu. Dostępność offline zależy od urządzenia.',
+  language: 'Język', about: 'O World Maps', privacy: 'Mapy i postępy pozostają na tym urządzeniu. Konto ani API nie są wymagane.',
+  mapSource: 'Mapa: Natural Earth · Przybliżone wskazówki o odległości', capital: 'Stolica', countryDetails: 'Informacje o państwie',
+  learnHint: 'Dotknij państwa, aby poznać jego nazwę i stolicę.', flag: 'Flaga',
+};
+export const gameCopy: Record<Language, Copy> = { en, pl };

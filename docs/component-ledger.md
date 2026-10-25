@@ -75,3 +75,11 @@ For each future component, replace generic status with dated evidence and the de
 - `speechController`: serialized stop/speak queue, installed-voice matching, stale
   callback guards and recoverable unavailable state. Hook stops on blur, mute,
   language change and unmount. Physical audible speech remains a separate gate.
+
+- Gameplay internals: `startRoundFor` starts a round for an explicit adaptive/random
+  target and rejects IDs outside the active pack; `classifyGuess` is the pure
+  proximity result shared by `guess()` and map colors (zero-distance neighbours stay
+  non-correct). `modePackId` owns the stored IDs (`europe-countries` for Hot & Cold,
+  `europe-countries:<mode>` otherwise). Tabs are typed by `TabParamList`. All app
+  text, including tab labels, lives in `gameCopy`; `src/ui/i18n.ts` keeps only
+  language and speech-locale definitions.

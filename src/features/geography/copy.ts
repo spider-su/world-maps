@@ -1,4 +1,6 @@
 import type { Language } from '../../ui/i18n';
+import { capitalName, countryName } from './countryFacts';
+import type { GameMode } from './modes';
 
 const en = {
   learningProgress: 'Learning progress', practiced: 'Practiced', mastered: 'Mastered', needsPractice: 'Needs practice', accuracy: 'Accuracy',
@@ -10,7 +12,7 @@ const en = {
   difficulty: 'Difficulty', levels: { easy: 'Easy', normal: 'Normal', difficult: 'Difficult' },
   levelHints: { easy: '7 largest map outlines', normal: '34 large and medium countries', difficult: 'All 47 countries' },
   learnAll: 'Learn always includes all 47 countries.',
-  offline: '47 countries · Offline map', back: 'Back to Home', settings: 'Settings',
+  offline: '47 countries · Offline map', back: 'Back to Home', settings: 'Settings', home: 'Home',
   modes: {
     'hot-cold': { title: 'Hot & Cold', description: 'Find a hidden country using distance clues.' },
     'find-it': { title: 'Find It', description: 'Read the name and find its country on the map.' },
@@ -24,14 +26,13 @@ const en = {
   attempts: 'Attempts', correct: 'Country found!', retry: 'Not quite. Try again.',
   next: 'Next country', restart: 'New round', hear: 'Hear name', mute: 'Mute voice', unmute: 'Enable voice',
   showNames: 'Show names', hideNames: 'Hide names', smallCountries: 'Small countries',
-  marker: 'Small country marker', mapCountry: 'Map country', allCountries: 'Choose on map or from the list',
-  lastSelection: 'Last selection', startHint: 'Tap a country for your first clue.',
+  marker: 'Small country marker', mapCountry: 'Map country',
   proximity: { correct: 'Found', 'very-close': 'Very close', close: 'Close', far: 'Far', 'very-far': 'Very far' },
   resetMap: 'Show all Europe', zoomIn: 'Zoom in', zoomOut: 'Zoom out',
   moveLeft: 'Move left', moveRight: 'Move right', moveUp: 'Move up', moveDown: 'Move down',
-  score: 'points', history: 'Recent history · up to 100 completed rounds', solved: 'Solved', best: 'Best score', total: 'Points in history',
+  score: 'points', history: 'Recent history · up to 100 completed rounds', solved: 'Solved', best: 'Best score',
   saveError: 'Your latest changes are not saved on this device.', readError: 'Saved progress could not be read. Retry before playing.',
-  retrySave: 'Retry', saved: 'Saved on this device', voice: 'Pronunciation', voiceHint: 'Uses voices installed on your device. Offline availability varies.',
+  retrySave: 'Retry', voice: 'Pronunciation', voiceHint: 'Uses voices installed on your device. Offline availability varies.',
   language: 'Language', about: 'About World Maps', privacy: 'Maps and progress stay on this device. No account or API is required.',
   mapSource: 'Map: Natural Earth · Approximate distance clues', capital: 'Capital', countryDetails: 'Country details',
   learnHint: 'Tap any country to discover its name and capital.', flag: 'Flag',
@@ -50,7 +51,7 @@ const pl: Copy = {
   difficulty: 'Poziom trudności', levels: { easy: 'Łatwy', normal: 'Normalny', difficult: 'Trudny' },
   levelHints: { easy: '7 największych obszarów na mapie', normal: '34 duże i średnie państwa', difficult: 'Wszystkie 47 państw' },
   learnAll: 'Nauka zawsze obejmuje wszystkie 47 państw.',
-  offline: '47 państw · Mapa offline', back: 'Wróć do strony głównej', settings: 'Ustawienia',
+  offline: '47 państw · Mapa offline', back: 'Wróć do strony głównej', settings: 'Ustawienia', home: 'Główna',
   modes: {
     'hot-cold': { title: 'Ciepło–zimno', description: 'Odkryj ukryte państwo dzięki wskazówkom o odległości.' },
     'find-it': { title: 'Znajdź je', description: 'Przeczytaj nazwę i wskaż państwo na mapie.' },
@@ -64,14 +65,13 @@ const pl: Copy = {
   attempts: 'Próby', correct: 'Państwo odnalezione!', retry: 'Nie tym razem. Spróbuj ponownie.',
   next: 'Następne państwo', restart: 'Nowa runda', hear: 'Posłuchaj nazwy', mute: 'Wyłącz głos', unmute: 'Włącz głos',
   showNames: 'Pokaż nazwy', hideNames: 'Ukryj nazwy', smallCountries: 'Małe państwa',
-  marker: 'Znacznik małego państwa', mapCountry: 'Państwo na mapie', allCountries: 'Wybierz na mapie lub z listy',
-  lastSelection: 'Ostatni wybór', startHint: 'Dotknij państwa, aby otrzymać wskazówkę.',
+  marker: 'Znacznik małego państwa', mapCountry: 'Państwo na mapie',
   proximity: { correct: 'Odnalezione', 'very-close': 'Bardzo blisko', close: 'Blisko', far: 'Daleko', 'very-far': 'Bardzo daleko' },
   resetMap: 'Pokaż całą Europę', zoomIn: 'Przybliż', zoomOut: 'Oddal',
   moveLeft: 'Przesuń w lewo', moveRight: 'Przesuń w prawo', moveUp: 'Przesuń w górę', moveDown: 'Przesuń w dół',
-  score: 'pkt', history: 'Ostatnie wyniki · do 100 ukończonych rund', solved: 'Ukończone', best: 'Najlepszy wynik', total: 'Punkty w historii',
+  score: 'pkt', history: 'Ostatnie wyniki · do 100 ukończonych rund', solved: 'Ukończone', best: 'Najlepszy wynik',
   saveError: 'Ostatnie zmiany nie są zapisane na tym urządzeniu.', readError: 'Nie udało się odczytać postępów. Ponów przed grą.',
-  retrySave: 'Ponów', saved: 'Zapisano na tym urządzeniu', voice: 'Wymowa', voiceHint: 'Korzysta z głosów zainstalowanych na urządzeniu. Dostępność offline zależy od urządzenia.',
+  retrySave: 'Ponów', voice: 'Wymowa', voiceHint: 'Korzysta z głosów zainstalowanych na urządzeniu. Dostępność offline zależy od urządzenia.',
   language: 'Język', about: 'O World Maps', privacy: 'Mapy i postępy pozostają na tym urządzeniu. Konto ani API nie są wymagane.',
   mapSource: 'Mapa: Natural Earth · Przybliżone wskazówki o odległości', capital: 'Stolica', countryDetails: 'Informacje o państwie',
   learnHint: 'Dotknij państwa, aby poznać jego nazwę i stolicę.', flag: 'Flaga',
@@ -88,7 +88,7 @@ const ru: Copy = {
   levelHints: { easy: '7 крупнейших контуров на карте', normal: '34 крупные и средние страны', difficult: 'Все 47 стран' },
   learnAll: 'Изучение всегда включает все 47 стран.',
   tagline: 'Исследуй · Учись · Играй', chooseMode: 'Выберите режим', europe: 'Европа',
-  offline: '47 стран · Офлайн-карта', back: 'На главную', settings: 'Настройки',
+  offline: '47 стран · Офлайн-карта', back: 'На главную', settings: 'Настройки', home: 'Главная',
   modes: {
     'hot-cold': { title: 'Горячо–холодно', description: 'Найдите скрытую страну по подсказкам о расстоянии.' },
     'find-it': { title: 'Найди страну', description: 'Прочитайте название и найдите страну на карте.' },
@@ -102,14 +102,13 @@ const ru: Copy = {
   attempts: 'Попытки', correct: 'Страна найдена!', retry: 'Не совсем. Попробуйте ещё раз.',
   next: 'Следующая страна', restart: 'Новый раунд', hear: 'Послушать название', mute: 'Выключить звук', unmute: 'Включить звук',
   showNames: 'Показать названия', hideNames: 'Скрыть названия', smallCountries: 'Малые страны',
-  marker: 'Метка малой страны', mapCountry: 'Страна на карте', allCountries: 'Выберите на карте или из списка',
-  lastSelection: 'Последний выбор', startHint: 'Нажмите на страну для первой подсказки.',
+  marker: 'Метка малой страны', mapCountry: 'Страна на карте',
   proximity: { correct: 'Найдено', 'very-close': 'Очень близко', close: 'Близко', far: 'Далеко', 'very-far': 'Очень далеко' },
   resetMap: 'Показать всю Европу', zoomIn: 'Приблизить', zoomOut: 'Отдалить',
   moveLeft: 'Сдвинуть влево', moveRight: 'Сдвинуть вправо', moveUp: 'Сдвинуть вверх', moveDown: 'Сдвинуть вниз',
-  score: 'очков', history: 'История · до 100 завершённых раундов', solved: 'Решено', best: 'Лучший результат', total: 'Очки в истории',
+  score: 'очков', history: 'История · до 100 завершённых раундов', solved: 'Решено', best: 'Лучший результат',
   saveError: 'Последние изменения не сохранены на устройстве.', readError: 'Не удалось прочитать прогресс. Повторите перед игрой.',
-  retrySave: 'Повторить', saved: 'Сохранено на устройстве', voice: 'Произношение', voiceHint: 'Использует голоса устройства. Работа офлайн зависит от установленных голосов.',
+  retrySave: 'Повторить', voice: 'Произношение', voiceHint: 'Использует голоса устройства. Работа офлайн зависит от установленных голосов.',
   language: 'Язык', about: 'О World Maps', privacy: 'Карты и прогресс хранятся на устройстве. Аккаунт и API не нужны.',
   mapSource: 'Карта: Natural Earth · Приблизительные расстояния', capital: 'Столица', countryDetails: 'О стране',
   learnHint: 'Нажмите на страну, чтобы узнать её название и столицу.', flag: 'Флаг',
@@ -118,3 +117,17 @@ const ru: Copy = {
   clueType: 'Подсказка: найти', answerType: 'Ответ: назвать', findClues: { name: 'Название', capital: 'Столица', flag: 'Флаг', mixed: 'Смешанный' }, nameAnswers: { country: 'Страна', capital: 'Столица' }, flagPrompt: 'Найдите страну с этим флагом',
 };
 export const gameCopy: Record<Language, Copy> = { en, pl, ru };
+
+/** Prompt shown above the map. Hot & Cold and Name It never reveal the target. */
+export function gamePrompt(language: Language, mode: GameMode, targetId: string, completed: boolean, clue: 'name' | 'capital' | 'flag' = 'name', answer: 'country' | 'capital' = 'country'): string {
+  const c = gameCopy[language];
+  if (completed) return c.correct;
+  switch (mode) {
+    case 'find-it': return clue === 'flag' ? c.flagPrompt : clue === 'capital' ? `${c.capitalFindPrompt} ${capitalName(targetId, language)}` : `${c.findPrompt} ${countryName(targetId, language)}`;
+    case 'capital-find': return `${c.capitalFindPrompt} ${capitalName(targetId, language)}`;
+    case 'capital-name': return `${c.capitalNamePrompt} ${countryName(targetId, language)}`;
+    case 'name-it': return answer === 'capital' ? `${c.capitalNamePrompt} ${countryName(targetId, language)}` : c.namePrompt;
+    case 'learn': return c.learnPrompt;
+    case 'hot-cold': return c.hiddenPrompt;
+  }
+}

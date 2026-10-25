@@ -66,3 +66,11 @@ export function canRevealNames(mode: GameMode, completed: boolean): boolean {
 export function replayCountryId(mode: GameMode, targetId: string, selectedId?: string): string | undefined {
   return mode === 'find-it' || mode === 'capital-find' ? targetId : selectedId;
 }
+
+/** Stored pack ID for a mode's scores and learning records. Hot & Cold keeps the
+ * original unsuffixed ID from when it was the only mode. Changing any of these
+ * strings orphans saved progress.
+ */
+export function modePackId(packId: string, mode: GameMode): string {
+  return mode === 'hot-cold' ? packId : `${packId}:${mode}`;
+}

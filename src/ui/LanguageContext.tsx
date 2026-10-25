@@ -1,13 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
-import { isLanguage, languageFromLocale, translate, type Language, type TranslationKey } from './i18n';
+import { isLanguage, languageFromLocale, type Language } from './i18n';
 
 const KEY = 'world-maps:language:v1';
 const LEGACY_KEY = 'mobile-template.language.v1';
 type LanguageContextValue = {
   language: Language; setLanguage: (language: Language) => void;
   languageError: boolean; retryLanguage: () => void;
-  t: (key: TranslationKey) => string;
 };
 const Context = createContext<LanguageContextValue | null>(null);
 export function LanguageProvider({ children }: { children: ReactNode }) {
@@ -41,7 +40,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     }).catch(() => { if (version === revision.current) setLanguageError(true); });
   }, []);
   const retryLanguage = () => { if (readFailed.current) void read(); else setLanguage(language); };
-  return <Context.Provider value={{ language, setLanguage, languageError, retryLanguage, t: key => translate(language, key) }}>{children}</Context.Provider>;
+  return <Context.Provider value={{ language, setLanguage, languageError, retryLanguage }}>{children}</Context.Provider>;
 }
 export function useLanguage() {
   const value = useContext(Context);

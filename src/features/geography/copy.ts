@@ -15,6 +15,8 @@ const en = {
     'hot-cold': { title: 'Hot & Cold', description: 'Find a hidden country using distance clues.' },
     'find-it': { title: 'Find It', description: 'Read the name and find its country on the map.' },
     'name-it': { title: 'Name It', description: 'Identify the highlighted country from four names.' },
+    'capital-find': { title: 'Find by Capital', description: 'Find the country on the map using its capital.' },
+    'capital-name': { title: 'Name the Capital', description: 'Choose the capital of the highlighted country.' },
     learn: { title: 'Learn', description: 'Explore countries, capitals and pronunciation.' },
   },
   loading: 'Restoring your progress…', speechError: 'Pronunciation is unavailable. Check your installed device voices.', licenses: 'Data sources and licenses', close: 'Close', languageError: 'The language preference could not be restored or saved.', hiddenPrompt: 'Find the hidden country', findPrompt: 'Find:',
@@ -33,6 +35,8 @@ const en = {
   language: 'Language', about: 'About World Maps', privacy: 'Maps and progress stay on this device. No account or API is required.',
   mapSource: 'Map: Natural Earth · Approximate distance clues', capital: 'Capital', countryDetails: 'Country details',
   learnHint: 'Tap any country to discover its name and capital.', flag: 'Flag',
+  capitalFindPrompt: 'Find the country whose capital is:', capitalNamePrompt: 'What is the capital of this country?',
+  capitalFeedback: 'Capital of',
 };
 type Copy = typeof en;
 const pl: Copy = {
@@ -50,6 +54,8 @@ const pl: Copy = {
     'hot-cold': { title: 'Ciepło–zimno', description: 'Odkryj ukryte państwo dzięki wskazówkom o odległości.' },
     'find-it': { title: 'Znajdź je', description: 'Przeczytaj nazwę i wskaż państwo na mapie.' },
     'name-it': { title: 'Nazwij je', description: 'Rozpoznaj zaznaczone państwo spośród czterech nazw.' },
+    'capital-find': { title: 'Znajdź po stolicy', description: 'Wskaż na mapie państwo podanej stolicy.' },
+    'capital-name': { title: 'Nazwij stolicę', description: 'Wybierz stolicę zaznaczonego państwa.' },
     learn: { title: 'Nauka', description: 'Poznawaj państwa, stolice i wymowę.' },
   },
   loading: 'Wczytywanie postępów…', speechError: 'Wymowa jest niedostępna. Sprawdź głosy zainstalowane na urządzeniu.', licenses: 'Źródła danych i licencje', close: 'Zamknij', languageError: 'Nie udało się odczytać lub zapisać ustawienia języka.', hiddenPrompt: 'Znajdź ukryte państwo', findPrompt: 'Znajdź:',
@@ -68,6 +74,8 @@ const pl: Copy = {
   language: 'Język', about: 'O World Maps', privacy: 'Mapy i postępy pozostają na tym urządzeniu. Konto ani API nie są wymagane.',
   mapSource: 'Mapa: Natural Earth · Przybliżone wskazówki o odległości', capital: 'Stolica', countryDetails: 'Informacje o państwie',
   learnHint: 'Dotknij państwa, aby poznać jego nazwę i stolicę.', flag: 'Flaga',
+  capitalFindPrompt: 'Znajdź państwo, którego stolicą jest:', capitalNamePrompt: 'Jaka jest stolica tego państwa?',
+  capitalFeedback: 'Stolica państwa',
 };
 const ru: Copy = {
   learningProgress: 'Прогресс обучения', practiced: 'Изучено', mastered: 'Освоено', needsPractice: 'Нужна практика', accuracy: 'Точность',
@@ -83,6 +91,8 @@ const ru: Copy = {
     'hot-cold': { title: 'Горячо–холодно', description: 'Найдите скрытую страну по подсказкам о расстоянии.' },
     'find-it': { title: 'Найди страну', description: 'Прочитайте название и найдите страну на карте.' },
     'name-it': { title: 'Назови страну', description: 'Выберите название выделенной страны из четырёх вариантов.' },
+    'capital-find': { title: 'Столица → страна', description: 'Найдите страну на карте по её столице.' },
+    'capital-name': { title: 'Назови столицу', description: 'Выберите столицу выделенной страны.' },
     learn: { title: 'Изучение', description: 'Изучайте страны, столицы и произношение.' },
   },
   loading: 'Загрузка прогресса…', speechError: 'Произношение недоступно. Проверьте установленные голоса устройства.', licenses: 'Источники данных и лицензии', close: 'Закрыть', languageError: 'Не удалось прочитать или сохранить язык.', hiddenPrompt: 'Найдите скрытую страну', findPrompt: 'Найдите:',
@@ -101,5 +111,7 @@ const ru: Copy = {
   language: 'Язык', about: 'О World Maps', privacy: 'Карты и прогресс хранятся на устройстве. Аккаунт и API не нужны.',
   mapSource: 'Карта: Natural Earth · Приблизительные расстояния', capital: 'Столица', countryDetails: 'О стране',
   learnHint: 'Нажмите на страну, чтобы узнать её название и столицу.', flag: 'Флаг',
+  capitalFindPrompt: 'Найдите страну, столица которой:', capitalNamePrompt: 'Какова столица этой страны?',
+  capitalFeedback: 'Столица страны',
 };
 export const gameCopy: Record<Language, Copy> = { en, pl, ru };

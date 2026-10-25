@@ -66,3 +66,7 @@ For each future component, replace generic status with dated evidence and the de
   deterministic adaptive/random target sampling, and learning summaries.
 - `LearningOverview` / `PracticeSelector`: app-owned saved practice controls and
   expandable country progress; reused on Home/Settings. See country-learning.md.
+
+- `EuropeMap.atlas` / `showBorders`: optional offline relief appearance, sharing
+  the existing SVG viewBox and hit geometry; selected terrain is translucent blue.
+  Raster registration/asset checksums are tested. See docs/atlas-data.md.

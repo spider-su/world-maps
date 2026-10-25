@@ -32,6 +32,7 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
     const id = practiceTarget(pack, progress.learning, practiceId, progress.practiceMode, previousId);
     return startRound(pack, () => (pack.locations.findIndex(l => l.id === id) + 0.5) / pack.locations.length);
   };
+  const [showBorders, setShowBorders] = useState(true);
   const [showNames, setShowNames] = useState(false);
   const [round, setRound] = useState<Round>(() => newRound());
   const [feedback, setFeedback] = useState<{ id: string; result: GuessResult } | null>(null);
@@ -136,7 +137,7 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
         {mode !== 'learn' && <View style={styles.attempts}><Text style={styles.attemptLabel}>{c.attempts}</Text><Text style={styles.attemptValue}>{round.guesses.length}</Text></View>}
       </View>
       <EuropeMap key={`${mode}:${round.startedAt}:${round.targetId}`} results={resultById} revealedIds={completedIds} showNames={showNames && canShowNames}
-        selectableIds={mode === 'learn' ? undefined : pack.locations.map(location => location.id)} onSelect={selectCountry} enabled={progressLoaded && mode !== 'name-it'} language={language} targetId={mode === 'name-it' && !completed ? target.id : undefined} />
+        atlas={mode === 'learn'} showBorders={showBorders} selectableIds={mode === 'learn' ? undefined : pack.locations.map(location => location.id)} onSelect={selectCountry} enabled={progressLoaded && mode !== 'name-it'} language={language} targetId={mode === 'name-it' && !completed ? target.id : undefined} />
       {mode !== 'name-it' && (mode === 'learn' || difficulty === 'difficult') && <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.markers}>
         <Text style={styles.markerLabel}>{c.smallCountries}</Text>
         {selectionAlternatives.map((country, index) => <Pressable key={country.id} accessibilityRole="button"
@@ -163,6 +164,7 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
           <View style={[styles.swatch, { backgroundColor: CLUE_COLORS[result] }]} /><Text style={styles.legendText}>{c.proximity[result]}</Text>
         </View>)}
       </View>}
+      {mode === 'learn' && <Pressable accessibilityRole="button" accessibilityState={{ selected: showBorders }} style={styles.secondary} onPress={() => setShowBorders(value => !value)}><Text style={styles.secondaryText}>{showBorders ? c.hideBorders : c.showBorders}</Text></Pressable>}
       {canShowNames && <Pressable accessibilityRole="button" onPress={() => setShowNames(value => !value)} style={styles.secondary}>
         <Text style={styles.secondaryText}>{showNames ? c.hideNames : c.showNames}</Text>
       </Pressable>}

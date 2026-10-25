@@ -66,3 +66,9 @@ practice while reducing repeats of mastered countries. Home/Settings show local
 Europe learning statistics and per-country accuracy. Existing scores migrate once
 without being reset; misses from unfinished rounds are retained. See
 [learning model and migration](docs/country-learning.md).
+
+### Atlas and quiz appearance
+
+Home/Learn use bundled Natural Earth shaded relief, registered to the same SVG
+country geometry used for taps. Learn offers a border toggle; quizzes keep the
+clean political map. [Source, license and regeneration](docs/atlas-data.md).

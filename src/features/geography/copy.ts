@@ -4,6 +4,8 @@ const en = {
   learningProgress: 'Learning progress', practiced: 'Practiced', mastered: 'Mastered', needsPractice: 'Needs practice', accuracy: 'Accuracy',
   practice: 'Practice', practiceModes: { adaptive: 'Adaptive', random: 'Random' }, practiceHint: 'Adaptive favors recent misses and revisits older practice. No immediate repeats.',
   masteryHint: 'Mastered: three first-try successes in one mode and the last three answers correct.', showProgress: 'Show country progress', hideProgress: 'Hide country progress', notPracticed: 'Not practiced yet',
+
+  hideBorders: 'Hide borders', showBorders: 'Show borders',
   tagline: 'Explore · Learn · Play', chooseMode: 'Choose how to explore', europe: 'Europe',
   difficulty: 'Difficulty', levels: { easy: 'Easy', normal: 'Normal', difficult: 'Difficult' },
   levelHints: { easy: '7 largest map outlines', normal: '34 large and medium countries', difficult: 'All 47 countries' },
@@ -37,6 +39,8 @@ const pl: Copy = {
   learningProgress: 'Postępy w nauce', practiced: 'Ćwiczone', mastered: 'Opanowane', needsPractice: 'Do powtórki', accuracy: 'Trafność',
   practice: 'Ćwiczenie', practiceModes: { adaptive: 'Adaptacyjne', random: 'Losowe' }, practiceHint: 'Tryb adaptacyjny częściej wybiera ostatnie błędy i starsze powtórki. Bez powtórzeń z rzędu.',
   masteryHint: 'Opanowane: trzy sukcesy w pierwszej próbie w jednym trybie i ostatnie trzy odpowiedzi poprawne.', showProgress: 'Pokaż postępy państw', hideProgress: 'Ukryj postępy państw', notPracticed: 'Jeszcze niećwiczone',
+
+  hideBorders: 'Ukryj granice', showBorders: 'Pokaż granice',
   tagline: 'Odkrywaj · Ucz się · Graj', chooseMode: 'Wybierz sposób odkrywania', europe: 'Europa',
   difficulty: 'Poziom trudności', levels: { easy: 'Łatwy', normal: 'Normalny', difficult: 'Trudny' },
   levelHints: { easy: '7 największych obszarów na mapie', normal: '34 duże i średnie państwa', difficult: 'Wszystkie 47 państw' },

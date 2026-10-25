@@ -38,3 +38,6 @@ Reuse the current primitive when its behavior matches. Extend it when at least t
   Home preview; takes guess results, revealed IDs, label visibility and selection.
 - `features/geography/ModeSelector`: four icon-led mode cards, EN/PL, no round state.
 - `screens/GeographyGameScreen`: one game mode/round, compact prompt and answers.
+- `features/geography/DifficultySelector`: saved EN/PL Home level selection.
+  `difficultyPack` supplies eligible quiz locations; `EuropeMap.selectableIds`
+  restricts interactions while retaining geographic context.

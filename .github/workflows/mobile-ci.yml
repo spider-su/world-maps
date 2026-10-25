@@ -2,10 +2,15 @@ name: Mobile CI
 
 on:
   push:
-    branches: [main, develop, 'codex/**', 'feat/**', 'feature/**']
+    branches: [main, develop]
   pull_request:
     branches: [main, develop]
   workflow_dispatch:
+
+# A PR and its branch push validate the same source; keep only the newest run.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
 
 permissions:
   contents: read

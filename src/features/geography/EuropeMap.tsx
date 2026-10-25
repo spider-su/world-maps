@@ -23,10 +23,11 @@ interface Props {
   enabled?: boolean;
   preview?: boolean;
   targetId?: string;
+  selectableIds?: readonly string[];
 }
 
 /** Shared, offline renderer. Country geometry remains authoritative for taps. */
-export function EuropeMap({ results, revealedIds, showNames, onSelect, language, enabled = true, preview = false, targetId }: Props) {
+export function EuropeMap({ results, revealedIds, showNames, onSelect, language, enabled = true, preview = false, targetId, selectableIds }: Props) {
   const { width } = useWindowDimensions();
   const [measuredWidth, setMeasuredWidth] = useState(0);
   const mapWidth = measuredWidth || Math.max(280, Math.min(width - 32, 840));
@@ -43,6 +44,7 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
   const gesture = useRef({ viewport, pinchDistance: 0 });
   useEffect(() => { current.current = viewport; }, [viewport]);
   const visible = frame(viewport);
+  const eligible = (id: string) => !selectableIds || selectableIds.includes(id);
   const c = gameCopy[language];
   const labels = mapLabels(europeShapes.map(shape => ({ ...shape, name: countryName(shape.id, language) })), showNames, revealedIds, visible, mapWidth);
   const begin = useCallback(() => { gesture.current = { viewport: current.current, pinchDistance: 0 }; }, []);
@@ -85,18 +87,18 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
         <Rect width="864" height="570" fill={SEA} />
         {europeContextShapes.map(shape => <Path key={shape.id} d={shape.path} fill="#CAD5DE" stroke="#70889A" strokeWidth={0.6 / viewport.zoom} />)}
         {europeShapes.map((shape, index) => {
-          const props = { d: shape.path, fill: shape.id === targetId ? '#F5AD18' : results.has(shape.id) ? CLUE_COLORS[results.get(shape.id)!] : LAND, stroke: '#637F90', strokeWidth: Math.max(0.35, 1 / viewport.zoom) };
-          return preview || !enabled ? <Path key={shape.id} {...props} /> : <CountryPath key={shape.id} {...props} accessibilityLabel={`${c.mapCountry} ${index + 1}`} onSelect={() => onSelect(shape.id)} />;
+          const props = { d: shape.path, fill: !eligible(shape.id) ? '#CAD5DE' : shape.id === targetId ? '#F5AD18' : results.has(shape.id) ? CLUE_COLORS[results.get(shape.id)!] : LAND, stroke: '#637F90', strokeWidth: Math.max(0.35, 1 / viewport.zoom) };
+          return preview || !enabled || !eligible(shape.id) ? <Path key={shape.id} {...props} /> : <CountryPath key={shape.id} {...props} accessibilityLabel={`${c.mapCountry} ${index + 1}`} onSelect={() => onSelect(shape.id)} />;
         })}
         {!preview && labels.map(location => <SvgText key={location.id} x={location.labelX} y={location.labelY}
           fontSize={11 * visible.w / mapWidth} fontFamily="sans-serif" fontWeight="700" textAnchor="middle" fill="#17364A" pointerEvents="none">{location.name}</SvgText>)}
-        {!preview && microstates.map(state => <CountryMarker key={state.id} cx={state.x} cy={state.y} r={Math.max(2, 6 / viewport.zoom)}
+        {!preview && microstates.filter(state => eligible(state.id)).map(state => <CountryMarker key={state.id} cx={state.x} cy={state.y} r={Math.max(2, 6 / viewport.zoom)}
           fill={state.id === targetId ? '#F5AD18' : results.has(state.id) ? CLUE_COLORS[results.get(state.id)!] : '#FFF'} stroke="#17364A" strokeWidth={1 / viewport.zoom}
           onSelect={() => { if (enabled) onSelect(state.id); }} />)}
         {targetPoint && <Circle cx={'labelX' in targetPoint ? targetPoint.labelX : targetPoint.x}
           cy={'labelY' in targetPoint ? targetPoint.labelY : targetPoint.y} r={12 * visible.w / mapWidth}
           fill="none" stroke="#B66D00" strokeWidth={2 * visible.w / mapWidth} pointerEvents="none" />}
-        {!preview && microstates.map((state, index) => <SvgText key={`${state.id}-number`} x={state.x} y={state.y + 2 / viewport.zoom}
+        {!preview && microstates.filter(state => eligible(state.id)).map((state, index) => <SvgText key={`${state.id}-number`} x={state.x} y={state.y + 2 / viewport.zoom}
           fontSize={6 / viewport.zoom} textAnchor="middle" fill="#17364A" pointerEvents="none">{index + 1}</SvgText>)}
       </Svg>
     </View>

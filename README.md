@@ -45,3 +45,16 @@ Completed scores and voice/language preferences survive relaunch; unfinished rou
 are intentionally not restored. Statistics describe the most recent 100 completed
 rounds. One light theme is supported in this POC. Learning data is bundled and its
 licenses are available in Settings and [data attribution](docs/country-data.md).
+
+### Difficulty
+
+Choose a level on Home before starting a quiz. **Normal** is the default (34
+large/medium countries); **Easy** uses the seven largest outlines on the displayed
+map; **Difficult** uses all 47 countries, including small-country markers. Size is
+projected map area, not a ranking by national land area. Excluded countries remain
+visible in muted gray and cannot be guessed. Name It draws all four options from
+the selected pool. Learn always includes every country.
+
+The level is saved with preferences and completed rounds; quiz history is filtered
+by mode and level. Older rounds remain intact and count as Difficult because they
+used the full pool. See [difficulty validation](docs/difficulty-testing.md).

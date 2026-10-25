@@ -11,7 +11,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   orientation: 'portrait',
   web: { ...config.web, favicon: './assets/icon.png' },
   icon: './assets/icon.png',
-  userInterfaceStyle: 'light',
+  userInterfaceStyle: 'automatic',
   ios: {
     ...config.ios,
     supportsTablet: false,

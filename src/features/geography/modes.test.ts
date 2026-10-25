@@ -9,7 +9,7 @@ const pack: GeographyPack = { id: 'test', title: 'Test', kind: 'country', locati
 
 describe('geography game modes', () => {
   it('exposes four distinct game modes', () => {
-    expect(MODE_DEFINITIONS.map(m => m.id)).toEqual(['hot-cold', 'find-it', 'name-it', 'capital-find', 'capital-name', 'learn']);
+    expect(MODE_DEFINITIONS.map(m => m.id)).toEqual(['hot-cold', 'find-it', 'name-it', 'learn']);
     expect(modePrompt('hot-cold', 'Poland')).not.toContain('Poland');
     expect(modePrompt('find-it', 'Poland')).toContain('Poland');
   });

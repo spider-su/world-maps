@@ -3,6 +3,8 @@ import { BackHandler, Pressable, ScrollView, StyleSheet, Text, View } from 'reac
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import type { TabParamList } from '../navigation';
 import { ModeSelector } from '../features/geography/ModeSelector';
 import { EuropeMap } from '../features/geography/EuropeMap';
 import { DifficultySelector } from '../features/geography/DifficultySelector';
@@ -23,7 +25,7 @@ export function HomeScreen() {
   const [mode, setMode] = useState<GameMode | null>(null);
   const { language } = useLanguage();
   const c = gameCopy[language];
-  const navigation = useNavigation();
+  const navigation = useNavigation<BottomTabNavigationProp<TabParamList, 'Home'>>();
   const insets = useSafeAreaInsets();
   useEffect(() => {
     navigation.setOptions({ tabBarStyle: mode ? { display: 'none' } : { ...getTabBarMetrics(insets.bottom) } });
@@ -38,7 +40,7 @@ export function HomeScreen() {
     <ScrollView contentContainerStyle={styles.body}>
       <View style={styles.top}>
         <View><Text style={styles.brand}>World Maps</Text><Text style={styles.tagline}>{c.tagline}</Text></View>
-        <Pressable accessibilityRole="button" accessibilityLabel={c.settings} onPress={() => navigation.navigate('Settings' as never)} style={styles.settings}>
+        <Pressable accessibilityRole="button" accessibilityLabel={c.settings} onPress={() => navigation.navigate('Settings')} style={styles.settings}>
           <Ionicons name="settings-outline" size={24} color={theme.brandDark} />
         </Pressable>
       </View>

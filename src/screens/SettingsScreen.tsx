@@ -11,6 +11,7 @@ import { LearningOverview } from '../features/geography/LearningOverview';
 import { ProgressStatus } from '../features/geography/ProgressStatus';
 import { summary } from '../features/geography/progress';
 import { europePack } from '../features/geography/europe';
+import { modePackId } from '../features/geography/modes';
 import licenses from '../features/geography/data/licenses.json';
 
 export function SettingsScreen() {
@@ -43,7 +44,7 @@ export function SettingsScreen() {
       <View style={styles.card}>
         <Text style={styles.cardTitle}>{c.history}</Text>
         {status === 'loading' ? <Text style={styles.hint}>{c.loading}</Text> : (['hot-cold','find-it','name-it'] as const).map(mode => {
-          const stats = summary(progress, mode === 'hot-cold' ? europePack.id : `${europePack.id}:${mode}`);
+          const stats = summary(progress, modePackId(europePack.id, mode));
           return <View key={mode} style={styles.historyRow}><Text style={styles.text}>{c.modes[mode].title}</Text>
             <Text style={styles.hint}>{c.solved}: {stats.played} · {c.best}: {stats.bestScore}</Text>
           </View>;

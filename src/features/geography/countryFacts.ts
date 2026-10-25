@@ -8,6 +8,9 @@ export interface CountryFacts {
   flagSvg: string;
 }
 export const countryFacts: Readonly<Record<string, CountryFacts>> = data.countries;
+export function capitalName(id: string, language: Language): string {
+  return countryFacts[id]?.capital[language] ?? id;
+}
 export function countryName(id: string, language: Language): string {
   return countryFacts[id]?.name[language] ?? id;
 }

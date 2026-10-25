@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } useColorScheme } from 'react-native';
+import { Pressable, StyleSheet, Text, View, useColorScheme } from 'react-native';
 import type { Language } from '../../ui/i18n';
 import { themeForScheme, type WorldMapsPalette } from '../../ui/worldMapsTheme';
 import { gameCopy } from './copy';

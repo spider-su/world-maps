@@ -1,7 +1,18 @@
 import type { GeographyLocation, GeographyPack, Round } from './engine';
-/** Display order of the Home mode cards; localized titles live in copy.ts. */
+/** Public Home modes; legacy capital IDs remain valid in saved progress. */
 export const GAME_MODES = ['hot-cold', 'find-it', 'name-it', 'learn'] as const;
-export type GameMode = typeof GAME_MODES[number];
+export type GameMode = typeof GAME_MODES[number] | 'capital-find' | 'capital-name';
+export type FindClue = 'name' | 'capital' | 'flag' | 'mixed';
+export type NameAnswer = 'country' | 'capital';
+
+export function findClueForRound(clue: FindClue, index: number): Exclude<FindClue, 'mixed'> {
+  return clue === 'mixed' ? (['name', 'capital', 'flag'] as const)[index % 3]! : clue;
+}
+
+/** Legacy capital mode IDs remain valid for existing saved progress. */
+export function publicMode(mode: GameMode): GameMode {
+  return mode === 'capital-find' ? 'find-it' : mode === 'capital-name' ? 'name-it' : mode;
+}
 
 export function answerChoices(pack: GeographyPack, targetId: string, random: () => number = Math.random): GeographyLocation[] {
   const target = pack.locations.find(item => item.id === targetId);
@@ -38,7 +49,7 @@ export function canRevealNames(mode: GameMode, completed: boolean): boolean {
 
 /** Find It replay remains the prompt, even after a wrong selection. */
 export function replayCountryId(mode: GameMode, targetId: string, selectedId?: string): string | undefined {
-  return mode === 'find-it' ? targetId : selectedId;
+  return mode === 'find-it' || mode === 'capital-find' ? targetId : selectedId;
 }
 
 /** Stored pack ID for a mode's scores and learning records. Hot & Cold keeps the

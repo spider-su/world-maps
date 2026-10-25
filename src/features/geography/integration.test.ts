@@ -60,6 +60,8 @@ describe('saved progress restoration', () => {
     expect(modePackId(europePack.id, 'hot-cold')).toBe('europe-countries');
     expect(modePackId(europePack.id, 'find-it')).toBe('europe-countries:find-it');
     expect(modePackId(europePack.id, 'name-it')).toBe('europe-countries:name-it');
+    expect(modePackId(europePack.id, 'capital-find')).toBe('europe-countries:capital-find');
+    expect(modePackId(europePack.id, 'capital-name')).toBe('europe-countries:capital-name');
     expect(modePackId(europePack.id, 'learn')).toBe('europe-countries:learn');
     for (const level of ['easy', 'normal', 'difficult'] as const) expect(difficultyPack(level).id).toBe(europePack.id);
   });

@@ -1,9 +1,10 @@
 import { useCallback, useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { SvgXml } from 'react-native-svg';
 import { useLanguage } from '../ui/LanguageContext';
-import { worldMapsTheme as theme } from '../ui/worldMapsTheme';
+import { themeForScheme, type WorldMapsPalette } from '../ui/worldMapsTheme';
 import { CountryInfoCard } from '../features/geography/CountryInfoCard';
 import { EuropeMap } from '../features/geography/EuropeMap';
 import { gamePrompt, gameCopy } from '../features/geography/copy';
@@ -17,12 +18,14 @@ import { recordSession, scoreRound, sessionFromRound, summary } from '../feature
 import { useProgress } from '../features/geography/ProgressContext';
 import { ProgressStatus } from '../features/geography/ProgressStatus';
 import { useCountrySpeech } from '../features/geography/useCountrySpeech';
-import { countryName } from '../features/geography/countryFacts';
+import { capitalName, countryName, countryFacts } from '../features/geography/countryFacts';
 import { practiceTarget, recordPractice } from '../features/geography/learning';
-import { canRevealNames, replayCountryId, answerChoices, modePackId, nameItAnswer, type GameMode } from '../features/geography/modes';
+import { canRevealNames, replayCountryId, answerChoices, modePackId, nameItAnswer, type GameMode, type FindClue, type NameAnswer, findClueForRound } from '../features/geography/modes';
 
-export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: () => void }) {
+export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnswer = 'country' }: { mode: GameMode; onBack: () => void; findClue?: FindClue; nameAnswer?: NameAnswer }) {
   const { language } = useLanguage();
+  const theme = themeForScheme(useColorScheme());
+  const styles = makeStyles(theme);
   const c = gameCopy[language];
   const { progress, status, update } = useProgress();
   const difficulty = progress.difficulty;
@@ -33,18 +36,22 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
   const [showBorders, setShowBorders] = useState(true);
   const [showNames, setShowNames] = useState(false);
   const [round, setRound] = useState<Round>(() => newRound());
+  const [roundIndex, setRoundIndex] = useState(0);
+  const clue = mode === 'capital-find' ? 'capital' : findClueForRound(findClue, roundIndex);
+  const answerType = mode === 'capital-name' ? 'capital' : nameAnswer;
   const [feedback, setFeedback] = useState<{ id: string; result: GuessResult } | null>(null);
   const progressLoaded = status !== 'loading' && status !== 'read-error';
   const soundEnabled = progress.voiceEnabled;
   const stats = useMemo(() => summary(progress, practiceId, difficulty), [progress, practiceId, difficulty]);
   const completed = mode !== 'learn' && round.completedAt !== undefined;
   const target = europePack.locations.find(item => item.id === round.targetId)!;
-  const choices = useMemo(() => mode === 'name-it' ? answerChoices(pack, round.targetId) : [], [mode, round.targetId, pack]);
+  const choices = useMemo(() => mode === 'name-it' || mode === 'capital-name' ? answerChoices(pack, round.targetId) : [], [mode, round.targetId, pack]);
   const distanceResolver = europeBorderDistanceKm;
   const { speak, stop, failed: speechFailed } = useCountrySpeech(soundEnabled && progressLoaded, language);
   const restart = () => {
     stop();
     setRound(newRound(round.targetId));
+    setRoundIndex(value => value + 1);
     setFeedback(null);
     setShowNames(false);
   };
@@ -60,7 +67,7 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
     if (!progressLoaded) return;
     const location = pack.locations.find(item => item.id === id);
     if (!location) return;
-    if (mode === 'name-it') return; // Name It is answered using four options.
+    if (mode === 'name-it' || mode === 'capital-name') return; // Multiple-choice modes use four answers.
     if (mode === 'learn') {
       setFeedback({ id: location.id, result: 'correct' });
       speak(countryName(location.id, language));
@@ -80,7 +87,7 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
   }, [round, mode, progressLoaded, distanceResolver, completeRound, speak, language, update, practiceId, pack]);
 
   const selectAnswer = useCallback((id: string) => {
-    if (mode !== 'name-it' || !progressLoaded || completed) return;
+    if ((mode !== 'name-it' && mode !== 'capital-name') || !progressLoaded || completed) return;
     const answer = nameItAnswer(round, id);
     const location = pack.locations.find(item => item.id === id);
     if (!location) return;
@@ -88,8 +95,8 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
     setRound(answer.round);
     setFeedback({ id: location.id, result: answer.correct ? 'correct' : 'far' });
     if (answer.correct && !answer.repeated) completeRound(answer.round);
-    speak(countryName(location.id, language));
-  }, [mode, round, completed, progressLoaded, completeRound, speak, language, update, practiceId, pack]);
+    speak(answerType === 'capital' ? capitalName(location.id, language) : countryName(location.id, language));
+  }, [mode, round, completed, progressLoaded, completeRound, speak, language, update, practiceId, pack, answerType]);
 
   const resultById = useMemo(() => {
     const results = new Map<string, GuessResult>();
@@ -100,11 +107,11 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
       }
       return results;
     }
-    if (mode === 'name-it') {
+    if (mode === 'name-it' || mode === 'capital-name') {
       results.set(round.targetId, 'correct');
       return results;
     }
-    if (mode === 'find-it') {
+    if (mode === 'find-it' || mode === 'capital-find') {
       for (const id of round.guesses) results.set(id, id === round.targetId ? 'correct' : 'far');
       return results;
     }
@@ -116,7 +123,7 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
   const canShowNames = canRevealNames(mode, completed);
   const replayId = replayCountryId(mode, target.id, feedback?.id);
   const modeStyle = theme.mode[mode];
-  const prompt = gamePrompt(language, mode, target.id, completed);
+  const prompt = gamePrompt(language, mode, target.id, completed, clue, answerType);
   return <SafeAreaView edges={['top', 'bottom']} style={styles.screen}>
     <View style={styles.header}>
       <Pressable accessibilityRole="button" accessibilityLabel={c.back} onPress={onBack} style={styles.iconButton}><Ionicons name="arrow-back" size={22} color={theme.navy} /></Pressable>
@@ -132,9 +139,12 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
         <Text style={styles.prompt}>{progressLoaded ? prompt : c.loading}</Text>
         {mode !== 'learn' && <View style={styles.attempts}><Text style={styles.attemptLabel}>{c.attempts}</Text><Text style={styles.attemptValue}>{round.guesses.length}</Text></View>}
       </View>
+      {mode === 'find-it' && clue === 'flag' && <View style={styles.flagPrompt} accessible accessibilityLabel={c.flagPrompt}>
+        <SvgXml xml={countryFacts[target.id]?.flagSvg ?? ''} width={112} height={76} />
+      </View>}
       <EuropeMap key={`${mode}:${round.startedAt}:${round.targetId}`} results={resultById} revealedIds={completedIds} showNames={showNames && canShowNames}
-        atlas={mode === 'learn'} showBorders={showBorders} selectableIds={mode === 'learn' ? undefined : pack.locations.map(location => location.id)} onSelect={selectCountry} enabled={progressLoaded && mode !== 'name-it'} language={language} targetId={mode === 'name-it' && !completed ? target.id : undefined} />
-      {mode !== 'name-it' && (mode === 'learn' || difficulty === 'difficult') && <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.markers}>
+        atlas={mode === 'learn'} showBorders={showBorders} selectableIds={mode === 'learn' ? undefined : pack.locations.map(location => location.id)} onSelect={selectCountry} enabled={progressLoaded && mode !== 'name-it' && mode !== 'capital-name'} language={language} targetId={(mode === 'name-it' || mode === 'capital-name') && !completed ? target.id : undefined} />
+      {mode !== 'name-it' && mode !== 'capital-name' && (mode === 'learn' || difficulty === 'difficult') && <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.markers}>
         <Text style={styles.markerLabel}>{c.smallCountries}</Text>
         {selectionAlternatives.map((country, index) => <Pressable key={country.id} accessibilityRole="button"
           accessibilityLabel={showNames || completedIds.includes(country.id) ? countryName(country.id, language) : `${c.marker} ${index + 1}`}
@@ -142,10 +152,10 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
           <Text style={styles.markerText}>#{index + 1}{showNames || completedIds.includes(country.id) ? ` ${countryName(country.id, language)}` : ''}</Text>
         </Pressable>)}
       </ScrollView>}
-      {mode === 'name-it' && <View style={styles.options}>
+      {(mode === 'name-it' || mode === 'capital-name') && <View style={styles.options}>
         {choices.map(option => <Pressable key={option.id} accessibilityRole="button" accessibilityState={{ disabled: completed || round.guesses.includes(option.id) || !progressLoaded }}
           disabled={completed || round.guesses.includes(option.id) || !progressLoaded} onPress={() => selectAnswer(option.id)}
-          style={[styles.option, round.guesses.includes(option.id) && (option.id === round.targetId ? styles.optionCorrect : styles.optionWrong)]}><Text style={styles.optionText}>{countryName(option.id, language)}</Text></Pressable>)}
+          style={[styles.option, round.guesses.includes(option.id) && (option.id === round.targetId ? styles.optionCorrect : styles.optionWrong)]}><Text style={styles.optionText}>{answerType === 'capital' ? capitalName(option.id, language) : countryName(option.id, language)}</Text></Pressable>)}
       </View>}
       {mode === 'learn' && feedback ? <CountryInfoCard id={feedback.id} language={language} onSpeak={() => speak(countryName(feedback.id, language))} /> : <View style={styles.feedback} accessibilityLiveRegion="polite">
         <View style={styles.feedbackCopy}>
@@ -153,7 +163,7 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
           <Text style={styles.feedbackText}>{feedback ? (mode === 'hot-cold' ? c.proximity[feedback.result] : mode === 'learn' ? c.learnHint : feedback.result === 'correct' ? c.correct : c.retry) : mode === 'learn' ? c.learnHint : c.modes[mode].description}</Text>
         </View>
         {replayId && <Pressable accessibilityRole="button" accessibilityLabel={c.hear}
-          onPress={() => speak(countryName(replayId, language))} style={styles.iconButton}><Ionicons name="volume-high-outline" size={24} color={theme.brand} /></Pressable>}
+          onPress={() => speak(mode === 'capital-find' || (mode === 'find-it' && clue === 'capital') ? capitalName(replayId, language) : countryName(replayId, language))} style={styles.iconButton}><Ionicons name="volume-high-outline" size={24} color={theme.brand} /></Pressable>}
       </View>}
       {mode === 'hot-cold' && <View style={styles.legend}>
         {(['very-far', 'far', 'close', 'very-close', 'correct'] as const).map(result => <View key={result} style={styles.legendItem}>
@@ -174,7 +184,8 @@ export function GeographyGameScreen({ mode, onBack }: { mode: GameMode; onBack: 
     </ScrollView>
   </SafeAreaView>;
 }
-const styles = StyleSheet.create({
+const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
+  flagPrompt: { backgroundColor: theme.surface, borderRadius: 14, padding: 12, alignItems: 'center', justifyContent: 'center', minHeight: 108 },
   screen: { flex: 1, backgroundColor: theme.paper },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, paddingVertical: 4, borderBottomWidth: 1, borderBottomColor: '#E1EAF3' },
   iconButton: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
@@ -184,14 +195,14 @@ const styles = StyleSheet.create({
   prompt: { flex: 1, color: theme.navy, fontSize: 20, fontWeight: '800' },
   attempts: { alignItems: 'center', minWidth: 54 }, attemptLabel: { color: theme.muted, fontSize: 10 }, attemptValue: { fontSize: 21, fontWeight: '800', color: theme.navy },
   markers: { gap: 5, alignItems: 'center' }, markerLabel: { color: theme.muted, fontSize: 10, marginRight: 2 },
-  marker: { minWidth: 40, minHeight: 44, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 8, backgroundColor: '#FFF', borderRadius: 10, borderWidth: 1, borderColor: '#D5E2EC' },
+  marker: { minWidth: 40, minHeight: 44, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 8, backgroundColor: theme.surface, borderRadius: 10, borderWidth: 1, borderColor: theme.border },
   markerText: { fontSize: 11, color: theme.brandDark, fontWeight: '700' },
-  options: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 }, option: { flexGrow: 1, flexBasis: '46%', minHeight: 48, padding: 12, justifyContent: 'center', backgroundColor: '#FFF', borderRadius: 12, borderWidth: 1, borderColor: '#A6C5E5' },
-  optionWrong: { backgroundColor: '#FEE2E2', borderColor: '#DC2626' }, optionCorrect: { backgroundColor: '#DCFCE7', borderColor: '#15803D' }, optionText: { color: theme.navy, fontWeight: '600', fontSize: 14 },
-  feedback: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF', padding: 12, borderRadius: 16, gap: 8 }, feedbackCopy: { flex: 1, gap: 4 },
+  options: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 }, option: { flexGrow: 1, flexBasis: '46%', minHeight: 48, padding: 12, justifyContent: 'center', backgroundColor: theme.surface, borderRadius: 12, borderWidth: 1, borderColor: theme.border },
+  optionWrong: { backgroundColor: theme.answerWrong, borderColor: '#F77D87' }, optionCorrect: { backgroundColor: theme.answerRight, borderColor: '#66DE96' }, optionText: { color: theme.navy, fontWeight: '600', fontSize: 14 },
+  feedback: { flexDirection: 'row', alignItems: 'center', backgroundColor: theme.surface, padding: 12, borderRadius: 16, gap: 8 }, feedbackCopy: { flex: 1, gap: 4 },
   feedbackTitle: { color: theme.navy, fontSize: 17, fontWeight: '800' }, feedbackText: { color: theme.muted, fontSize: 12, lineHeight: 18 },
   legend: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8 }, legendItem: { flexDirection: 'row', alignItems: 'center', gap: 3 }, swatch: { width: 9, height: 9, borderRadius: 5 }, legendText: { color: theme.muted, fontSize: 10 },
-  primary: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 48, borderRadius: 14, backgroundColor: theme.brand }, primaryText: { color: '#FFF', fontWeight: '700', fontSize: 15 },
+  primary: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 48, borderRadius: 14, backgroundColor: theme.brandDark }, primaryText: { color: '#FFF', fontWeight: '700', fontSize: 15 },
   secondary: { minHeight: 44, justifyContent: 'center', alignItems: 'center' }, secondaryText: { color: theme.brand, fontWeight: '700', fontSize: 13 },
-  score: { color: '#15803D', textAlign: 'center', fontWeight: '800', fontSize: 18 }, warning: { color: '#AA3131', fontSize: 12 }, history: { color: theme.muted, textAlign: 'center', fontSize: 10, lineHeight: 15 },
+  score: { color: theme.success, textAlign: 'center', fontWeight: '800', fontSize: 18 }, warning: { color: theme.error, fontSize: 12 }, history: { color: theme.muted, textAlign: 'center', fontSize: 10, lineHeight: 15 },
 });

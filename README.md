@@ -86,3 +86,7 @@ The [delivery report](docs/p0-p1-delivery.md) records the focused feature PRs,
 combined branch, 73 source/setup tests, offline Android APK provenance and emulator
 evidence, including selection of all 47 countries. Physical-phone, audible speech
 and iOS validation remain separate pending gates.
+
+The shell and game prompts share `gameCopy` / `gamePrompt` for EN/PL/RU. Find It
+clues support country, capital and flag; Name It supports country or capital answers.
+Legacy capital mode storage IDs remain compatible with saved progress.

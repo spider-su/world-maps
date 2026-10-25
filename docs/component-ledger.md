@@ -48,3 +48,8 @@ For each future component, replace generic status with dated evidence and the de
 - Product Settings replaces biometric/demo flows with language, voice, recent-history
   summaries and bundled data license notices. EN/PL covers controls and country names;
   speech uses the matching language, cancels queued pronunciation on blur/unmount.
+
+- P0 map stabilization: even-odd multipart paths; `selectionAlternatives` covers
+  marker-only countries and outlines below 700 map-area units. `createSelectionGuard`
+  suppresses guesses during/just after movement. Distances are an offline table
+  generated from shared geometry; see `docs/p0-geography-gameplay.md`.

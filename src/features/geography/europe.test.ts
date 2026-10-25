@@ -42,3 +42,15 @@ describe('Europe Hot & Cold map pack', () => {
     expect(found.round.guesses).toEqual([other.id, initial.targetId]);
   });
 });
+
+it('contains finite nondegenerate closed rings for multipart country selection', () => {
+  for (const shape of europeShapes) {
+    for (const ring of shape.path.split('Z').filter(Boolean)) {
+      const values = ring.match(/-?\d+(?:\.\d+)?/g)!.map(Number);
+      expect(values.every(Number.isFinite)).toBe(true);
+      const points = Array.from({ length: values.length / 2 }, (_, i) => [values[i * 2]!, values[i * 2 + 1]!]);
+      const area = points.reduce((sum, a, i) => { const b = points[(i + 1) % points.length]!; return sum + a[0]! * b[1]! - b[0]! * a[1]!; }, 0);
+      expect(Math.abs(area)).toBeGreaterThan(0);
+    }
+  }
+});

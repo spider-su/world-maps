@@ -7,7 +7,7 @@ import { europeShapes, europeContextShapes } from './europe';
 import { microstates } from './microstates';
 import type { GuessResult } from './engine';
 import { CountryPath } from './CountryPath';
-import { CountryMarker } from './CountryMarker';
+import { createSelectionGuard } from './selection';
 import { mapLabels } from './mapLabels';
 import { frame, INITIAL_VIEWPORT, normalize, pan, zoomAt, focusPoint, type Viewport } from './viewport';
 import { CLUE_COLORS, SEA, LAND } from './mapColors';
@@ -39,13 +39,14 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
   });
   const targetPoint = microstates.find(location => location.id === targetId)
     ?? europeShapes.find(location => location.id === targetId);
+  const [selectionGuard] = useState(createSelectionGuard);
   const current = useRef(viewport);
   const gesture = useRef({ viewport, pinchDistance: 0 });
   useEffect(() => { current.current = viewport; }, [viewport]);
   const visible = frame(viewport);
   const c = gameCopy[language];
   const labels = mapLabels(europeShapes.map(shape => ({ ...shape, name: countryName(shape.id, language) })), showNames, revealedIds, visible, mapWidth);
-  const begin = useCallback(() => { gesture.current = { viewport: current.current, pinchDistance: 0 }; }, []);
+  const begin = useCallback(() => { selectionGuard.begin(); gesture.current = { viewport: current.current, pinchDistance: 0 }; }, [selectionGuard]);
   const move = useCallback<NonNullable<Parameters<typeof PanResponder.create>[0]['onPanResponderMove']>>((event, state) => {
     const [a, b] = event.nativeEvent.touches;
     if (a && b) {
@@ -62,11 +63,11 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
       setViewport(pan(gesture.current.viewport, state.dx, state.dy, mapWidth));
     }
   }, [mapWidth, mapHeight]);
-  const end = useCallback(() => { gesture.current.pinchDistance = 0; }, []);
+  const end = useCallback(() => { gesture.current.pinchDistance = 0; selectionGuard.end(Date.now()); }, [selectionGuard]);
   // eslint-disable-next-line react-hooks/refs -- PanResponder stores callbacks for gesture events after render.
   const responder = useMemo(() => PanResponder.create({
     onStartShouldSetPanResponder: () => false,
-    onMoveShouldSetPanResponder: (event, state) => !preview && (event.nativeEvent.touches.length > 1 || Math.abs(state.dx) > 5 || Math.abs(state.dy) > 5),
+    onMoveShouldSetPanResponderCapture: (event, state) => !preview && (event.nativeEvent.touches.length > 1 || Math.abs(state.dx) > 5 || Math.abs(state.dy) > 5),
     onPanResponderGrant: begin, onPanResponderMove: move, onPanResponderRelease: end, onPanResponderTerminate: end,
   }), [begin, move, end, preview]);
   const adjustZoom = (factor: number) => setViewport(old => zoomAt(old, factor, { x: mapWidth / 2, y: mapHeight / 2 }, mapWidth));
@@ -83,16 +84,16 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
     <View {...(!preview ? responder.panHandlers : {})} collapsable={false}>
       <Svg width={mapWidth} height={mapHeight} viewBox={`${visible.x} ${visible.y} ${visible.w} ${visible.h}`} accessibilityRole={preview ? 'image' : 'none'} accessibilityLabel={c.europe}>
         <Rect width="864" height="570" fill={SEA} />
-        {europeContextShapes.map(shape => <Path key={shape.id} d={shape.path} fill="#CAD5DE" stroke="#70889A" strokeWidth={0.6 / viewport.zoom} />)}
+        {europeContextShapes.map(shape => <Path key={shape.id} d={shape.path} fillRule="evenodd" fill="#CAD5DE" stroke="#70889A" strokeWidth={0.6 / viewport.zoom} />)}
         {europeShapes.map((shape, index) => {
           const props = { d: shape.path, fill: shape.id === targetId ? '#F5AD18' : results.has(shape.id) ? CLUE_COLORS[results.get(shape.id)!] : LAND, stroke: '#637F90', strokeWidth: Math.max(0.35, 1 / viewport.zoom) };
-          return preview || !enabled ? <Path key={shape.id} {...props} /> : <CountryPath key={shape.id} {...props} accessibilityLabel={`${c.mapCountry} ${index + 1}`} onSelect={() => onSelect(shape.id)} />;
+          return preview || !enabled ? <Path key={shape.id} {...props} fillRule="evenodd" /> : <CountryPath key={shape.id} {...props} accessibilityLabel={`${c.mapCountry} ${index + 1}`} onSelect={() => { if (selectionGuard.canSelect(Date.now())) onSelect(shape.id); }} />;
         })}
         {!preview && labels.map(location => <SvgText key={location.id} x={location.labelX} y={location.labelY}
           fontSize={11 * visible.w / mapWidth} fontFamily="sans-serif" fontWeight="700" textAnchor="middle" fill="#17364A" pointerEvents="none">{location.name}</SvgText>)}
-        {!preview && microstates.map(state => <CountryMarker key={state.id} cx={state.x} cy={state.y} r={Math.max(2, 6 / viewport.zoom)}
+        {!preview && microstates.map(state => <Circle key={state.id} pointerEvents="none" cx={state.x} cy={state.y} r={Math.max(1, 3 / viewport.zoom)}
           fill={state.id === targetId ? '#F5AD18' : results.has(state.id) ? CLUE_COLORS[results.get(state.id)!] : '#FFF'} stroke="#17364A" strokeWidth={1 / viewport.zoom}
-          onSelect={() => { if (enabled) onSelect(state.id); }} />)}
+          />)}
         {targetPoint && <Circle cx={'labelX' in targetPoint ? targetPoint.labelX : targetPoint.x}
           cy={'labelY' in targetPoint ? targetPoint.labelY : targetPoint.y} r={12 * visible.w / mapWidth}
           fill="none" stroke="#B66D00" strokeWidth={2 * visible.w / mapWidth} pointerEvents="none" />}

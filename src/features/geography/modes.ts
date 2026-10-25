@@ -1,9 +1,11 @@
 import type { GeographyLocation, GeographyPack, Round } from './engine';
-export type GameMode = 'hot-cold' | 'find-it' | 'name-it' | 'learn';
+export type GameMode = 'hot-cold' | 'find-it' | 'name-it' | 'capital-find' | 'capital-name' | 'learn';
 export const MODE_DEFINITIONS: { id: GameMode; title: string; description: string }[] = [
   { id: 'hot-cold', title: 'Hot & Cold', description: 'Find a hidden country using distance colors' },
   { id: 'find-it', title: 'Find It', description: 'Read the name and tap its country on the map' },
   { id: 'name-it', title: 'Name It', description: 'Identify the highlighted country from four names' },
+  { id: 'capital-find', title: 'Find by Capital', description: 'Given a capital, locate its country on the map' },
+  { id: 'capital-name', title: 'Name the Capital', description: 'Choose the capital of a highlighted country' },
   { id: 'learn', title: 'Learn', description: 'Explore freely, without a score or secret target' },
 ];
 
@@ -12,6 +14,8 @@ export function modePrompt(mode: GameMode, countryName: string): string {
     case 'hot-cold': return 'Find the hidden country';
     case 'find-it': return `Find: ${countryName}`;
     case 'name-it': return 'Which country is highlighted?';
+    case 'capital-find': return 'Find the country for the capital';
+    case 'capital-name': return 'Which capital belongs to this country?';
     case 'learn': return 'Tap any country to discover its name';
   }
 }
@@ -51,5 +55,5 @@ export function canRevealNames(mode: GameMode, completed: boolean): boolean {
 
 /** Find It replay remains the prompt, even after a wrong selection. */
 export function replayCountryId(mode: GameMode, targetId: string, selectedId?: string): string | undefined {
-  return mode === 'find-it' ? targetId : selectedId;
+  return mode === 'find-it' || mode === 'capital-find' ? targetId : selectedId;
 }

@@ -1,3 +1,5 @@
+import { StatusBar } from 'expo-status-bar';
+import { useIsFocused } from '@react-navigation/native';
 import { useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Switch, Text, View, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -15,6 +17,7 @@ import { modePackId } from '../features/geography/modes';
 import licenses from '../features/geography/data/licenses.json';
 
 export function SettingsScreen() {
+  const isFocused = useIsFocused();
   const { language, setLanguage, languageError, retryLanguage } = useLanguage();
   const theme = themeForScheme(useColorScheme());
   const styles = makeStyles(theme);
@@ -22,6 +25,7 @@ export function SettingsScreen() {
   const [showLicenses, setShowLicenses] = useState(false);
   const c = gameCopy[language];
   return <SafeAreaView edges={['top']} style={styles.screen}>
+    {isFocused && <StatusBar style="auto" />}
     <ScrollView contentContainerStyle={styles.body}>
       <Text style={styles.title}>{c.settings}</Text>
       <View style={styles.card}>

@@ -88,3 +88,11 @@ For each future component, replace generic status with dated evidence and the de
   Name It answer types, including legacy capital modes. ModeSelector retains the
   current system-aware icon tints while using the four public `GAME_MODES` IDs.
   Theme and richer Learn components from develop remain intact.
+
+- Map-first UI: Home uses offline decorative orbit artwork and four mode cards.
+  Difficulty/practice/quiz variants move to `OptionsSheet`; learning summaries stay
+  in Settings. The game removes repeated instructions and the always-visible map
+  toolbar, keeps attempts/best score and one round action, and uses a compact Learn
+  card with opt-in full details. `EuropeMap.fill` and aspect-aware viewport math
+  preserve geography proportions and pointer scale on tall surfaces. Directional
+  map controls and numbered small-country selection remain available on demand.

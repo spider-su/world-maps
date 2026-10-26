@@ -93,3 +93,11 @@ Stage results and any remaining gates are appended as implementation proceeds.
 - All implementation stages are committed. POC source/local preview are ready for
   a personal trial with the explicit remaining physical-device, audio, pinch and
   iOS gates above. No store publication, production signing or merge performed.
+
+### Map-first visual refresh — 2026-10-25
+
+Home now uses decorative offline orbit artwork and four mode cards. Secondary
+setup lives in a sheet; the game prioritizes the map, compact feedback and scores.
+Full Learn facts and non-gesture map controls remain available on demand.
+See [UI implementation and evidence](map-first-ui.md). This is presentation work,
+not a new ruleset or completion of physical-device/iOS acceptance gates.

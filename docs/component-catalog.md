@@ -38,3 +38,20 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
   bundled atlas crop, localized capital, region, coordinates and optional landmark.
 - `GAME_MODES` contains four public Home modes; `GameMode` also accepts legacy
   capital mode IDs for stored progress. `modePackId` preserves all existing IDs.
+
+## Map-first presentation
+
+- `EuropeMap.fill`: fills a flex-height play surface without distorting outlines.
+  A phone starts at a closer view; Show all Europe restores the complete extent.
+  Map tools disclose zoom and directional controls without removing keyboard or
+  non-gesture access. `viewport` helpers accept optional height/width aspect ratio.
+- `OptionsSheet`: shared dismissible, scrollable modal for secondary play controls;
+  owns its modal safe areas and handles Android Back. It does not persist settings.
+- `ModeSelector` / `QuizOptions`: mode cards stay on Home; existing clue and answer
+  variants are composed separately inside Home's play-options sheet. Difficulty
+  and practice selectors use the same saved progress contract as before.
+- `CountryInfoCard.compact` / `onDetails`: selected country's flag, capital and
+  pronunciation remain below the map; full offline facts open in a separate sheet.
+- `GeographyGameScreen`: fixed header, responsive map and bounded scrollable dock;
+  options and small-country alternatives are disclosed in sheets. Score/learning
+  rules and hidden-target behavior are unchanged.

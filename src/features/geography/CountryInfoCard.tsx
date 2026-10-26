@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, View, useColorScheme } from 'react-native';
+import { Image, Linking, Pressable, StyleSheet, Text, View, useColorScheme } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import { Ionicons } from '@expo/vector-icons';
 import type { Language } from '../../ui/i18n';
@@ -33,7 +33,10 @@ export function CountryInfoCard({ id, language, onSpeak, compact = false, onDeta
     {photo && failedPhoto !== id && <View style={styles.photoBlock}>
       <Image source={{ uri: photo.url }} resizeMode="cover" accessibilityLabel={landmark ?? facts.name[language]}
         onError={() => setFailedPhoto(id)} style={styles.photo} />
-      <Text style={styles.photoCredit}>{photo.credit} · {photo.license} · Online photo</Text>
+      <Pressable accessibilityRole="link" accessibilityLabel={`${photo.credit} · ${photo.license}`}
+        onPress={() => { void Linking.openURL(photo.source); }}>
+        <Text style={styles.photoCredit}>{photo.credit} · {photo.license} · <Ionicons name="open-outline" size={12} color={theme.brand} /></Text>
+      </Pressable>
     </View>}
     <CountryAtlasPortrait id={id} caption={education.atlas} />
     <View style={styles.row}>

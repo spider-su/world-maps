@@ -128,7 +128,7 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
             style={[styles.pickerTarget, { left: target.x - PICKER_SIZE / 2, top: target.y - PICKER_SIZE / 2 }]}
             onPress={() => { if (!selectionGuard.canSelect(Date.now())) return; if (single) onSelect(member.id); else setViewport(expandPicker(target, viewport, mapWidth, mapHeight)); }}>
             <View style={[styles.pickerPin, !single && styles.pickerGroup, result && { borderColor: CLUE_COLORS[result] }]}>
-              {!single && <Ionicons name="layers-outline" size={14} color={theme.brandDark} />}
+              {!single && <Ionicons name="layers-outline" size={14} color={theme.brand} />}
               <Text style={styles.pickerNumber}>{single ? member.number : target.members.length}</Text>
             </View>
           </Pressable>;
@@ -157,7 +157,7 @@ const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
   pickerTarget: { position: 'absolute', width: PICKER_SIZE, height: PICKER_SIZE, alignItems: 'center', justifyContent: 'center' },
   pickerPin: { width: 34, height: 34, borderRadius: 17, backgroundColor: theme.surface, borderWidth: 2, borderColor: theme.brand, alignItems: 'center', justifyContent: 'center', shadowColor: '#123E70', shadowOpacity: 0.18, shadowRadius: 3, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
   pickerGroup: { width: 44, height: 44, borderRadius: 22, borderColor: theme.border, backgroundColor: theme.surface },
-  pickerNumber: { color: theme.brandDark, fontSize: 12, fontWeight: '800' },
+  pickerNumber: { color: theme.navy, fontSize: 12, fontWeight: '800' },
   tools: { position: 'absolute', bottom: 12, right: 12, alignItems: 'flex-end', gap: 8, maxWidth: '85%' },
   quickTools: { flexDirection: 'row', gap: 6 },
   controls: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-end', padding: 4, gap: 2, backgroundColor: theme.surface, borderRadius: 16 },

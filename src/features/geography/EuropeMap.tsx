@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { PanResponder, Pressable, StyleSheet, View, useWindowDimensions, useColorScheme } from 'react-native';
 import Svg, { Circle, ClipPath, Defs, Image as SvgImage, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { Ionicons } from '@expo/vector-icons';
@@ -34,6 +34,7 @@ interface Props {
 /** Shared, offline renderer. Country geometry remains authoritative for taps. */
 export function EuropeMap({ results, revealedIds, showNames, onSelect, language, enabled = true, preview = false, fill = false, targetId, selectableIds, atlas = false, showBorders = true }: Props) {
   const { width } = useWindowDimensions();
+  const atlasClipId = `atlas-land-${useId()}`;
   const theme = themeForScheme(useColorScheme());
   const styles = makeStyles(theme);
   const [measuredWidth, setMeasuredWidth] = useState(0);
@@ -96,7 +97,7 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
     <View {...(!preview ? responder.panHandlers : {})} collapsable={false}>
       <Svg width={mapWidth} height={mapHeight} viewBox={`${visible.x} ${visible.y} ${visible.w} ${visible.h}`} accessibilityRole={preview ? 'image' : 'none'} accessibilityLabel={c.europe}>
         <Rect x="-2000" y="-2000" width="5000" height="5000" fill={theme.ocean} />
-        {atlas && <><Defs><ClipPath id="atlas-land">{[...europeShapes, ...europeContextShapes].map(shape => <Path key={shape.id} d={shape.path} fillRule="evenodd" clipRule="evenodd" />)}</ClipPath></Defs><SvgImage href={atlasImage} x={0} y={0} width={864} height={570} clipPath="url(#atlas-land)" preserveAspectRatio="none" pointerEvents="none" /></>}
+        {atlas && <><Defs><ClipPath id={atlasClipId}>{[...europeShapes, ...europeContextShapes].map(shape => <Path key={shape.id} d={shape.path} fillRule="evenodd" clipRule="evenodd" />)}</ClipPath></Defs><SvgImage href={atlasImage} x={0} y={0} width={864} height={570} clipPath={`url(#${atlasClipId})`} preserveAspectRatio="none" pointerEvents="none" /></>}
         {europeContextShapes.map(shape => <Path key={shape.id} d={shape.path} fillRule="evenodd" fill={atlas ? theme.oceanDeep : theme.oceanDeep} stroke={atlas ? showBorders ? theme.border : 'transparent' : theme.border} strokeWidth={0.6 / viewport.zoom} />)}
         {europeShapes.map((shape, index) => {
           const props = { d: shape.path, fill: !eligible(shape.id) ? theme.oceanDeep : shape.id === targetId ? '#F5AD18' : results.has(shape.id) ? atlas ? 'rgba(37,99,235,0.35)' : CLUE_COLORS[results.get(shape.id)!] : atlas ? 'transparent' : theme.mapLand, stroke: atlas ? showBorders ? theme.border : 'transparent' : theme.mapBorder, strokeWidth: Math.max(0.65, 2 / viewport.zoom) };

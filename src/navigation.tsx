@@ -6,11 +6,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HomeScreen } from './screens/HomeScreen';
 import { Ionicons } from '@expo/vector-icons';
 import { SettingsScreen } from './screens/SettingsScreen';
+import { ExploreScreen } from './screens/ExploreScreen';
 import { getTabBarMetrics } from './platform/safeArea';
 import { useLanguage } from './ui/LanguageContext';
 import { gameCopy } from './features/geography/copy';
 
-export type TabParamList = { Home: undefined; Settings: undefined };
+export type TabParamList = { Home: undefined; Explore: undefined; Settings: undefined };
 const Tab = createBottomTabNavigator<TabParamList>();
 
 function Tabs() {
@@ -27,6 +28,7 @@ function Tabs() {
       tabBarStyle: { ...tabBar, backgroundColor: theme.surface, borderTopColor: theme.border, height: tabBar.height, paddingTop: tabBar.paddingTop, paddingBottom: tabBar.paddingBottom },
     }}>
       <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: c.home, tabBarIcon: ({ color, size }) => <Ionicons name="earth-outline" color={color} size={size} /> }} />
+      <Tab.Screen name="Explore" component={ExploreScreen} options={{ tabBarLabel: c.countryCollection, tabBarIcon: ({ color, size }) => <Ionicons name="book-outline" color={color} size={size} /> }} />
       <Tab.Screen name="Settings" component={SettingsScreen} options={{ tabBarLabel: c.settings, tabBarIcon: ({ color, size }) => <Ionicons name="settings-outline" color={color} size={size} /> }} />
     </Tab.Navigator>
   );

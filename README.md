@@ -110,3 +110,10 @@ and Learn include every location. Scores and practice are separate for each map.
 New continent maps use vector fills; physical relief remains available for Europe.
 Map selection lasts for the app session and defaults to Europe on relaunch.
 See [coverage, sources and generation](docs/continent-maps.md).
+
+### Wikipedia discovery
+
+Country details include a Wikipedia article link and optional credited photographs
+of places and landscapes. Tap **Show photos** to load images online; country facts,
+flags, maps and progress continue working offline. Source/author and license links
+are shown for each image. See [Wikipedia gallery](docs/wikipedia-gallery.md).

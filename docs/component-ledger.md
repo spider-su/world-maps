@@ -117,3 +117,10 @@ For each future component, replace generic status with dated evidence and the de
   and restored-guess truncation without changing record shapes. No runtime
   dependencies; Shapely 2.0.7 is a data-generation tool. Coverage and source
   conventions: `docs/continent-maps.md`.
+
+- 2026-10-27: Replaced the two automatically loaded country images with reusable
+  `CountryGallery` in expanded Learn/collection details. Bundles Wikipedia article
+  links and credited image metadata, loads photos only on request, retains offline
+  map/facts and handles image/link failures. Removed the obsolete per-card single
+  photo failure state. Added no runtime dependency or persistence change; see
+  `docs/wikipedia-gallery.md` for metadata generation and source attribution.

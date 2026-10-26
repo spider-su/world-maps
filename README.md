@@ -91,8 +91,8 @@ The shell and game prompts share `gameCopy` / `gamePrompt` for EN/PL/RU. Find It
 clues support country, capital and flag; Name It supports country or capital answers.
 Legacy capital mode storage IDs remain compatible with saved progress.
 
-Home and gameplay now use a map-first layout inspired by the UI sketch. Home's
-Europe row opens difficulty, practice and quiz options. During play, the header
+Home and gameplay now use a map-first layout inspired by the UI sketch. The middle Europe tab
+contains the offline region summary, difficulty, practice and quiz options. During play, the header
 opens voice/label controls; map tools and small-country selection are available
 on demand. Learn keeps a compact country card with expandable offline details.
 The [Home artwork and generation prompt](docs/licenses/home-artwork.md) are separate

@@ -55,3 +55,7 @@ viewBox with a local equirectangular projection. Oceania wraps longitudes across
 polygon separation is precomputed in that same regional plane. This is a game
 clue, not a geodesic distance service. Matching country ID alone wins; touching
 countries can have zero border separation without being the correct answer.
+
+## Validation
+
+See [commands, artifact identity and emulator evidence](evidence/continent-maps/README.md).

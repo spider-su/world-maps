@@ -52,9 +52,9 @@ licenses are available in Settings and [data attribution](docs/country-data.md).
 
 ### Difficulty
 
-Choose a level on Home before starting a quiz. **Normal** is the default (34
-large/medium countries); **Easy** uses the seven largest outlines on the displayed
-map; **Difficult** uses all 47 countries, including small-country markers. Size is
+Choose a level in Play options before starting a quiz. **Normal** is the default
+(large/medium outlines, with at least four choices); **Easy** uses the seven largest
+outlines on the selected map; **Difficult** uses every location on that map. Size is
 projected map area, not a ranking by national land area. Excluded countries remain
 visible in muted gray and cannot be guessed. Name It draws all four options from
 the selected pool. Learn always includes every country.
@@ -67,7 +67,7 @@ used the full pool. See [difficulty validation](docs/difficulty-testing.md).
 
 Home offers Adaptive or Random practice. Adaptive revisits recent misses and older
 practice while reducing repeats of mastered countries. Home/Settings show local
-Europe learning statistics and per-country accuracy. Existing scores migrate once
+selected-map learning statistics and per-country accuracy. Existing scores migrate once
 without being reset; misses from unfinished rounds are retained. See
 [learning model and migration](docs/country-learning.md).
 

@@ -47,14 +47,6 @@ export function HomeScreen() {
     <ScrollView contentContainerStyle={styles.body}>
       <ImageBackground source={homeArtwork} resizeMode="cover" style={styles.hero} imageStyle={styles.heroImage}>
         <View style={styles.heroShade} />
-        <View style={styles.top}>
-          <Pressable accessibilityRole="button" accessibilityLabel={c.settings} onPress={() => navigation.navigate('Settings')} style={styles.heroButton}>
-            <Ionicons name="settings-outline" size={22} color="#FFF" />
-          </Pressable>
-          <Pressable accessibilityRole="button" accessibilityLabel={c.learningProgress} onPress={() => navigation.navigate('Settings')} style={styles.heroButton}>
-            <Ionicons name="stats-chart-outline" size={22} color="#FFF" />
-          </Pressable>
-        </View>
         <View style={styles.heroCopy}><Text style={styles.eyebrow}>{c.europe.toUpperCase()}</Text>
           <Text style={styles.brand}>World Maps</Text><Text style={styles.tagline}>{c.tagline}</Text>
         </View>
@@ -81,9 +73,7 @@ const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#123E70' }, body: { flexGrow: 1, backgroundColor: theme.paper, paddingBottom: 18 },
   hero: { width: '100%', height: 304, backgroundColor: '#123E70', overflow: 'hidden' },
   heroImage: { width: '100%', height: '100%', opacity: 1 }, heroShade: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(5,35,67,0.14)' },
-  top: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 8 },
-  heroButton: { width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(255,255,255,0.16)', alignItems: 'center', justifyContent: 'center' },
-  heroCopy: { alignItems: 'center', marginTop: 14, gap: 6 }, eyebrow: { fontSize: 10, letterSpacing: 3, fontWeight: '800', color: '#D7EAFE' },
+  heroCopy: { alignItems: 'center', marginTop: 66, gap: 6 }, eyebrow: { fontSize: 10, letterSpacing: 3, fontWeight: '800', color: '#D7EAFE' },
   brand: { fontSize: 38, letterSpacing: -1.2, fontWeight: '800', color: '#FFFFFF', textShadowColor: 'rgba(6,26,48,0.3)', textShadowRadius: 12 },
   tagline: { color: '#ECF6FF', fontSize: 14, letterSpacing: 0.5 },
   menu: { marginTop: -64, paddingHorizontal: 18, width: '100%', maxWidth: 560, alignSelf: 'center', gap: 10 },

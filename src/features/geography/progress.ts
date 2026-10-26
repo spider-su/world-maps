@@ -16,14 +16,21 @@ export interface CompletedSession {
 
 export interface GameProgress {
   difficulty: Difficulty;
-  schemaVersion: 2;
+  schemaVersion: 3;
+  explored: string[];
   learning: LearningProgress;
   practiceMode: PracticeMode;
   sessions: CompletedSession[];
   voiceEnabled: boolean;
 }
 
-export const initialProgress: GameProgress = { sessions: [], voiceEnabled: true, difficulty: DEFAULT_DIFFICULTY, schemaVersion: 2, learning: {}, practiceMode: 'adaptive' };
+export const initialProgress: GameProgress = { sessions: [], voiceEnabled: true, difficulty: DEFAULT_DIFFICULTY, schemaVersion: 3, explored: [], learning: {}, practiceMode: 'adaptive' };
+
+/** A country is explored when its Learn detail is opened, not merely guessed in a quiz. */
+export function recordExploration(progress: GameProgress, countryId: string): GameProgress {
+  if (!/^[A-Z]{3}$/.test(countryId) || progress.explored.includes(countryId)) return progress;
+  return { ...progress, explored: [...progress.explored, countryId].slice(-100) };
+}
 
 export function scoreRound(guesses: number): number {
   if (!Number.isFinite(guesses) || guesses < 1) return 0;
@@ -81,13 +88,15 @@ export function parseProgress(raw: string | null): GameProgress {
     const value: unknown = JSON.parse(raw);
     if (!value || typeof value !== 'object') return initialProgress;
     const candidate = value as Partial<GameProgress>;
-    if (typeof (candidate as { schemaVersion?: number }).schemaVersion === 'number' && candidate.schemaVersion! > 2) throw new Error('Unsupported progress version');
+    const savedVersion = (candidate as { schemaVersion?: number }).schemaVersion;
+    if (typeof savedVersion === 'number' && savedVersion > 3) throw new Error('Unsupported progress version');
     const sessions = Array.isArray(candidate.sessions) ? candidate.sessions.filter(isSession).slice(-MAX_HISTORY) : [];
     return {
       difficulty: isDifficulty(candidate.difficulty) ? candidate.difficulty : DEFAULT_DIFFICULTY,
-      schemaVersion: 2,
+      schemaVersion: 3,
+      explored: Array.isArray(candidate.explored) ? [...new Set(candidate.explored.filter((id): id is string => typeof id === 'string' && /^[A-Z]{3}$/.test(id)))].slice(-100) : [],
       practiceMode: candidate.practiceMode === 'random' ? 'random' : 'adaptive',
-      learning: candidate.schemaVersion === 2 ? parseLearning(candidate.learning) : migrateLearning(sessions),
+      learning: (savedVersion === 2 || savedVersion === 3) ? parseLearning(candidate.learning) : migrateLearning(sessions),
       voiceEnabled: typeof candidate.voiceEnabled === 'boolean' ? candidate.voiceEnabled : true,
       sessions,
     };

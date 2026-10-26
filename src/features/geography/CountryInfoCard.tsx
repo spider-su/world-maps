@@ -1,4 +1,5 @@
-import { Pressable, StyleSheet, Text, View, useColorScheme } from 'react-native';
+import { useState } from 'react';
+import { Image, Linking, Pressable, StyleSheet, Text, View, useColorScheme } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import { Ionicons } from '@expo/vector-icons';
 import type { Language } from '../../ui/i18n';
@@ -7,9 +8,12 @@ import { countryFacts } from './countryFacts';
 import { CountryAtlasPortrait } from './CountryAtlasPortrait';
 import { countryCoordinates, countryRegion, educationCopy, geographicCoordinate, landmarkName } from './countryEducation';
 import { gameCopy } from './copy';
+import { countryPhotos } from './countryPhotos';
 
 export function CountryInfoCard({ id, language, onSpeak, compact = false, onDetails }: { id: string; language: Language; onSpeak: () => void; compact?: boolean; onDetails?: () => void }) {
   const facts = countryFacts[id];
+  const [failedPhoto, setFailedPhoto] = useState<string | null>(null);
+  const photo = countryPhotos[id];
   const theme = themeForScheme(useColorScheme());
   const styles = makeStyles(theme);
   const c = gameCopy[language];
@@ -26,6 +30,14 @@ export function CountryInfoCard({ id, language, onSpeak, compact = false, onDeta
     </View>
   </View>;
   return <View style={styles.card} accessibilityLiveRegion="polite">
+    {photo && failedPhoto !== id && <View style={styles.photoBlock}>
+      <Image source={{ uri: photo.url }} resizeMode="cover" accessibilityLabel={landmark ?? facts.name[language]}
+        onError={() => setFailedPhoto(id)} style={styles.photo} />
+      <Pressable accessibilityRole="link" accessibilityLabel={`${photo.credit} · ${photo.license}`}
+        onPress={() => { void Linking.openURL(photo.source); }}>
+        <Text style={styles.photoCredit}>{photo.credit} · {photo.license} · <Ionicons name="open-outline" size={12} color={theme.brand} /></Text>
+      </Pressable>
+    </View>}
     <CountryAtlasPortrait id={id} caption={education.atlas} />
     <View style={styles.row}>
       <View accessible accessibilityLabel={`${c.flag}: ${facts.name[language]}`} style={styles.flag}>
@@ -69,6 +81,9 @@ export function CountryInfoCard({ id, language, onSpeak, compact = false, onDeta
   </View>;
 }
 const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
+  photoBlock: { borderRadius: 14, overflow: 'hidden', backgroundColor: theme.paper },
+  photo: { width: '100%', height: 186 },
+  photoCredit: { paddingHorizontal: 10, paddingVertical: 6, fontSize: 10, color: theme.muted },
   compact: { paddingVertical: 4 }, compactName: { fontSize: 19, color: theme.navy, fontWeight: '800' },
   card: { padding: 12, borderRadius: 18, backgroundColor: theme.surface, gap: 14, borderWidth: 1, borderColor: theme.border },
   row: { flexDirection: 'row', alignItems: 'center', gap: 12 },

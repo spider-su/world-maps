@@ -16,7 +16,7 @@ import { europePack } from '../features/geography/europe';
 import { europeBorderDistanceKm } from '../features/geography/borderDistance';
 import { selectionAlternatives } from '../features/geography/selection';
 import { classifyGuess, guess, startRoundFor, type GuessResult, type Round } from '../features/geography/engine';
-import { recordSession, scoreRound, sessionFromRound, summary } from '../features/geography/progress';
+import { recordExploration, recordSession, scoreRound, sessionFromRound, summary } from '../features/geography/progress';
 import { useProgress } from '../features/geography/ProgressContext';
 import { ProgressStatus } from '../features/geography/ProgressStatus';
 import { useCountrySpeech } from '../features/geography/useCountrySpeech';
@@ -76,6 +76,7 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
     if (mode === 'name-it' || mode === 'capital-name') return; // Multiple-choice modes use four answers.
     if (mode === 'learn') {
       setFeedback({ id: location.id, result: 'correct' });
+      update(current => recordExploration(current, location.id));
       speak(countryName(location.id, language));
       return;
     }

@@ -28,3 +28,14 @@ See [POC stages](poc-roadmap.md) and [map attribution](europe-map-assets.md).
 - Reuse 47 existing localized capitals (English, Polish, Russian), difficulty settings, local history and adaptive practice, with independent score/progress keys per mode.
 - There is no new geographic layer or backend. Capitol location coordinates are not needed because the questions are country-based, not city-point selection.
 - Validate Android and web quiz flow, voice and CI before merging.
+
+
+## Country collections and player progress
+
+- A dedicated Explore tab groups the same 47 locations into geographic regions and supports name/capital search.
+- A country opens the existing, shared Learn card. Exploring a country is distinct from mastering it through scored quizzes.
+- Optional credited Wikimedia Commons photos enhance selected details when online; the physical atlas and facts remain offline.
+- A Profile tab reports exploration, quiz mastery and regional progress from the single device-local progress store.
+- Progress schema v3 adds a bounded list of explored IDs and preserves v2 learning and session history.
+
+See [Explore, collections, photography and profile](explore-collections-profile.md) for data definitions, attribution and acceptance criteria.

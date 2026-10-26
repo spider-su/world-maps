@@ -1,3 +1,6 @@
+import { useMap } from '../features/geography/MapContext';
+import { MapSelector } from '../features/geography/MapSelector';
+import { mapName } from '../features/geography/maps';
 import { StatusBar } from 'expo-status-bar';
 import { useIsFocused } from '@react-navigation/native';
 import { ScrollView, StyleSheet, Text, View, useColorScheme } from 'react-native';
@@ -20,6 +23,7 @@ export function EuropeScreen({ findClue, onFindClue, nameAnswer, onNameAnswer }:
   findClue: FindClue; onFindClue: (clue: FindClue) => void;
   nameAnswer: NameAnswer; onNameAnswer: (answer: NameAnswer) => void;
 }) {
+  const { map, mapId } = useMap();
   const { language } = useLanguage();
   const c = gameCopy[language];
   const isFocused = useIsFocused();
@@ -28,8 +32,9 @@ export function EuropeScreen({ findClue, onFindClue, nameAnswer, onNameAnswer }:
   return <SafeAreaView edges={['top']} style={styles.screen}>
     {isFocused && <StatusBar style="auto" />}
     <ScrollView contentContainerStyle={styles.body}>
-      <View style={styles.heading}><Text accessibilityRole="header" style={styles.title}>{c.europe}</Text><Text style={styles.subtitle}>{c.offline}</Text></View>
-      <EuropeMap preview atlas language={language} results={noResults} revealedIds={[]} showNames={false} onSelect={ignoreSelection} />
+      <View style={styles.heading}><Text accessibilityRole="header" style={styles.title}>{mapName(mapId, language)}</Text><Text style={styles.subtitle}>{map.pack.locations.length} · {c.offlineMap}</Text></View>
+      <MapSelector />
+      <EuropeMap key={mapId} map={map} preview atlas language={language} results={noResults} revealedIds={[]} showNames={false} onSelect={ignoreSelection} />
       <ProgressStatus language={language} />
       <View style={styles.card}>
         <Text accessibilityRole="header" style={styles.sectionTitle}>{c.playOptions}</Text>

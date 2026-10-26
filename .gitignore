@@ -10,6 +10,7 @@ coverage/
 android/
 ios/
 .DS_Store
+.idea/
 
 artifacts/
 .playwright-mcp/

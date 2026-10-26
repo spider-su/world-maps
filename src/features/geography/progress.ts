@@ -29,7 +29,7 @@ export const initialProgress: GameProgress = { sessions: [], voiceEnabled: true,
 /** A country is explored when its Learn detail is opened, not merely guessed in a quiz. */
 export function recordExploration(progress: GameProgress, countryId: string): GameProgress {
   if (!/^[A-Z]{3}$/.test(countryId) || progress.explored.includes(countryId)) return progress;
-  return { ...progress, explored: [...progress.explored, countryId].slice(-100) };
+  return { ...progress, explored: [...progress.explored, countryId] };
 }
 
 export function scoreRound(guesses: number): number {
@@ -94,7 +94,7 @@ export function parseProgress(raw: string | null): GameProgress {
     return {
       difficulty: isDifficulty(candidate.difficulty) ? candidate.difficulty : DEFAULT_DIFFICULTY,
       schemaVersion: 3,
-      explored: Array.isArray(candidate.explored) ? [...new Set(candidate.explored.filter((id): id is string => typeof id === 'string' && /^[A-Z]{3}$/.test(id)))].slice(-100) : [],
+      explored: Array.isArray(candidate.explored) ? [...new Set(candidate.explored.filter((id): id is string => typeof id === 'string' && /^[A-Z]{3}$/.test(id)))] : [],
       practiceMode: candidate.practiceMode === 'random' ? 'random' : 'adaptive',
       learning: (savedVersion === 2 || savedVersion === 3) ? parseLearning(candidate.learning) : migrateLearning(sessions),
       voiceEnabled: typeof candidate.voiceEnabled === 'boolean' ? candidate.voiceEnabled : true,

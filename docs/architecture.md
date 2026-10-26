@@ -1,6 +1,6 @@
 # Architecture and ownership map
 
-Read this before adding a feature. World Maps is an offline Expo SDK 57 / React Native 0.86 geography game for Europe. It is a hobby app, not a reusable starter.
+Read this before adding a feature. World Maps is an offline Expo SDK 57 / React Native 0.86 geography game with five offline continent packs. It is a hobby app, not a reusable starter.
 
 ## Startup and runtime
 
@@ -35,3 +35,8 @@ Start with `AGENTS.md` -> this map -> `docs/component-catalog.md` -> the relevan
 Quiz clue and answer choices are transient state owned by the tab navigator and
 passed to Europe setup and Home gameplay. Difficulty/practice remain in the
 existing progress store; switching tabs does not create a new storage schema.
+
+`MapProvider` shares session-only continent selection across tabs. `maps.ts` owns
+the pack registry; Europe IDs/geometry are preserved, while four generated packs
+share the renderer and modes. Scores/learning use the existing pack/mode key
+contract. See `docs/continent-maps.md` for data coverage and regeneration.

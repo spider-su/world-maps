@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { countryFacts, countryName } from './countryFacts';
-import { europePack } from './europe';
+import { maps } from './maps';
+const locations = [...new Map(Object.values(maps).flatMap(m => m.pack.locations).map(l => [l.id, l])).values()];
 
 describe('offline country learning data', () => {
-  it('covers every selectable polygon and marker in both languages', () => {
-    expect(Object.keys(countryFacts).sort()).toEqual(europePack.locations.map(item => item.id).sort());
-    for (const location of europePack.locations) {
+  it('covers every selectable polygon and marker in all three languages', () => {
+    expect(Object.keys(countryFacts).sort()).toEqual(locations.map(item => item.id).sort());
+    for (const location of locations) {
       const facts = countryFacts[location.id]!;
       for (const language of ['en', 'pl', 'ru'] as const) {
         expect(facts.name[language].length).toBeGreaterThan(1);

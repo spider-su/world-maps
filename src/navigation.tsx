@@ -1,3 +1,5 @@
+import { MapProvider, useMap } from './features/geography/MapContext';
+import { mapName } from './features/geography/maps';
 import { useState } from 'react';
 import type { FindClue, NameAnswer } from './features/geography/modes';
 import { EuropeScreen } from './screens/EuropeScreen';
@@ -19,6 +21,7 @@ export type TabParamList = { Home: undefined; Europe: undefined; Explore: undefi
 const Tab = createBottomTabNavigator<TabParamList>();
 
 function Tabs() {
+  const { mapId } = useMap();
   const [findClue, setFindClue] = useState<FindClue>('mixed');
   const [nameAnswer, setNameAnswer] = useState<NameAnswer>('country');
   const { language } = useLanguage();
@@ -36,10 +39,10 @@ function Tabs() {
       <Tab.Screen name="Home" options={{ tabBarLabel: c.home, tabBarIcon: ({ color, size }) => <Ionicons name="home-outline" color={color} size={size} /> }}>
         {() => <HomeScreen findClue={findClue} nameAnswer={nameAnswer} />}
       </Tab.Screen>
-      <Tab.Screen name="Europe" options={{ tabBarLabel: c.europe, tabBarIcon: ({ color, size }) => <Ionicons name="earth-outline" color={color} size={size} /> }}>
+      <Tab.Screen name="Europe" options={{ tabBarLabel: mapName(mapId, language), tabBarIcon: ({ color, size }) => <Ionicons name="earth-outline" color={color} size={size} /> }}>
         {() => <EuropeScreen findClue={findClue} onFindClue={setFindClue} nameAnswer={nameAnswer} onNameAnswer={setNameAnswer} />}
       </Tab.Screen>
-      <Tab.Screen name="Explore" component={ExploreScreen} options={{ tabBarLabel: c.countryCollection, tabBarIcon: ({ color, size }) => <Ionicons name="book-outline" color={color} size={size} /> }} />
+      <Tab.Screen name="Explore" children={() => <ExploreScreen key={mapId} />} options={{ tabBarLabel: c.countryCollection, tabBarIcon: ({ color, size }) => <Ionicons name="book-outline" color={color} size={size} /> }} />
       <Tab.Screen name="Profile" component={ProfileScreen} options={{ tabBarLabel: c.profile, tabBarIcon: ({ color, size }) => <Ionicons name="person-outline" color={color} size={size} /> }} />
       <Tab.Screen name="Settings" component={SettingsScreen} options={{ tabBarLabel: c.settings, tabBarIcon: ({ color, size }) => <Ionicons name="settings-outline" color={color} size={size} /> }} />
     </Tab.Navigator>
@@ -49,5 +52,5 @@ function Tabs() {
 export function AppNavigation() {
   const theme = themeForScheme(useColorScheme());
   const base = useColorScheme() === 'dark' ? DarkTheme : DefaultTheme;
-  return <NavigationContainer theme={{ ...base, colors: { ...base.colors, background: theme.paper, card: theme.surface, text: theme.navy, border: theme.border, primary: theme.brand } }}><Tabs /></NavigationContainer>;
+  return <NavigationContainer theme={{ ...base, colors: { ...base.colors, background: theme.paper, card: theme.surface, text: theme.navy, border: theme.border, primary: theme.brand } }}><MapProvider><Tabs /></MapProvider></NavigationContainer>;
 }

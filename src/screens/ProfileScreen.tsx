@@ -6,21 +6,23 @@ import { themeForScheme, type WorldMapsPalette } from '../ui/worldMapsTheme';
 import { useProgress } from '../features/geography/ProgressContext';
 import { ProgressStatus } from '../features/geography/ProgressStatus';
 import { learningSummary } from '../features/geography/learning';
-import { europePack } from '../features/geography/europe';
+import { useMap } from '../features/geography/MapContext';
+import { mapName } from '../features/geography/maps';
 import { REGION_IDS, regionCountries, regionLabel } from '../features/geography/regions';
 import { gameCopy } from '../features/geography/copy';
 
 export function ProfileScreen() {
+  const { map, mapId } = useMap();
   const { language } = useLanguage();
   const { progress, status } = useProgress();
   const c = gameCopy[language];
   const theme = themeForScheme(useColorScheme());
   const styles = makeStyles(theme);
-  const total = europePack.locations.length;
+  const total = map.pack.locations.length;
   const explored = new Set(progress.explored ?? []);
-  const learning = learningSummary(progress.learning, europePack.id, europePack.locations.map(c => c.id));
+  const learning = learningSummary(progress.learning, map.pack.id, map.pack.locations.map(c => c.id));
   const rows = [
-    [c.countriesExplored, `${europePack.locations.filter(country => explored.has(country.id)).length}/${total}`],
+    [c.countriesExplored, `${map.pack.locations.filter(country => explored.has(country.id)).length}/${total}`],
     [c.mastered, `${learning.mastered}/${total}`],
     [c.accuracy, `${learning.accuracy}%`],
     [c.roundsPlayed, String(progress.sessions.length)],
@@ -40,13 +42,13 @@ export function ProfileScreen() {
         </View>)}
       </View>
       <Text style={styles.section}>{c.regionProgress}</Text>
-      {REGION_IDS.filter(id => id !== 'all').map(region => {
-        const ids = regionCountries(region).map(item => item.id);
-        const stats = learningSummary(progress.learning, europePack.id, ids);
+      {(mapId === 'europe' ? REGION_IDS.filter(id => id !== 'all') : ['all'] as const).map(region => {
+        const ids = (mapId === 'europe' ? regionCountries(region) : map.pack.locations).map(item => item.id);
+        const stats = learningSummary(progress.learning, map.pack.id, ids);
         const viewed = ids.filter(id => explored.has(id)).length;
         const percent = ids.length ? 100 * viewed / ids.length : 0;
         return <View key={region} style={styles.region}>
-          <View style={styles.line}><Text style={styles.regionName}>{regionLabel(region, language)}</Text>
+          <View style={styles.line}><Text style={styles.regionName}>{mapId === 'europe' ? regionLabel(region, language) : mapName(mapId, language)}</Text>
             <Text style={styles.caption}>{viewed}/{ids.length} · {stats.mastered} {c.mastered.toLowerCase()}</Text>
           </View>
           <View style={styles.bar}><View style={[styles.fill, { width: `${percent}%` }]} /></View>

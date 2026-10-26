@@ -11,11 +11,13 @@ import { CountryInfoCard } from '../features/geography/CountryInfoCard';
 import { useCountrySpeech } from '../features/geography/useCountrySpeech';
 import { useProgress } from '../features/geography/ProgressContext';
 import { learningSummary } from '../features/geography/learning';
-import { europePack } from '../features/geography/europe';
+import { useMap } from '../features/geography/MapContext';
+import { mapName } from '../features/geography/maps';
 import { gameCopy } from '../features/geography/copy';
 import { recordExploration } from '../features/geography/progress';
 
 export function ExploreScreen() {
+  const { map, mapId } = useMap();
   const { language } = useLanguage();
   const { progress, update, status } = useProgress();
   const theme = themeForScheme(useColorScheme());
@@ -25,12 +27,13 @@ export function ExploreScreen() {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<string | null>(null);
   const { speak } = useCountrySpeech(progress.voiceEnabled, language);
-  const countries = useMemo(() => regionCountries(region).filter(item =>
+  const locations = mapId === 'europe' ? regionCountries(region) : map.pack.locations;
+  const countries = useMemo(() => locations.filter(item =>
     countryName(item.id, language).toLocaleLowerCase().includes(search.trim().toLocaleLowerCase()) ||
     countryFacts[item.id]?.capital[language].toLocaleLowerCase().includes(search.trim().toLocaleLowerCase())
   ).sort((a,b) => countryName(a.id, language).localeCompare(countryName(b.id, language))),
-  [region, language, search]);
-  const statistics = learningSummary(progress.learning, europePack.id, regionCountries(region).map(item => item.id));
+  [locations, language, search]);
+  const statistics = learningSummary(progress.learning, map.pack.id, locations.map(item => item.id));
   const choose = (id: string) => { if (status === 'loading' || status === 'read-error') return; update(p => recordExploration(p, id)); setSelected(id); speak(countryName(id, language)); };
   return <SafeAreaView edges={['top']} style={styles.screen}>
     {selected ? <ScrollView contentContainerStyle={styles.content}>
@@ -43,19 +46,19 @@ export function ExploreScreen() {
       <Text style={styles.heading}>{c.countryCollection}</Text>
       <Text style={styles.subtitle}>{c.collectionHint}</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.regions}>
-        {REGION_IDS.map(id => <Pressable key={id} accessibilityRole="button" accessibilityState={{ selected: id === region }}
+        {(mapId === 'europe' ? REGION_IDS : ['all'] as const).map(id => <Pressable key={id} accessibilityRole="button" accessibilityState={{ selected: id === region }}
           onPress={() => setRegion(id)} style={[styles.chip, id === region && styles.activeChip]}>
-          <Text style={[styles.chipText, id === region && styles.activeText]}>{regionLabel(id, language)}</Text>
+          <Text style={[styles.chipText, id === region && styles.activeText]}>{mapId === 'europe' ? regionLabel(id, language) : mapName(mapId, language)}</Text>
         </Pressable>)}
       </ScrollView>
-      <View style={styles.progress}><Text style={styles.subtitle}>{statistics.practiced}/{regionCountries(region).length} {c.practiced.toLowerCase()} · {statistics.mastered} {c.mastered.toLowerCase()}</Text></View>
+      <View style={styles.progress}><Text style={styles.subtitle}>{statistics.practiced}/{locations.length} {c.practiced.toLowerCase()} · {statistics.mastered} {c.mastered.toLowerCase()}</Text></View>
       <TextInput value={search} onChangeText={setSearch} placeholder={c.searchCountry} placeholderTextColor={theme.muted}
         accessibilityLabel={c.searchCountry} style={styles.search} />
       <View style={styles.grid}>
         {countries.map(country => {
           const facts = countryFacts[country.id];
           if (!facts) return null;
-          const stats = learningSummary(progress.learning, europePack.id, [country.id]);
+          const stats = learningSummary(progress.learning, map.pack.id, [country.id]);
           return <Pressable accessibilityRole="button" key={country.id} disabled={status === 'loading' || status === 'read-error'} onPress={() => choose(country.id)} style={styles.card}>
             <View style={styles.flag}><SvgXml xml={facts.flagSvg} width={72} height={48} /></View>
             <Text style={styles.name} numberOfLines={2}>{facts.name[language]}</Text>

@@ -66,3 +66,18 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
   maximum zoom individual buttons fan to nearby free positions with leader lines.
   `EuropeMap` applies the existing selection guard to these buttons and renders
   them only for enabled, eligible locations. Numbers preserve quiz answer secrecy.
+
+## Continent maps
+
+- `maps.ts`: typed offline registry for Europe/Asia/Africa/South America/Oceania;
+  stable pack IDs, shared shapes/markers/context and precomputed distance tables.
+- `MapProvider` / `useMap`: shares transient map choice across tabs, defaults to
+  Europe; it does not change the saved-progress schema or keys.
+- `MapSelector`: localized horizontal map choices reused by Home and map setup.
+- `EuropeMap.map`: optional map definition, defaults to Europe for compatibility.
+  Shapes, marker anchors, labels and picker clusters use that definition. Relief
+  is restricted to Europe; other packs use bundled vector fills.
+- `difficultyPack(level, map?)`: derives eligible countries from each map's outline
+  areas; normal retains at least four targets for multiple-choice modes.
+- `CountryAtlasPortrait`: uses the selected map for shared country IDs; non-Europe
+  portraits show the same offline vector geometry as gameplay.

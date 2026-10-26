@@ -1,3 +1,5 @@
+import { useMap } from './MapContext';
+import { mapName } from './maps';
 import { useState } from 'react';
 import { Image, Linking, Pressable, StyleSheet, Text, View, useColorScheme } from 'react-native';
 import { SvgXml } from 'react-native-svg';
@@ -11,6 +13,7 @@ import { gameCopy } from './copy';
 import { countryPhotos } from './countryPhotos';
 
 export function CountryInfoCard({ id, language, onSpeak, compact = false, onDetails }: { id: string; language: Language; onSpeak: () => void; compact?: boolean; onDetails?: () => void }) {
+  const { mapId } = useMap();
   const facts = countryFacts[id];
   const [failedPhoto, setFailedPhoto] = useState<string | null>(null);
   const photo = countryPhotos[id];
@@ -38,14 +41,14 @@ export function CountryInfoCard({ id, language, onSpeak, compact = false, onDeta
         <Text style={styles.photoCredit}>{photo.credit} · {photo.license} · <Ionicons name="open-outline" size={12} color={theme.brand} /></Text>
       </Pressable>
     </View>}
-    <CountryAtlasPortrait id={id} caption={education.atlas} />
+    <CountryAtlasPortrait id={id} caption={mapId === 'europe' ? education.atlas : education.location} />
     <View style={styles.row}>
       <View accessible accessibilityLabel={`${c.flag}: ${facts.name[language]}`} style={styles.flag}>
         <SvgXml xml={facts.flagSvg} width={62} height={46} />
       </View>
       <View style={styles.nameBlock}>
         <Text style={styles.name}>{facts.name[language]}</Text>
-        <Text style={styles.region}>{countryRegion(id, language)}</Text>
+        <Text style={styles.region}>{mapId === 'europe' ? countryRegion(id, language) : mapName(mapId, language)}</Text>
       </View>
       <Pressable accessibilityRole="button" accessibilityLabel={c.hear} style={styles.speak} onPress={onSpeak}>
         <Ionicons name="volume-high-outline" size={24} color={theme.brand} />
@@ -60,7 +63,7 @@ export function CountryInfoCard({ id, language, onSpeak, compact = false, onDeta
       <View style={styles.fact}>
         <Ionicons name="compass-outline" size={20} color={theme.brand} />
         <Text style={styles.label}>{education.region}</Text>
-        <Text style={styles.value}>{countryRegion(id, language)}</Text>
+        <Text style={styles.value}>{mapId === 'europe' ? countryRegion(id, language) : mapName(mapId, language)}</Text>
       </View>
       {coordinates && <View style={styles.fact}>
         <Ionicons name="navigate-outline" size={20} color={theme.brand} />

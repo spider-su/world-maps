@@ -3,6 +3,7 @@ import { capitalName, countryName } from './countryFacts';
 import type { FindClue, GameMode, NameAnswer } from './modes';
 
 const en = {
+  offlineMap: 'Offline map', learnAllMaps: 'Learn includes every country on this map.',
   zoomCountries: 'Zoom to nearby countries',
   playOptions: 'Play options', countryCollection: 'Country collection', collectionHint: 'Explore countries by region and learn at your own pace.', backToCollection: 'Back to collection', searchCountry: 'Search country or capital', noCountriesFound: 'No matching countries', profile: 'Profile', countriesExplored: 'Countries explored', roundsPlayed: 'Rounds played', regionProgress: 'Regions', mapTools: 'Map tools', moreDetails: 'Country details', cold: 'Cold', hot: 'Hot',
   learningProgress: 'Learning progress', practiced: 'Practiced', mastered: 'Mastered', needsPractice: 'Needs practice', accuracy: 'Accuracy',
@@ -30,7 +31,7 @@ const en = {
   showNames: 'Show names', hideNames: 'Hide names', smallCountries: 'Small countries',
   marker: 'Small country marker', mapCountry: 'Map country',
   proximity: { correct: 'Found', 'very-close': 'Very close', close: 'Close', far: 'Far', 'very-far': 'Very far' },
-  resetMap: 'Show all Europe', zoomIn: 'Zoom in', zoomOut: 'Zoom out',
+  resetMap: 'Show whole map', zoomIn: 'Zoom in', zoomOut: 'Zoom out',
   moveLeft: 'Move left', moveRight: 'Move right', moveUp: 'Move up', moveDown: 'Move down',
   score: 'points', history: 'Recent history · up to 100 completed rounds', solved: 'Solved', best: 'Best score',
   saveError: 'Your latest changes are not saved on this device.', readError: 'Saved progress could not be read. Retry before playing.',
@@ -44,6 +45,7 @@ const en = {
 };
 type Copy = typeof en;
 const pl: Copy = {
+  offlineMap: 'Mapa offline', learnAllMaps: 'Nauka obejmuje wszystkie państwa na tej mapie.',
   zoomCountries: 'Przybliż pobliskie państwa',
   playOptions: 'Opcje gry', countryCollection: 'Kolekcja państw', collectionHint: 'Poznawaj państwa według regionów we własnym tempie.', backToCollection: 'Powrót do kolekcji', searchCountry: 'Szukaj państwa lub stolicy', noCountriesFound: 'Brak wyników', profile: 'Profil', countriesExplored: 'Odkryte państwa', roundsPlayed: 'Rozegrane rundy', regionProgress: 'Regiony', mapTools: 'Narzędzia mapy', moreDetails: 'Informacje o państwie', cold: 'Zimno', hot: 'Ciepło',
   learningProgress: 'Postępy w nauce', practiced: 'Ćwiczone', mastered: 'Opanowane', needsPractice: 'Do powtórki', accuracy: 'Trafność',
@@ -71,7 +73,7 @@ const pl: Copy = {
   showNames: 'Pokaż nazwy', hideNames: 'Ukryj nazwy', smallCountries: 'Małe państwa',
   marker: 'Znacznik małego państwa', mapCountry: 'Państwo na mapie',
   proximity: { correct: 'Odnalezione', 'very-close': 'Bardzo blisko', close: 'Blisko', far: 'Daleko', 'very-far': 'Bardzo daleko' },
-  resetMap: 'Pokaż całą Europę', zoomIn: 'Przybliż', zoomOut: 'Oddal',
+  resetMap: 'Pokaż całą mapę', zoomIn: 'Przybliż', zoomOut: 'Oddal',
   moveLeft: 'Przesuń w lewo', moveRight: 'Przesuń w prawo', moveUp: 'Przesuń w górę', moveDown: 'Przesuń w dół',
   score: 'pkt', history: 'Ostatnie wyniki · do 100 ukończonych rund', solved: 'Ukończone', best: 'Najlepszy wynik',
   saveError: 'Ostatnie zmiany nie są zapisane na tym urządzeniu.', readError: 'Nie udało się odczytać postępów. Ponów przed grą.',
@@ -84,6 +86,7 @@ const pl: Copy = {
   clueType: 'Podpowiedź: znajdź', answerType: 'Odpowiedź: nazwij', findClues: { name: 'Nazwa', capital: 'Stolica', flag: 'Flaga', mixed: 'Mieszane' }, nameAnswers: { country: 'Państwo', capital: 'Stolica' }, flagPrompt: 'Znajdź państwo z tą flagą',
 };
 const ru: Copy = {
+  offlineMap: 'Офлайн-карта', learnAllMaps: 'Обучение включает все страны на этой карте.',
   zoomCountries: 'Приблизить соседние страны',
   playOptions: 'Настройки игры', countryCollection: 'Коллекция стран', collectionHint: 'Изучайте страны по регионам в своём темпе.', backToCollection: 'Назад к коллекции', searchCountry: 'Найти страну или столицу', noCountriesFound: 'Страны не найдены', profile: 'Профиль', countriesExplored: 'Открытые страны', roundsPlayed: 'Сыграно раундов', regionProgress: 'Регионы', mapTools: 'Инструменты карты', moreDetails: 'О стране', cold: 'Холодно', hot: 'Горячо',
   learningProgress: 'Прогресс обучения', practiced: 'Изучено', mastered: 'Освоено', needsPractice: 'Нужна практика', accuracy: 'Точность',
@@ -110,7 +113,7 @@ const ru: Copy = {
   showNames: 'Показать названия', hideNames: 'Скрыть названия', smallCountries: 'Малые страны',
   marker: 'Метка малой страны', mapCountry: 'Страна на карте',
   proximity: { correct: 'Найдено', 'very-close': 'Очень близко', close: 'Близко', far: 'Далеко', 'very-far': 'Очень далеко' },
-  resetMap: 'Показать всю Европу', zoomIn: 'Приблизить', zoomOut: 'Отдалить',
+  resetMap: 'Показать всю карту', zoomIn: 'Приблизить', zoomOut: 'Отдалить',
   moveLeft: 'Сдвинуть влево', moveRight: 'Сдвинуть вправо', moveUp: 'Сдвинуть вверх', moveDown: 'Сдвинуть вниз',
   score: 'очков', history: 'История · до 100 завершённых раундов', solved: 'Решено', best: 'Лучший результат',
   saveError: 'Последние изменения не сохранены на устройстве.', readError: 'Не удалось прочитать прогресс. Повторите перед игрой.',

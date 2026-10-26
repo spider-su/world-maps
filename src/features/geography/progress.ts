@@ -88,14 +88,15 @@ export function parseProgress(raw: string | null): GameProgress {
     const value: unknown = JSON.parse(raw);
     if (!value || typeof value !== 'object') return initialProgress;
     const candidate = value as Partial<GameProgress>;
-    if (typeof (candidate as { schemaVersion?: number }).schemaVersion === 'number' && candidate.schemaVersion! > 3) throw new Error('Unsupported progress version');
+    const savedVersion = (candidate as { schemaVersion?: number }).schemaVersion;
+    if (typeof savedVersion === 'number' && savedVersion > 3) throw new Error('Unsupported progress version');
     const sessions = Array.isArray(candidate.sessions) ? candidate.sessions.filter(isSession).slice(-MAX_HISTORY) : [];
     return {
       difficulty: isDifficulty(candidate.difficulty) ? candidate.difficulty : DEFAULT_DIFFICULTY,
       schemaVersion: 3,
       explored: Array.isArray(candidate.explored) ? [...new Set(candidate.explored.filter((id): id is string => typeof id === 'string' && /^[A-Z]{3}$/.test(id)))].slice(-100) : [],
       practiceMode: candidate.practiceMode === 'random' ? 'random' : 'adaptive',
-      learning: (candidate.schemaVersion === 2 || candidate.schemaVersion === 3) ? parseLearning(candidate.learning) : migrateLearning(sessions),
+      learning: (savedVersion === 2 || savedVersion === 3) ? parseLearning(candidate.learning) : migrateLearning(sessions),
       voiceEnabled: typeof candidate.voiceEnabled === 'boolean' ? candidate.voiceEnabled : true,
       sessions,
     };

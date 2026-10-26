@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { ActivityIndicator, Image, Linking, Pressable, ScrollView, StyleSheet, Text, View, useColorScheme } from 'react-native';
+import { ActivityIndicator, Image, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View, useColorScheme } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { Language } from '../../ui/i18n';
 import { themeForScheme } from '../../ui/worldMapsTheme';
-import { countryWikipedia, type CountryPhoto } from './countryPhotos';
+import { countryWikipedia, countryPhotoSource, type CountryPhoto } from './countryPhotos';
 
 import { galleryCopy } from './galleryCopy';
 
@@ -14,7 +14,7 @@ function Photo({ photo, language, open }: { photo: CountryPhoto; language: Langu
   const c = galleryCopy[language];
   return <View style={[styles.photoCard, { backgroundColor: theme.paper, borderColor: theme.border }]}>
     <View style={styles.imageFrame}>
-      {state !== 'failed' && <Image key={attempt} source={{ uri: photo.url, headers: { 'User-Agent': 'WorldMaps/0.1 (https://github.com/spider-su/world-maps)' } }} resizeMode="contain" style={styles.image}
+      {state !== 'failed' && <Image key={attempt} source={countryPhotoSource(photo.url, Platform.OS)} resizeMode="contain" style={styles.image}
         accessibilityLabel={photo.caption} onLoad={() => setState('loaded')} onError={() => setState('failed')} />}
       {state === 'loading' && <ActivityIndicator accessibilityLabel={c.loading} style={StyleSheet.absoluteFill} color={theme.brand} />}
       {state === 'failed' && <View style={styles.failure}><Text style={{ color: theme.muted }}>{c.unavailable}</Text><Pressable accessibilityRole="button" style={styles.action} onPress={() => { setState('loading'); setAttempt(a => a + 1); }}><Text style={{ color: theme.brand }}>{c.retry}</Text></Pressable></View>}

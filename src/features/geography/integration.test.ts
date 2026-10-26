@@ -73,7 +73,7 @@ describe('saved progress restoration', () => {
       session('europe-countries:name-it', 'ITA', 30, ['ESP', 'ITA']),
     ] });
     const restored = parseProgress(legacy);
-    expect(restored.schemaVersion).toBe(2);
+    expect(restored.schemaVersion).toBe(3);
     expect(restored.voiceEnabled).toBe(false);
     expect(restored.difficulty).toBe('normal');
     expect(restored.practiceMode).toBe('adaptive');
@@ -98,6 +98,6 @@ describe('saved progress restoration', () => {
     // Schema-2 learning is kept as stored rather than rebuilt from sessions.
     expect(Object.keys(current.learning)).toEqual(['europe-countries']);
     expect(parseProgress(JSON.stringify(current))).toEqual(current);
-    expect(() => parseProgress(JSON.stringify({ ...current, schemaVersion: 3 }))).toThrow();
+    expect(() => parseProgress(JSON.stringify({ ...current, schemaVersion: 4 }))).toThrow();
   });
 });

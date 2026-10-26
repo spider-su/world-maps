@@ -19,8 +19,8 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 
 - `features/geography/EuropeMap`: shared interactive renderer and noninteractive
   Home preview; takes guess results, revealed IDs, label visibility and selection.
-  Small countries are drawn as non-interactive markers and selected through
-  `selectionAlternatives` buttons.
+  Small countries have 48dp on-map picker targets connected to their geographic
+  anchors. Crowded targets cluster and zoom on tap; polygon hit areas are unchanged.
 - `features/geography/ModeSelector`: four icon-led mode cards in `GAME_MODES`
   order, localized through `gameCopy`, no round state.
 - `screens/GeographyGameScreen`: one game mode/round, compact prompt and answers.
@@ -53,10 +53,16 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 - `CountryInfoCard.compact` / `onDetails`: selected country's flag, capital and
   pronunciation remain below the map; full offline facts open in a separate sheet.
 - `GeographyGameScreen`: fixed header, responsive map and bounded scrollable dock;
-  options and small-country alternatives are disclosed in sheets. Score/learning
+  secondary options and full Learn details are disclosed in sheets. Score/learning
   rules and hidden-target behavior are unchanged.
 
 - `EuropeScreen`: middle bottom tab with Europe/47-country/offline summary, a
   read-only map preview and existing play setup. Owns the top safe area; tabs own
   the bottom. The tab navigator shares transient quiz variants with Home; saved
   difficulty and practice preferences continue using the existing progress store.
+
+- `mapPicker.ts`: pure screen-space target grouping and cluster expansion for the
+  stable `selectionAlternatives` anchors. Groups avoid overlap and map tools; at
+  maximum zoom individual buttons fan to nearby free positions with leader lines.
+  `EuropeMap` applies the existing selection guard to these buttons and renders
+  them only for enabled, eligible locations. Numbers preserve quiz answer secrecy.

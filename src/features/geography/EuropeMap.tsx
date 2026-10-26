@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
-import { PanResponder, Pressable, StyleSheet, View, useWindowDimensions, useColorScheme } from 'react-native';
-import Svg, { Circle, ClipPath, Defs, Image as SvgImage, Path, Rect, Text as SvgText } from 'react-native-svg';
+import { PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions, useColorScheme } from 'react-native';
+import Svg, { Circle, ClipPath, Defs, Image as SvgImage, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { Ionicons } from '@expo/vector-icons';
 import type { Language } from '../../ui/i18n';
 import { europeShapes, europeContextShapes } from './europe';
 import { microstates } from './microstates';
 import type { GuessResult } from './engine';
 import { CountryPath } from './CountryPath';
-import { createSelectionGuard } from './selection';
+import { expandPicker, PICKER_SIZE, pickerTargets } from './mapPicker';
+import { createSelectionGuard, selectionAlternatives } from './selection';
 import { mapLabels } from './mapLabels';
 import { frame, INITIAL_VIEWPORT, normalize, pan, zoomAt, focusPoint, type Viewport } from './viewport';
 import { CLUE_COLORS } from './mapColors';
@@ -58,6 +59,7 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
   const visible = frame(viewport, aspect);
   const eligible = (id: string) => !selectableIds || selectableIds.includes(id);
   const c = gameCopy[language];
+  const picker = !preview && enabled ? pickerTargets(selectionAlternatives.map((location, index) => ({ ...location, number: index + 1 })).filter(location => eligible(location.id)), viewport, mapWidth, mapHeight) : [];
   const labels = mapLabels(europeShapes.map(shape => ({ ...shape, name: countryName(shape.id, language) })), showNames, revealedIds, visible, mapWidth);
   const begin = useCallback(() => { selectionGuard.begin(); gesture.current = { viewport: current.current, pinchDistance: 0 }; }, [selectionGuard]);
   const move = useCallback<NonNullable<Parameters<typeof PanResponder.create>[0]['onPanResponderMove']>>((event, state) => {
@@ -111,9 +113,27 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
         {targetPoint && <Circle cx={'labelX' in targetPoint ? targetPoint.labelX : targetPoint.x}
           cy={'labelY' in targetPoint ? targetPoint.labelY : targetPoint.y} r={12 * visible.w / mapWidth}
           fill="none" stroke="#B66D00" strokeWidth={2 * visible.w / mapWidth} pointerEvents="none" />}
-        {!preview && microstates.filter(state => eligible(state.id)).map((state, index) => <SvgText key={`${state.id}-number`} x={state.x} y={state.y + 2 / viewport.zoom}
-          fontSize={6 / viewport.zoom} textAnchor="middle" fill={theme.navy} pointerEvents="none">{index + 1}</SvgText>)}
+
       </Svg>
+      {!!picker.length && <View pointerEvents="box-none" style={StyleSheet.absoluteFill}>
+        <Svg pointerEvents="none" width={mapWidth} height={mapHeight} style={StyleSheet.absoluteFill}>
+          {picker.flatMap(target => target.members.map(member => <Line key={member.id} x1={member.screenX} y1={member.screenY} x2={target.x} y2={target.y} stroke={theme.brand} strokeWidth={1.5} opacity={0.65} />))}
+        </Svg>
+        {picker.map(target => {
+          const member = target.members[0]!;
+          const single = target.members.length === 1;
+          const label = single ? showNames || revealedIds.includes(member.id) ? countryName(member.id, language) : `${c.marker} ${member.number}` : `${c.zoomCountries} · ${target.members.length}`;
+          const result = single ? results.get(member.id) : undefined;
+          return <Pressable key={target.members.map(p => p.id).join(':')} accessibilityRole="button" accessibilityLabel={label}
+            style={[styles.pickerTarget, { left: target.x - PICKER_SIZE / 2, top: target.y - PICKER_SIZE / 2 }]}
+            onPress={() => { if (!selectionGuard.canSelect(Date.now())) return; if (single) onSelect(member.id); else setViewport(expandPicker(target, viewport, mapWidth, mapHeight)); }}>
+            <View style={[styles.pickerPin, !single && styles.pickerGroup, result && { borderColor: CLUE_COLORS[result] }]}>
+              {!single && <Ionicons name="layers-outline" size={14} color={theme.brandDark} />}
+              <Text style={styles.pickerNumber}>{single ? member.number : target.members.length}</Text>
+            </View>
+          </Pressable>;
+        })}
+      </View>}
     </View>
     {!preview && <View style={styles.tools}>
       {showTools && <View style={styles.controls}>
@@ -134,6 +154,10 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
 const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
   map: { width: '100%', backgroundColor: theme.ocean, borderRadius: 24, overflow: 'hidden' },
   fill: { flex: 1, minHeight: 180 },
+  pickerTarget: { position: 'absolute', width: PICKER_SIZE, height: PICKER_SIZE, alignItems: 'center', justifyContent: 'center' },
+  pickerPin: { width: 34, height: 34, borderRadius: 17, backgroundColor: theme.surface, borderWidth: 2, borderColor: theme.brand, alignItems: 'center', justifyContent: 'center', shadowColor: '#123E70', shadowOpacity: 0.18, shadowRadius: 3, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
+  pickerGroup: { width: 44, height: 44, borderRadius: 22, borderColor: theme.border, backgroundColor: theme.surface },
+  pickerNumber: { color: theme.brandDark, fontSize: 12, fontWeight: '800' },
   tools: { position: 'absolute', bottom: 12, right: 12, alignItems: 'flex-end', gap: 8, maxWidth: '85%' },
   quickTools: { flexDirection: 'row', gap: 6 },
   controls: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-end', padding: 4, gap: 2, backgroundColor: theme.surface, borderRadius: 16 },

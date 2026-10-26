@@ -13,7 +13,6 @@ export function regionCountries(region: RegionId): GeographyPack['locations'] {
     europePack.locations.filter(item => countryRegion(item.id, 'en') === regionNames.en[region]);
 }
 import { countryRegion } from './countryEducation';
-function requireRegion(id: string): string { return countryRegion(id, 'en'); }
 export function regionPack(region: RegionId): GeographyPack {
   return { ...europePack, locations: regionCountries(region) };
 }

@@ -101,3 +101,11 @@ setup lives in a sheet; the game prioritizes the map, compact feedback and score
 Full Learn facts and non-gesture map controls remain available on demand.
 See [UI implementation and evidence](map-first-ui.md). This is presentation work,
 not a new ruleset or completion of physical-device/iOS acceptance gates.
+
+## Continent expansion — 2026-10-26
+
+The additional-regions deferral above describes the original Europe POC. Four
+offline maps now extend all modes: Asia, Africa, South America and Oceania.
+See [coverage and generation](continent-maps.md) and
+[validation evidence](evidence/continent-maps/README.md). Physical-phone, iOS,
+screen-reader and audible-speech validation remain separate pending gates.

@@ -108,3 +108,12 @@ For each future component, replace generic status with dated evidence and the de
   buttons with leader lines. Preserve stable numbers, difficulty filtering,
   target secrecy, keyboard SVG adapters and pan/pinch suppression. The renderer
   owns the picker; `mapPicker.ts` holds pure, tested layout rules.
+
+- 2026-10-26: Added four offline continent packs and the `maps` registry. Reused
+  `EuropeMap` via optional `map`, existing SVG adapters, gestures, picker clusters,
+  game modes, speech and progress serialization. Added shared session map choice
+  (`MapProvider`, `MapSelector`); collection, profile and Settings follow the map.
+  Retained Europe pack/storage IDs and schema. Removed Europe-sized exploration
+  and restored-guess truncation without changing record shapes. No runtime
+  dependencies; Shapely 2.0.7 is a data-generation tool. Coverage and source
+  conventions: `docs/continent-maps.md`.

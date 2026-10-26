@@ -1,3 +1,6 @@
+import { useMap } from '../features/geography/MapContext';
+import { MapSelector } from '../features/geography/MapSelector';
+import { mapName } from '../features/geography/maps';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useState } from 'react';
 import { BackHandler, ImageBackground, ScrollView, StyleSheet, Text, View, useColorScheme } from 'react-native';
@@ -17,6 +20,7 @@ import { getTabBarMetrics } from '../platform/safeArea';
 import { GeographyGameScreen } from './GeographyGameScreen';
 
 export function HomeScreen({ findClue, nameAnswer }: { findClue: FindClue; nameAnswer: NameAnswer }) {
+  const { map, mapId } = useMap();
   const { progress, status } = useProgress();
   const theme = themeForScheme(useColorScheme());
   const styles = makeStyles(theme);
@@ -34,17 +38,18 @@ export function HomeScreen({ findClue, nameAnswer }: { findClue: FindClue; nameA
     const listener = BackHandler.addEventListener('hardwareBackPress', () => { setMode(null); return true; });
     return () => listener.remove();
   }, [mode]));
-  if (mode) return <GeographyGameScreen key={`${mode}:${progress.difficulty}:${status === 'loading' || status === 'read-error' ? 'loading' : 'loaded'}`} mode={mode} findClue={findClue} nameAnswer={nameAnswer} onBack={() => setMode(null)} />;
+  if (mode) return <GeographyGameScreen map={map} key={`${mapId}:${mode}:${progress.difficulty}:${status === 'loading' || status === 'read-error' ? 'loading' : 'loaded'}`} mode={mode} findClue={findClue} nameAnswer={nameAnswer} onBack={() => setMode(null)} />;
   return <SafeAreaView edges={['top']} style={styles.screen}>
     {isFocused && <StatusBar style="light" />}
     <ScrollView contentContainerStyle={styles.body}>
       <ImageBackground source={homeArtwork} resizeMode="cover" style={styles.hero} imageStyle={styles.heroImage}>
         <View style={styles.heroShade} />
-        <View style={styles.heroCopy}><Text style={styles.eyebrow}>{c.europe.toUpperCase()}</Text>
+        <View style={styles.heroCopy}><Text style={styles.eyebrow}>{mapName(mapId, language).toUpperCase()}</Text>
           <Text style={styles.brand}>World Maps</Text><Text style={styles.tagline}>{c.tagline}</Text>
         </View>
       </ImageBackground>
       <View style={styles.menu}>
+        <MapSelector />
         <ModeSelector onChange={setMode} language={language} />
         <ProgressStatus language={language} />
       </View>

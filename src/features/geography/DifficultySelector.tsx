@@ -1,11 +1,13 @@
 import { Pressable, StyleSheet, Text, View, useColorScheme } from 'react-native';
 import type { Language } from '../../ui/i18n';
 import { themeForScheme, type WorldMapsPalette } from '../../ui/worldMapsTheme';
-import { DIFFICULTIES } from './difficulty';
+import { useMap } from './MapContext';
+import { difficultyPack, DIFFICULTIES } from './difficulty';
 import { gameCopy } from './copy';
 import { useProgress } from './ProgressContext';
 
 export function DifficultySelector({ language }: { language: Language }) {
+  const { map } = useMap();
   const { progress, status, update } = useProgress();
   const theme = themeForScheme(useColorScheme());
   const styles = makeStyles(theme);
@@ -19,7 +21,7 @@ export function DifficultySelector({ language }: { language: Language }) {
       style={[styles.option, progress.difficulty === level && styles.selected]}>
       <Text style={[styles.label, progress.difficulty === level && styles.selectedLabel]}>{c.levels[level]}</Text>
     </Pressable>)}</View>
-    <Text style={styles.hint}>{c.levelHints[progress.difficulty]} · {c.learnAll}</Text>
+    <Text style={styles.hint}>{difficultyPack(progress.difficulty, map).locations.length}/{map.pack.locations.length} · {c.learnAllMaps}</Text>
   </View>;
 }
 const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({

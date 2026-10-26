@@ -65,7 +65,7 @@ export function parseLearning(value: unknown): LearningProgress {
         r.firstTry! > r.correct! || !Array.isArray(r.recent) || !r.recent.every(v => typeof v === 'boolean') ||
         !Array.isArray(r.lastGuesses) || !r.lastGuesses.every(v => typeof v === 'string') ||
         ![r.correct, r.incorrect, r.firstTry].every(Number.isInteger)) continue;
-      valid[id] = { ...r, recent: r.recent.slice(-10), lastGuesses: [...new Set(r.lastGuesses)].slice(-47) } as CountryLearning;
+      valid[id] = { ...r, recent: r.recent.slice(-10), lastGuesses: [...new Set(r.lastGuesses)] } as CountryLearning;
     }
     // Object.fromEntries creates data properties, including unusual imported keys.
     if (Object.keys(valid).length) Object.defineProperty(result, packId, { value: valid, enumerable: true, writable: true, configurable: true });

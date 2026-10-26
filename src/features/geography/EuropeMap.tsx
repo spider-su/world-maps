@@ -3,12 +3,11 @@ import { PanResponder, Pressable, StyleSheet, Text, View, useWindowDimensions, u
 import Svg, { Circle, ClipPath, Defs, Image as SvgImage, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { Ionicons } from '@expo/vector-icons';
 import type { Language } from '../../ui/i18n';
-import { europeShapes, europeContextShapes } from './europe';
-import { microstates } from './microstates';
+import { maps, mapName, type MapDefinition } from './maps';
 import type { GuessResult } from './engine';
 import { CountryPath } from './CountryPath';
 import { expandPicker, PICKER_SIZE, pickerTargets } from './mapPicker';
-import { createSelectionGuard, selectionAlternatives } from './selection';
+import { createSelectionGuard } from './selection';
 import { mapLabels } from './mapLabels';
 import { frame, INITIAL_VIEWPORT, normalize, pan, zoomAt, focusPoint, type Viewport } from './viewport';
 import { CLUE_COLORS } from './mapColors';
@@ -18,6 +17,7 @@ import { countryName } from './countryFacts';
 import { gameCopy } from './copy';
 
 interface Props {
+  map?: MapDefinition;
   results: ReadonlyMap<string, GuessResult>;
   revealedIds: readonly string[];
   showNames: boolean;
@@ -33,7 +33,12 @@ interface Props {
 }
 
 /** Shared, offline renderer. Country geometry remains authoritative for taps. */
-export function EuropeMap({ results, revealedIds, showNames, onSelect, language, enabled = true, preview = false, fill = false, targetId, selectableIds, atlas = false, showBorders = true }: Props) {
+export function EuropeMap({ results, revealedIds, showNames, onSelect, language, enabled = true, preview = false, fill = false, targetId, selectableIds, atlas = false, showBorders = true, map = maps.europe }: Props) {
+  const shapes = map.shapes;
+  const contextShapes = map.context;
+  const markers = map.markers;
+  const selectionAlternatives = [...markers, ...shapes.filter(s => s.path && s.area < 700).map(s => ({ id: s.id, x: s.labelX, y: s.labelY }))];
+  const physicalAtlas = atlas && map.id === 'europe';
   const { width } = useWindowDimensions();
   const atlasClipId = `atlas-land-${useId()}`;
   const theme = themeForScheme(useColorScheme());
@@ -45,13 +50,13 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
   const mapHeight = fill ? Math.max(180, measuredHeight || mapWidth * 570 / 864) : mapWidth * 570 / 864;
   const aspect = mapHeight / mapWidth;
   const [viewport, setViewport] = useState<Viewport>(() => {
-    const small = microstates.find(location => location.id === targetId);
-    const shape = europeShapes.find(location => location.id === targetId);
+    const small = markers.find(location => location.id === targetId);
+    const shape = shapes.find(location => location.id === targetId);
     return small ? focusPoint({ x: small.x, y: small.y }, 4) : shape && shape.area < 700
       ? focusPoint({ x: shape.labelX, y: shape.labelY }, 3) : fill && width < 600 ? focusPoint(shape ? { x: shape.labelX, y: shape.labelY } : INITIAL_VIEWPORT.center, 1.8) : INITIAL_VIEWPORT;
   });
-  const targetPoint = microstates.find(location => location.id === targetId)
-    ?? europeShapes.find(location => location.id === targetId);
+  const targetPoint = markers.find(location => location.id === targetId)
+    ?? shapes.find(location => location.id === targetId);
   const [selectionGuard] = useState(createSelectionGuard);
   const current = useRef(viewport);
   const gesture = useRef({ viewport, pinchDistance: 0 });
@@ -60,7 +65,7 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
   const eligible = (id: string) => !selectableIds || selectableIds.includes(id);
   const c = gameCopy[language];
   const picker = !preview && enabled ? pickerTargets(selectionAlternatives.map((location, index) => ({ ...location, number: index + 1 })).filter(location => eligible(location.id)), viewport, mapWidth, mapHeight) : [];
-  const labels = mapLabels(europeShapes.map(shape => ({ ...shape, name: countryName(shape.id, language) })), showNames, revealedIds, visible, mapWidth);
+  const labels = mapLabels(shapes.map(shape => ({ ...shape, name: countryName(shape.id, language) })), showNames, revealedIds, visible, mapWidth);
   const begin = useCallback(() => { selectionGuard.begin(); gesture.current = { viewport: current.current, pinchDistance: 0 }; }, [selectionGuard]);
   const move = useCallback<NonNullable<Parameters<typeof PanResponder.create>[0]['onPanResponderMove']>>((event, state) => {
     const [a, b] = event.nativeEvent.touches;
@@ -97,17 +102,17 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
   ] as const;
   return <View style={[styles.map, fill && styles.fill]} onLayout={event => { setMeasuredWidth(event.nativeEvent.layout.width); setMeasuredHeight(event.nativeEvent.layout.height); }}>
     <View {...(!preview ? responder.panHandlers : {})} collapsable={false}>
-      <Svg width={mapWidth} height={mapHeight} viewBox={`${visible.x} ${visible.y} ${visible.w} ${visible.h}`} accessibilityRole={preview ? 'image' : 'none'} accessibilityLabel={c.europe}>
+      <Svg width={mapWidth} height={mapHeight} viewBox={`${visible.x} ${visible.y} ${visible.w} ${visible.h}`} accessibilityRole={preview ? 'image' : 'none'} accessibilityLabel={mapName(map.id, language)}>
         <Rect x="-2000" y="-2000" width="5000" height="5000" fill={theme.ocean} />
-        {atlas && <><Defs><ClipPath id={atlasClipId}>{[...europeShapes, ...europeContextShapes].map(shape => <Path key={shape.id} d={shape.path} fillRule="evenodd" clipRule="evenodd" />)}</ClipPath></Defs><SvgImage href={atlasImage} x={0} y={0} width={864} height={570} clipPath={`url(#${atlasClipId})`} preserveAspectRatio="none" pointerEvents="none" /></>}
-        {europeContextShapes.map(shape => <Path key={shape.id} d={shape.path} fillRule="evenodd" fill={atlas ? theme.oceanDeep : theme.oceanDeep} stroke={atlas ? showBorders ? theme.border : 'transparent' : theme.border} strokeWidth={0.6 / viewport.zoom} />)}
-        {europeShapes.map((shape, index) => {
-          const props = { d: shape.path, fill: !eligible(shape.id) ? theme.oceanDeep : shape.id === targetId ? '#F5AD18' : results.has(shape.id) ? atlas ? 'rgba(37,99,235,0.35)' : CLUE_COLORS[results.get(shape.id)!] : atlas ? 'transparent' : theme.mapLand, stroke: atlas ? showBorders ? theme.border : 'transparent' : theme.mapBorder, strokeWidth: Math.max(0.65, 2 / viewport.zoom) };
+        {physicalAtlas && <><Defs><ClipPath id={atlasClipId}>{[...shapes, ...contextShapes].map(shape => <Path key={shape.id} d={shape.path} fillRule="evenodd" clipRule="evenodd" />)}</ClipPath></Defs><SvgImage href={atlasImage} x={0} y={0} width={864} height={570} clipPath={`url(#${atlasClipId})`} preserveAspectRatio="none" pointerEvents="none" /></>}
+        {contextShapes.map(shape => <Path key={shape.id} d={shape.path} fillRule="evenodd" fill={theme.oceanDeep} stroke={atlas && !showBorders ? 'transparent' : theme.border} strokeWidth={0.6 / viewport.zoom} />)}
+        {shapes.filter(s => s.path).map((shape, index) => {
+          const props = { d: shape.path, fill: !eligible(shape.id) ? theme.oceanDeep : shape.id === targetId ? '#F5AD18' : results.has(shape.id) ? physicalAtlas ? 'rgba(37,99,235,0.35)' : CLUE_COLORS[results.get(shape.id)!] : physicalAtlas ? 'transparent' : theme.mapLand, stroke: atlas && !showBorders ? 'transparent' : physicalAtlas ? theme.border : theme.mapBorder, strokeWidth: Math.max(0.65, 2 / viewport.zoom) };
           return preview || !enabled || !eligible(shape.id) ? <Path key={shape.id} {...props} fillRule="evenodd" /> : <CountryPath key={shape.id} {...props} accessibilityLabel={`${c.mapCountry} ${index + 1}`} onSelect={() => { if (selectionGuard.canSelect(Date.now())) onSelect(shape.id); }} />;
         })}
         {!preview && labels.map(location => <SvgText key={location.id} x={location.labelX} y={location.labelY}
           fontSize={11 * visible.w / mapWidth} fontFamily="sans-serif" fontWeight="700" textAnchor="middle" fill={theme.navy} pointerEvents="none">{location.name}</SvgText>)}
-        {!preview && microstates.filter(state => eligible(state.id)).map(state => <Circle key={state.id} pointerEvents="none" cx={state.x} cy={state.y} r={Math.max(1, 3 / viewport.zoom)}
+        {!preview && markers.filter(state => eligible(state.id)).map(state => <Circle key={state.id} pointerEvents="none" cx={state.x} cy={state.y} r={Math.max(1, 3 / viewport.zoom)}
           fill={state.id === targetId ? '#F5AD18' : results.has(state.id) ? CLUE_COLORS[results.get(state.id)!] : theme.surface} stroke={theme.navy} strokeWidth={1 / viewport.zoom}
           />)}
         {targetPoint && <Circle cx={'labelX' in targetPoint ? targetPoint.labelX : targetPoint.x}

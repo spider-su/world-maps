@@ -3,6 +3,8 @@
 World Maps is a downstream app of mobile_template. It owns its geography features.
 
 - Europe includes 47 selectable locations: 41 country polygons and six markers.
+- Asia (50), Africa (54), South America (12) and Oceania (14) use the same four
+  modes and separate pack IDs for scores/practice. See [coverage](continent-maps.md).
 - Hot & Cold: hidden target; guessed countries retain distance colors; matching ID
   alone wins. Adjacent countries never count as the answer.
 - Find It: named target; select the correct country on the map.

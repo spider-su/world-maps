@@ -1,5 +1,5 @@
 import type { Language } from '../../ui/i18n';
-import { europePack } from './europe';
+import { mapForCountry, mapName } from './maps';
 
 /** Coarse geographic groupings for learning, not political classifications. */
 export type EuropeRegion = 'north' | 'west' | 'central' | 'south' | 'east' | 'southeast' | 'crossroads';
@@ -23,11 +23,12 @@ export const regionNames: Record<Language, Record<EuropeRegion, string>> = {
 };
 
 export function countryRegion(id: string, language: Language): string {
-  return regionNames[language][regionById[id] ?? 'crossroads'];
+  const map = mapForCountry(id);
+  return map && map.id !== 'europe' ? mapName(map.id, language) : regionNames[language][regionById[id] ?? 'crossroads'];
 }
 
 export function countryCoordinates(id: string): { latitude: number; longitude: number } | undefined {
-  const entry = europePack.locations.find(country => country.id === id);
+  const entry = mapForCountry(id)?.pack.locations.find(country => country.id === id);
   return entry && { latitude: entry.latitude, longitude: entry.longitude };
 }
 

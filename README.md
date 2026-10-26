@@ -1,10 +1,13 @@
 # World Maps
 
-Offline Europe geography learning game built with Expo / React Native from
+Offline geography learning game built with Expo / React Native from
 [mobile_template](https://github.com/spider-su/mobile_template).
 
-Four modes share one bundled vector map with 47 selectable locations (41 polygons
-and six small-country markers): Hot & Cold, Find It, Name It and Learn. Completed
+Five bundled maps cover Europe, Asia, Africa, South America and Oceania.
+See [continent coverage and generation](docs/continent-maps.md).
+
+Europe retains 47 selectable locations (41 polygons
+and six small-country markers). Every map supports Hot & Cold, Find It, Name It and Learn. Completed
 quiz scores and voice preference are stored locally. No API or account required.
 
 Quiz map names stay hidden until guessed/completed. Learn supports freely shown
@@ -49,9 +52,9 @@ licenses are available in Settings and [data attribution](docs/country-data.md).
 
 ### Difficulty
 
-Choose a level on Home before starting a quiz. **Normal** is the default (34
-large/medium countries); **Easy** uses the seven largest outlines on the displayed
-map; **Difficult** uses all 47 countries, including small-country markers. Size is
+Choose a level in Play options before starting a quiz. **Normal** is the default
+(large/medium outlines, with at least four choices); **Easy** uses the seven largest
+outlines on the selected map; **Difficult** uses every location on that map. Size is
 projected map area, not a ranking by national land area. Excluded countries remain
 visible in muted gray and cannot be guessed. Name It draws all four options from
 the selected pool. Learn always includes every country.
@@ -64,7 +67,7 @@ used the full pool. See [difficulty validation](docs/difficulty-testing.md).
 
 Home offers Adaptive or Random practice. Adaptive revisits recent misses and older
 practice while reducing repeats of mastered countries. Home/Settings show local
-Europe learning statistics and per-country accuracy. Existing scores migrate once
+selected-map learning statistics and per-country accuracy. Existing scores migrate once
 without being reset; misses from unfinished rounds are retained. See
 [learning model and migration](docs/country-learning.md).
 
@@ -97,3 +100,13 @@ opens voice/label controls; map tools are available on demand. Small countries h
 crowded targets zoom apart when tapped. Learn keeps a compact country card with expandable offline details.
 The [Home artwork and generation prompt](docs/licenses/home-artwork.md) are separate
 from the accurate bundled gameplay geography.
+
+## Continent maps
+
+Choose Europe, Asia, Africa, South America or Oceania on Home or the map tab.
+All four modes use the selected offline map. Easy selects seven large outlines;
+Normal selects large/medium outlines (at least four for answer choices); Difficult
+and Learn include every location. Scores and practice are separate for each map.
+New continent maps use vector fills; physical relief remains available for Europe.
+Map selection lasts for the app session and defaults to Europe on relaunch.
+See [coverage, sources and generation](docs/continent-maps.md).

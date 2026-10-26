@@ -12,8 +12,8 @@ import { EuropeMap } from '../features/geography/EuropeMap';
 import { gamePrompt, gameCopy } from '../features/geography/copy';
 import { CLUE_COLORS } from '../features/geography/mapColors';
 import { difficultyPack } from '../features/geography/difficulty';
-import { europePack } from '../features/geography/europe';
-import { europeBorderDistanceKm } from '../features/geography/borderDistance';
+import { maps, type MapDefinition } from '../features/geography/maps';
+import { borderDistanceFor } from '../features/geography/borderDistance';
 import { classifyGuess, guess, startRoundFor, type GuessResult, type Round } from '../features/geography/engine';
 import { recordExploration, recordSession, scoreRound, sessionFromRound, summary } from '../features/geography/progress';
 import { useProgress } from '../features/geography/ProgressContext';
@@ -23,15 +23,15 @@ import { capitalName, countryName, countryFacts } from '../features/geography/co
 import { practiceTarget, recordPractice } from '../features/geography/learning';
 import { canRevealNames, replayCountryId, answerChoices, modePackId, nameItAnswer, type GameMode, type FindClue, type NameAnswer, findClueForRound } from '../features/geography/modes';
 
-export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnswer = 'country' }: { mode: GameMode; onBack: () => void; findClue?: FindClue; nameAnswer?: NameAnswer }) {
+export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnswer = 'country', map = maps.europe }: { map?: MapDefinition; mode: GameMode; onBack: () => void; findClue?: FindClue; nameAnswer?: NameAnswer }) {
   const { language } = useLanguage();
   const theme = themeForScheme(useColorScheme());
   const styles = makeStyles(theme);
   const c = gameCopy[language];
   const { progress, status, update } = useProgress();
   const difficulty = progress.difficulty;
-  const pack = useMemo(() => mode === 'learn' ? europePack : difficultyPack(difficulty), [mode, difficulty]);
-  const practiceId = modePackId(europePack.id, mode);
+  const pack = useMemo(() => mode === 'learn' ? map.pack : difficultyPack(difficulty, map), [mode, difficulty, map]);
+  const practiceId = modePackId(map.pack.id, mode);
   const newRound = (previousId?: string) =>
     startRoundFor(pack, practiceTarget(pack, progress.learning, practiceId, progress.practiceMode, previousId));
   const { height, fontScale } = useWindowDimensions();
@@ -48,9 +48,9 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
   const soundEnabled = progress.voiceEnabled;
   const stats = useMemo(() => summary(progress, practiceId, difficulty), [progress, practiceId, difficulty]);
   const completed = mode !== 'learn' && round.completedAt !== undefined;
-  const target = europePack.locations.find(item => item.id === round.targetId)!;
+  const target = map.pack.locations.find(item => item.id === round.targetId)!;
   const choices = useMemo(() => mode === 'name-it' || mode === 'capital-name' ? answerChoices(pack, round.targetId) : [], [mode, round.targetId, pack]);
-  const distanceResolver = europeBorderDistanceKm;
+  const distanceResolver = useMemo(() => borderDistanceFor(map), [map]);
   const { speak, stop, failed: speechFailed } = useCountrySpeech(soundEnabled && progressLoaded, language);
   const restart = () => {
     stop();
@@ -107,7 +107,7 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
     const results = new Map<string, GuessResult>();
     if (mode === 'learn') {
       if (feedback) {
-        const item = europePack.locations.find(location => location.id === feedback.id);
+        const item = map.pack.locations.find(location => location.id === feedback.id);
         if (item) results.set(item.id, 'correct');
       }
       return results;
@@ -122,7 +122,7 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
     }
     for (const id of round.guesses) results.set(id, classifyGuess(pack, round.targetId, id, distanceResolver).result);
     return results;
-  }, [round, mode, feedback, distanceResolver, pack]);
+  }, [round, mode, feedback, distanceResolver, pack, map]);
 
   const completedIds = mode === 'learn' ? [...resultById.keys()] : round.guesses;
   const canShowNames = canRevealNames(mode, completed);
@@ -146,7 +146,7 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
         </Pressable>}
       </View>
       <View style={styles.mapArea}>
-        <EuropeMap key={`${mode}:${round.startedAt}:${round.targetId}`} fill results={resultById} revealedIds={completedIds} showNames={showNames && canShowNames}
+        <EuropeMap map={map} key={`${mode}:${round.startedAt}:${round.targetId}`} fill results={resultById} revealedIds={completedIds} showNames={showNames && canShowNames}
           atlas={mode === 'learn'} showBorders={showBorders} selectableIds={mode === 'learn' ? undefined : pack.locations.map(location => location.id)} onSelect={selectCountry} enabled={progressLoaded && !completed && mode !== 'name-it' && mode !== 'capital-name'} language={language} targetId={(mode === 'name-it' || mode === 'capital-name') && !completed ? target.id : undefined} />
 
       </View>

@@ -101,3 +101,10 @@ For each future component, replace generic status with dated evidence and the de
   move the Europe summary/setup row into a middle `Europe` tab. Home has only the
   four game cards; tabs are Home / Europe / Settings and still hide during play.
   Quiz variants are shared in the tab navigator; no persistence schema changes.
+
+- Country picker usability: replace the separate small-country sheet with direct
+  48dp on-map buttons and screen-space clustering. One tap picks an isolated
+  country; a crowded group tap only zooms. The maximum-zoom layout separates
+  buttons with leader lines. Preserve stable numbers, difficulty filtering,
+  target secrecy, keyboard SVG adapters and pan/pinch suppression. The renderer
+  owns the picker; `mapPicker.ts` holds pure, tested layout rules.

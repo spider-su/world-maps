@@ -14,7 +14,6 @@ import { CLUE_COLORS } from '../features/geography/mapColors';
 import { difficultyPack } from '../features/geography/difficulty';
 import { europePack } from '../features/geography/europe';
 import { europeBorderDistanceKm } from '../features/geography/borderDistance';
-import { selectionAlternatives } from '../features/geography/selection';
 import { classifyGuess, guess, startRoundFor, type GuessResult, type Round } from '../features/geography/engine';
 import { recordExploration, recordSession, scoreRound, sessionFromRound, summary } from '../features/geography/progress';
 import { useProgress } from '../features/geography/ProgressContext';
@@ -37,7 +36,6 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
     startRoundFor(pack, practiceTarget(pack, progress.learning, practiceId, progress.practiceMode, previousId));
   const { height, fontScale } = useWindowDimensions();
   const [showOptions, setShowOptions] = useState(false);
-  const [showSmallCountries, setShowSmallCountries] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [showBorders, setShowBorders] = useState(true);
   const [showNames, setShowNames] = useState(false);
@@ -149,10 +147,8 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
       </View>
       <View style={styles.mapArea}>
         <EuropeMap key={`${mode}:${round.startedAt}:${round.targetId}`} fill results={resultById} revealedIds={completedIds} showNames={showNames && canShowNames}
-          atlas={mode === 'learn'} showBorders={showBorders} selectableIds={mode === 'learn' ? undefined : pack.locations.map(location => location.id)} onSelect={selectCountry} enabled={progressLoaded && mode !== 'name-it' && mode !== 'capital-name'} language={language} targetId={(mode === 'name-it' || mode === 'capital-name') && !completed ? target.id : undefined} />
-        {mode !== 'name-it' && mode !== 'capital-name' && (mode === 'learn' || difficulty === 'difficult') && <Pressable accessibilityRole="button" accessibilityLabel={c.smallCountries} onPress={() => setShowSmallCountries(true)} style={styles.smallButton}>
-          <Ionicons name="locate-outline" size={21} color={theme.brandDark} /><Text style={styles.smallButtonText}>{c.smallCountries}</Text>
-        </Pressable>}
+          atlas={mode === 'learn'} showBorders={showBorders} selectableIds={mode === 'learn' ? undefined : pack.locations.map(location => location.id)} onSelect={selectCountry} enabled={progressLoaded && !completed && mode !== 'name-it' && mode !== 'capital-name'} language={language} targetId={(mode === 'name-it' || mode === 'capital-name') && !completed ? target.id : undefined} />
+
       </View>
       <ScrollView style={[styles.dock, { maxHeight: height * (fontScale > 1.3 ? 0.5 : 0.38) }]} contentContainerStyle={styles.dockContent} keyboardShouldPersistTaps="handled">
         {(mode === 'name-it' || mode === 'capital-name') && <View style={styles.options}>
@@ -190,13 +186,6 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
       {mode !== 'learn' && <Text style={styles.sheetHint}>{c.levels[difficulty]} · {c.levelHints[difficulty]}{ '\n' }{c.history} · {c.solved}: {stats.played}</Text>}
       <ProgressStatus language={language} />
     </OptionsSheet>
-    <OptionsSheet visible={showSmallCountries} title={c.smallCountries} closeLabel={c.close} onClose={() => setShowSmallCountries(false)}>
-      <View style={styles.options}>{selectionAlternatives.map((country, index) => <Pressable key={country.id} accessibilityRole="button"
-        accessibilityLabel={showNames || completedIds.includes(country.id) ? countryName(country.id, language) : `${c.marker} ${index + 1}`}
-        disabled={!progressLoaded} onPress={() => { selectCountry(country.id); setShowSmallCountries(false); }} style={styles.option}>
-        <Text style={styles.optionText}>#{index + 1}{showNames || completedIds.includes(country.id) ? ` ${countryName(country.id, language)}` : ''}</Text>
-      </Pressable>)}</View>
-    </OptionsSheet>
     <OptionsSheet visible={showDetails && !!feedback} title={c.moreDetails} closeLabel={c.close} onClose={() => setShowDetails(false)}>
       {mode === 'learn' && feedback && <CountryInfoCard id={feedback.id} language={language} onSpeak={() => speak(countryName(feedback.id, language))} />}
     </OptionsSheet>
@@ -212,8 +201,6 @@ const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
   prompt: { flex: 1, color: theme.navy, fontSize: 18, fontWeight: '800', lineHeight: 24 },
   replay: { width: 40, minHeight: 44, borderRadius: 20, backgroundColor: theme.ocean, alignItems: 'center', justifyContent: 'center' },
   mapArea: { flex: 1, minHeight: 180 },
-  smallButton: { position: 'absolute', bottom: 12, left: 12, flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 44, borderRadius: 16, backgroundColor: theme.surface, paddingHorizontal: 12 },
-  smallButtonText: { color: theme.brandDark, fontSize: 11, fontWeight: '700' },
   dock: { flexGrow: 0, flexShrink: 1, backgroundColor: theme.surface, borderRadius: 22 },
   dockContent: { padding: 12, gap: 10 },
   options: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },

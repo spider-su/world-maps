@@ -21,7 +21,7 @@ describe('country learning and adaptive practice', () => {
     const migrated = parseProgress(JSON.stringify({ sessions: [session], voiceEnabled: false }));
     expect(migrated.sessions).toEqual([session]);
     expect(migrated.voiceEnabled).toBe(false);
-    expect(migrated.schemaVersion).toBe(2);
+    expect(migrated.schemaVersion).toBe(3);
     expect(migrated.learning.europe!.POL).toMatchObject({ correct: 1, incorrect: 1, firstTry: 0 });
     const withMiss = { ...migrated, learning: recordPractice(migrated.learning, 'europe', { ...round, startedAt: 8 }, 'FRA', 9) };
     expect(parseProgress(JSON.stringify(withMiss))).toEqual(withMiss);

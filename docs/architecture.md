@@ -4,7 +4,7 @@ Read this before adding a feature. World Maps is an offline Expo SDK 57 / React 
 
 ## Startup and runtime
 
-`App.tsx` composes the safe-area provider, error boundary, `LanguageProvider`, `ProgressProvider` and navigation. `src/navigation.tsx` owns the NavigationContainer and the Home/Settings bottom tabs. `src/screens/` contains route-level UI: `HomeScreen` (mode cards with difficulty/practice in a modal), `GeographyGameScreen` (one mounted round, large responsive map and compact dock, tabs hidden) and `SettingsScreen` (language, voice, learning summary and data licenses). `src/features/geography/` contains the game engine, modes, map rendering, bundled data, progress persistence and speech. `src/ui/` contains language definitions, the language context and the app theme. `src/platform/` contains safe-area contracts. `app.config.ts` reads non-secret app identity from environment variables.
+`App.tsx` composes the safe-area provider, error boundary, `LanguageProvider`, `ProgressProvider` and navigation. `src/navigation.tsx` owns the NavigationContainer and the Home/Europe/Settings bottom tabs. `src/screens/` contains route-level UI: `HomeScreen` (four mode cards), `EuropeScreen` (offline region summary and play setup), `GeographyGameScreen` (one mounted round, large responsive map and compact dock, tabs hidden) and `SettingsScreen` (language, voice, learning summary and data licenses). `src/features/geography/` contains the game engine, modes, map rendering, bundled data, progress persistence and speech. `src/ui/` contains language definitions, the language context and the app theme. `src/platform/` contains safe-area contracts. `app.config.ts` reads non-secret app identity from environment variables.
 
 ## Ownership rules
 
@@ -31,3 +31,7 @@ With visible tabs the screen owns the top inset and the tab navigator owns the b
 ## How to navigate unfamiliar code
 
 Start with `AGENTS.md` -> this map -> `docs/component-catalog.md` -> the relevant source file -> colocated tests -> `docs/agent-workflow.md`. Inspect current code before following documentation if they differ. Update documentation when contracts change.
+
+Quiz clue and answer choices are transient state owned by the tab navigator and
+passed to Europe setup and Home gameplay. Difficulty/practice remain in the
+existing progress store; switching tabs does not create a new storage schema.

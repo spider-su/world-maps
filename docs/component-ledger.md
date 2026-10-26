@@ -96,3 +96,8 @@ For each future component, replace generic status with dated evidence and the de
   card with opt-in full details. `EuropeMap.fill` and aspect-aware viewport math
   preserve geography proportions and pointer scale on tall surfaces. Directional
   map controls and numbered small-country selection remain available on demand.
+
+- Navigation follow-up: remove both redundant Home header links to Settings and
+  move the Europe summary/setup row into a middle `Europe` tab. Home has only the
+  four game cards; tabs are Home / Europe / Settings and still hide during play.
+  Quiz variants are shared in the tab navigator; no persistence schema changes.

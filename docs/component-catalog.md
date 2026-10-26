@@ -48,10 +48,15 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 - `OptionsSheet`: shared dismissible, scrollable modal for secondary play controls;
   owns its modal safe areas and handles Android Back. It does not persist settings.
 - `ModeSelector` / `QuizOptions`: mode cards stay on Home; existing clue and answer
-  variants are composed separately inside Home's play-options sheet. Difficulty
+  variants are composed separately in the middle Europe tab. Difficulty
   and practice selectors use the same saved progress contract as before.
 - `CountryInfoCard.compact` / `onDetails`: selected country's flag, capital and
   pronunciation remain below the map; full offline facts open in a separate sheet.
 - `GeographyGameScreen`: fixed header, responsive map and bounded scrollable dock;
   options and small-country alternatives are disclosed in sheets. Score/learning
   rules and hidden-target behavior are unchanged.
+
+- `EuropeScreen`: middle bottom tab with Europe/47-country/offline summary, a
+  read-only map preview and existing play setup. Owns the top safe area; tabs own
+  the bottom. The tab navigator shares transient quiz variants with Home; saved
+  difficulty and practice preferences continue using the existing progress store.

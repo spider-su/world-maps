@@ -7,11 +7,12 @@ import { HomeScreen } from './screens/HomeScreen';
 import { Ionicons } from '@expo/vector-icons';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { ExploreScreen } from './screens/ExploreScreen';
+import { ProfileScreen } from './screens/ProfileScreen';
 import { getTabBarMetrics } from './platform/safeArea';
 import { useLanguage } from './ui/LanguageContext';
 import { gameCopy } from './features/geography/copy';
 
-export type TabParamList = { Home: undefined; Explore: undefined; Settings: undefined };
+export type TabParamList = { Home: undefined; Explore: undefined; Profile: undefined; Settings: undefined };
 const Tab = createBottomTabNavigator<TabParamList>();
 
 function Tabs() {
@@ -29,6 +30,7 @@ function Tabs() {
     }}>
       <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: c.home, tabBarIcon: ({ color, size }) => <Ionicons name="earth-outline" color={color} size={size} /> }} />
       <Tab.Screen name="Explore" component={ExploreScreen} options={{ tabBarLabel: c.countryCollection, tabBarIcon: ({ color, size }) => <Ionicons name="book-outline" color={color} size={size} /> }} />
+      <Tab.Screen name="Profile" component={ProfileScreen} options={{ tabBarLabel: c.profile, tabBarIcon: ({ color, size }) => <Ionicons name="person-outline" color={color} size={size} /> }} />
       <Tab.Screen name="Settings" component={SettingsScreen} options={{ tabBarLabel: c.settings, tabBarIcon: ({ color, size }) => <Ionicons name="settings-outline" color={color} size={size} /> }} />
     </Tab.Navigator>
   );

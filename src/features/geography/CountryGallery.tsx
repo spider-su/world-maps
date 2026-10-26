@@ -14,7 +14,7 @@ function Photo({ photo, language, open }: { photo: CountryPhoto; language: Langu
   const c = galleryCopy[language];
   return <View style={[styles.photoCard, { backgroundColor: theme.paper, borderColor: theme.border }]}>
     <View style={styles.imageFrame}>
-      {state !== 'failed' && <Image key={attempt} source={{ uri: photo.url }} resizeMode="contain" style={styles.image}
+      {state !== 'failed' && <Image key={attempt} source={{ uri: photo.url, headers: { 'User-Agent': 'WorldMaps/0.1 (https://github.com/spider-su/world-maps)' } }} resizeMode="contain" style={styles.image}
         accessibilityLabel={photo.caption} onLoad={() => setState('loaded')} onError={() => setState('failed')} />}
       {state === 'loading' && <ActivityIndicator accessibilityLabel={c.loading} style={StyleSheet.absoluteFill} color={theme.brand} />}
       {state === 'failed' && <View style={styles.failure}><Text style={{ color: theme.muted }}>{c.unavailable}</Text><Pressable accessibilityRole="button" style={styles.action} onPress={() => { setState('loading'); setAttempt(a => a + 1); }}><Text style={{ color: theme.brand }}>{c.retry}</Text></Pressable></View>}

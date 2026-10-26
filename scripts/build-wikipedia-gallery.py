@@ -3,15 +3,14 @@ Usage: python3 scripts/build-wikipedia-gallery.py /tmp/world-maps-wiki-cache
 Only metadata is downloaded; images remain optional online enhancements.
 MediaWiki Imageinfo API: https://www.mediawiki.org/wiki/API:Imageinfo
 """
-import concurrent.futures
 import hashlib
 import html
 import json
 from pathlib import Path
+from datetime import date
 import re
 import sys
 import time
-import threading
 import urllib.parse
 import urllib.request
 
@@ -21,7 +20,6 @@ base = root/'src/features/geography/data'
 facts = {**json.loads((base/'continent-maps.json').read_text())['facts'], **json.loads((base/'country-facts.json').read_text())['countries']}
 overrides = {'GEO':'Georgia (country)', 'COG':'Republic of the Congo', 'COD':'Democratic Republic of the Congo', 'PSE':'State of Palestine', 'FSM':'Federated States of Micronesia'}
 
-_rate_lock = threading.Lock()
 _last_request = 0.0
 def query(params):
     global _last_request
@@ -31,9 +29,8 @@ def query(params):
     if dest.exists(): return json.loads(dest.read_text())
     for attempt in range(3):
         try:
-            with _rate_lock:
-                time.sleep(max(0, 1.1-(time.monotonic()-_last_request)))
-                _last_request = time.monotonic()
+            time.sleep(max(0, 1.1-(time.monotonic()-_last_request)))
+            _last_request = time.monotonic()
             req = urllib.request.Request(url, headers={'User-Agent':'WorldMaps/0.1 (https://github.com/spider-su/world-maps; educational photo metadata)'})
             with urllib.request.urlopen(req, timeout=20) as response: data = json.load(response)
             if 'error' in data: raise ValueError(str(data['error']))
@@ -121,7 +118,6 @@ def build(item):
     print(country_id,len(photos),[p['caption'] for p in photos],flush=True)
     return country_id,{'article':article,'photos':photos}
 
-with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
-    countries=dict(pool.map(build, sorted(facts.items())))
-(base/'wikipedia-gallery.json').write_text(json.dumps({'source':'English Wikipedia article images; Wikimedia Commons Imageinfo metadata','retrieved':'2026-10-27','countries':countries},ensure_ascii=False,indent=2)+'\n')
+countries = dict(build(item) for item in sorted(facts.items()))
+(base/'wikipedia-gallery.json').write_text(json.dumps({'source':'English Wikipedia article images; Wikimedia Commons Imageinfo metadata','retrieved':date.today().isoformat(),'countries':countries},ensure_ascii=False,indent=2)+'\n')
 print('Gallery coverage:',sum(bool(c['photos']) for c in countries.values()),'/',len(countries))

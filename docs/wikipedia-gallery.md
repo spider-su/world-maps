@@ -42,3 +42,16 @@ This replaces the previous two automatically loaded Poland/Italy photos with a
 shared optional gallery. No runtime dependency, storage schema or permission was
 added. Photo availability and licenses can change upstream; refresh the metadata
 when replacing gallery entries. No full Wikipedia articles are copied into the app.
+
+Native image requests identify World Maps with a project URL in their User-Agent,
+following [Wikimedia's policy](https://foundation.wikimedia.org/wiki/Policy:Wikimedia_Foundation_User-Agent_Policy).
+A generic `okhttp` agent returned HTTP 403 during verification; the identifying
+agent returned 200 for the same photo. Web images use the browser's own user agent.
+The pinned RN 0.86 Android Image implementation forwards headers only from its
+array source branch. `countryPhotoSource` uses that supported native form and an
+object source for React Native Web; no native configuration or dependency patch
+is needed. Recheck this contract when upgrading React Native.
+
+Current coverage: 174 article links, 394 photos across 172 countries. Republic of
+the Congo and Djibouti currently have article links only. See
+[validation and platform evidence](evidence/wikipedia-gallery/README.md).

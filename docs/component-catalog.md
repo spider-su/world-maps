@@ -91,3 +91,6 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 - `countryPhotos.ts` / `data/wikipedia-gallery.json`: typed article/photo metadata;
   replaced the two automatically loaded curated photos. Refreshed by
   `scripts/build-wikipedia-gallery.py`, with no runtime API or new dependency.
+- `countryPhotoSource(url, platform)`: native array source forwards the identifying
+  Wikimedia request header in pinned RN 0.86; web receives an object source and
+  uses browser headers. Keep this contract when changing the image loader.

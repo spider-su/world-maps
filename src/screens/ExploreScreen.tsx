@@ -13,10 +13,11 @@ import { useProgress } from '../features/geography/ProgressContext';
 import { learningSummary } from '../features/geography/learning';
 import { europePack } from '../features/geography/europe';
 import { gameCopy } from '../features/geography/copy';
+import { recordExploration } from '../features/geography/progress';
 
 export function ExploreScreen() {
   const { language } = useLanguage();
-  const { progress } = useProgress();
+  const { progress, update, status } = useProgress();
   const theme = themeForScheme(useColorScheme());
   const styles = makeStyles(theme);
   const c = gameCopy[language];
@@ -30,7 +31,7 @@ export function ExploreScreen() {
   ).sort((a,b) => countryName(a.id, language).localeCompare(countryName(b.id, language))),
   [region, language, search]);
   const statistics = learningSummary(progress.learning, europePack.id, regionCountries(region).map(item => item.id));
-  const choose = (id: string) => { setSelected(id); speak(countryName(id, language)); };
+  const choose = (id: string) => { if (status === 'loading' || status === 'read-error') return; update(p => recordExploration(p, id)); setSelected(id); speak(countryName(id, language)); };
   return <SafeAreaView edges={['top']} style={styles.screen}>
     {selected ? <ScrollView contentContainerStyle={styles.content}>
       <Pressable accessibilityRole="button" onPress={() => setSelected(null)} style={styles.back}>
@@ -55,7 +56,7 @@ export function ExploreScreen() {
           const facts = countryFacts[country.id];
           if (!facts) return null;
           const stats = learningSummary(progress.learning, europePack.id, [country.id]);
-          return <Pressable accessibilityRole="button" key={country.id} onPress={() => choose(country.id)} style={styles.card}>
+          return <Pressable accessibilityRole="button" key={country.id} disabled={status === 'loading' || status === 'read-error'} onPress={() => choose(country.id)} style={styles.card}>
             <View style={styles.flag}><SvgXml xml={facts.flagSvg} width={72} height={48} /></View>
             <Text style={styles.name} numberOfLines={2}>{facts.name[language]}</Text>
             <Text style={styles.caption} numberOfLines={1}>{facts.capital[language]}</Text>

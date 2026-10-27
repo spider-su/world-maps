@@ -81,3 +81,16 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
   areas; normal retains at least four targets for multiple-choice modes.
 - `CountryAtlasPortrait`: uses the selected map for shared country IDs; non-Europe
   portraits show the same offline vector geometry as gameplay.
+
+## Wikipedia discovery
+
+- `CountryGallery`: expanded Learn/collection details only. Bundled country article
+  link, optional horizontal gallery (up to three images), per-image load/error/retry
+  and source/license links. Images mount only after Show photos; callers key by
+  country ID to reset gallery/error state. Compact cards remain offline.
+- `countryPhotos.ts` / `data/wikipedia-gallery.json`: typed article/photo metadata;
+  replaced the two automatically loaded curated photos. Refreshed by
+  `scripts/build-wikipedia-gallery.py`, with no runtime API or new dependency.
+- `countryPhotoSource(url, platform)`: native array source forwards the identifying
+  Wikimedia request header in pinned RN 0.86; web receives an object source and
+  uses browser headers. Keep this contract when changing the image loader.

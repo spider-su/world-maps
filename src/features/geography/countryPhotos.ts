@@ -1,23 +1,23 @@
-/** Curated Commons photos are an optional enhancement. The bundled atlas always works offline.
- * Do not add imagery without verifying rights, creator credit and the destination file.
- */
+import type { ImageSourcePropType } from 'react-native';
+import data from './data/wikipedia-gallery.json';
+
 export interface CountryPhoto {
   url: string;
+  caption: string;
   credit: string;
   source: string;
   license: string;
+  licenseUrl: string;
 }
-export const countryPhotos: Readonly<Record<string, CountryPhoto>> = {
-  POL: {
-    url: 'https://commons.wikimedia.org/wiki/Special:FilePath/Wawel_Castle_Krakow.jpg?width=850',
-    credit: 'Lotse8 / Wikimedia Commons',
-    source: 'https://commons.wikimedia.org/wiki/File:Wawel_Castle_Krakow.jpg',
-    license: 'CC BY-SA 4.0',
-  },
-  ITA: {
-    url: 'https://commons.wikimedia.org/wiki/Special:FilePath/Photo_of_The_Colosseum_in_Rome,_Italy.jpg?width=850',
-    credit: 'Minimum-herb / Wikimedia Commons',
-    source: 'https://commons.wikimedia.org/wiki/File:Photo_of_The_Colosseum_in_Rome,_Italy.jpg',
-    license: 'CC BY-SA 4.0',
-  },
-};
+export interface CountryWikipedia { article: string; photos: CountryPhoto[] }
+/** Metadata only. Photos are requested only after the user opens the online gallery. */
+export const countryWikipedia: Readonly<Record<string, CountryWikipedia>> = data.countries;
+
+/** RN 0.86 forwards native request headers through the array source form.
+ * React Native Web requires the object form and supplies the browser user agent.
+ */
+export function countryPhotoSource(url: string, platform: string): ImageSourcePropType {
+  return platform === 'web' ? { uri: url } : [{ uri: url,
+    headers: { 'User-Agent': 'WorldMaps/0.1 (https://github.com/spider-su/world-maps)' },
+  }];
+}

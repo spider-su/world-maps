@@ -73,7 +73,8 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
   stable pack IDs, shared shapes/markers/context and precomputed distance tables.
 - `MapProvider` / `useMap`: shares transient map choice across tabs, defaults to
   Europe; it does not change the saved-progress schema or keys.
-- `MapSelector`: localized horizontal map choices reused by Home and map setup.
+- `MapSelector`: selected-map summary and localized chooser sheet reused by Home
+  and map setup; all five maps appear in a vertical list.
 - `EuropeMap.map`: optional map definition, defaults to Europe for compatibility.
   Shapes, marker anchors, labels and picker clusters use that definition. Relief
   is restricted to Europe; other packs use bundled vector fills.
@@ -94,3 +95,18 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 - `countryPhotoSource(url, platform)`: native array source forwards the identifying
   Wikimedia request header in pinned RN 0.86; web receives an object source and
   uses browser headers. Keep this contract when changing the image loader.
+
+## Compact launcher and play surface
+
+- `ModeSelector`: four direct-launch tiles in a wrapping two-column grid; short
+  localized captions retain full descriptions as accessible button names.
+- `HomeScreen`: compact orbit hero, shared map chooser and a Difficulty row opening
+  the existing persisted selector in `OptionsSheet`.
+- `EuropeMap.toolsVisible`: optional controlled disclosure of directional/zoom
+  buttons from play options; Fit is always available. `fill` removes rounded
+  map edges to join the game's ocean surface. Hit testing/selection are unchanged.
+- `GeographyGameScreen`: compact status dock; restart moves to play options.
+  Completion hides the prompt and Name It choices, retaining result, score,
+  pronunciation and Next. Learn has no empty dock before country selection.
+- Navigation labels are Home / Maps / Library / Profile / Settings; route IDs and
+  selected-map sharing are unchanged.

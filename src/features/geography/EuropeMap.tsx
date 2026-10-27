@@ -30,10 +30,11 @@ interface Props {
   atlas?: boolean;
   showBorders?: boolean;
   selectableIds?: readonly string[];
+  toolsVisible?: boolean;
 }
 
 /** Shared, offline renderer. Country geometry remains authoritative for taps. */
-export function EuropeMap({ results, revealedIds, showNames, onSelect, language, enabled = true, preview = false, fill = false, targetId, selectableIds, atlas = false, showBorders = true, map = maps.europe }: Props) {
+export function EuropeMap({ results, revealedIds, showNames, onSelect, language, enabled = true, preview = false, fill = false, targetId, selectableIds, toolsVisible = false, atlas = false, showBorders = true, map = maps.europe }: Props) {
   const shapes = map.shapes;
   const contextShapes = map.context;
   const markers = map.markers;
@@ -45,7 +46,6 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
   const styles = makeStyles(theme);
   const [measuredWidth, setMeasuredWidth] = useState(0);
   const [measuredHeight, setMeasuredHeight] = useState(0);
-  const [showTools, setShowTools] = useState(false);
   const mapWidth = measuredWidth || Math.max(280, Math.min(width - 32, 840));
   const mapHeight = fill ? Math.max(180, measuredHeight || mapWidth * 570 / 864) : mapWidth * 570 / 864;
   const aspect = mapHeight / mapWidth;
@@ -141,16 +141,12 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
       </View>}
     </View>
     {!preview && <View style={styles.tools}>
-      {showTools && <View style={styles.controls}>
+      {toolsVisible && <View style={styles.controls}>
         {controls.map(control => <Pressable key={control.label} accessibilityRole="button" accessibilityLabel={control.label}
           style={styles.control} onPress={control.action}><Ionicons name={control.icon} size={18} color={theme.navy} /></Pressable>)}
       </View>}
       <View style={styles.quickTools}>
       <Pressable accessibilityRole="button" accessibilityLabel={c.resetMap} style={styles.toolToggle} onPress={() => setViewport(INITIAL_VIEWPORT)}><Ionicons name="scan-outline" size={20} color={theme.navy} /></Pressable>
-      <Pressable accessibilityRole="button" accessibilityLabel={c.mapTools} accessibilityState={{ expanded: showTools }}
-        style={styles.toolToggle} onPress={() => setShowTools(value => !value)}>
-        <Ionicons name={showTools ? 'close' : 'expand-outline'} size={20} color={theme.navy} />
-      </Pressable>
       </View>
     </View>}
 
@@ -158,7 +154,7 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
 }
 const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
   map: { width: '100%', backgroundColor: theme.ocean, borderRadius: 24, overflow: 'hidden' },
-  fill: { flex: 1, minHeight: 180 },
+  fill: { flex: 1, minHeight: 180, borderRadius: 0 },
   pickerTarget: { position: 'absolute', width: PICKER_SIZE, height: PICKER_SIZE, alignItems: 'center', justifyContent: 'center' },
   pickerPin: { width: 34, height: 34, borderRadius: 17, backgroundColor: theme.surface, borderWidth: 2, borderColor: theme.brand, alignItems: 'center', justifyContent: 'center', shadowColor: '#123E70', shadowOpacity: 0.18, shadowRadius: 3, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
   pickerGroup: { width: 44, height: 44, borderRadius: 22, borderColor: theme.border, backgroundColor: theme.surface },

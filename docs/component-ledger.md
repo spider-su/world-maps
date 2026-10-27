@@ -124,3 +124,10 @@ For each future component, replace generic status with dated evidence and the de
   map/facts and handles image/link failures. Removed the obsolete per-card single
   photo failure state. Added no runtime dependency or persistence change; see
   `docs/wikipedia-gallery.md` for metadata generation and source attribution.
+
+- 2026-10-27 compact UI: reused mode, map, difficulty and options components for
+  a two-column Home launcher and continuous ocean play surface. `MapSelector`
+  becomes a summary plus full vertical chooser; `EuropeMap.toolsVisible` lets
+  play options disclose secondary controls while keeping Fit visible. Completion
+  replaces answers/prompt with compact feedback, audio and Next. Short tab labels
+  retain existing route IDs. No dependencies, game rules or storage changes.

@@ -1,9 +1,12 @@
 import { useMap } from '../features/geography/MapContext';
 import { MapSelector } from '../features/geography/MapSelector';
 import { mapName } from '../features/geography/maps';
+import { Ionicons } from '@expo/vector-icons';
+import { OptionsSheet } from '../ui/OptionsSheet';
+import { DifficultySelector } from '../features/geography/DifficultySelector';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useState } from 'react';
-import { BackHandler, ImageBackground, ScrollView, StyleSheet, Text, View, useColorScheme } from 'react-native';
+import { BackHandler, ImageBackground, Pressable, ScrollView, StyleSheet, Text, View, useColorScheme } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation, useIsFocused } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
@@ -24,6 +27,7 @@ export function HomeScreen({ findClue, nameAnswer }: { findClue: FindClue; nameA
   const { progress, status } = useProgress();
   const theme = themeForScheme(useColorScheme());
   const styles = makeStyles(theme);
+  const [showDifficulty, setShowDifficulty] = useState(false);
   const [mode, setMode] = useState<GameMode | null>(null);
   const { language } = useLanguage();
   const c = gameCopy[language];
@@ -51,18 +55,24 @@ export function HomeScreen({ findClue, nameAnswer }: { findClue: FindClue; nameA
       <View style={styles.menu}>
         <MapSelector />
         <ModeSelector onChange={setMode} language={language} />
+        <Pressable accessibilityRole="button" accessibilityLabel={`${c.difficulty}: ${c.levels[progress.difficulty]}`} accessibilityState={{ expanded: showDifficulty }} onPress={() => setShowDifficulty(true)} style={styles.difficultyRow}>
+          <Ionicons name="bar-chart-outline" size={21} color={theme.muted} /><Text style={styles.difficultyTitle}>{c.difficulty}</Text><Text style={styles.difficultyValue}>{c.levels[progress.difficulty]}</Text><Ionicons name="chevron-forward" size={18} color={theme.muted} />
+        </Pressable>
         <ProgressStatus language={language} />
       </View>
     </ScrollView>
+    <OptionsSheet visible={showDifficulty} title={c.difficulty} closeLabel={c.close} onClose={() => setShowDifficulty(false)}><DifficultySelector language={language} /></OptionsSheet>
 
   </SafeAreaView>;
 }
 const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#123E70' }, body: { flexGrow: 1, backgroundColor: theme.paper, paddingBottom: 18 },
-  hero: { width: '100%', height: 304, backgroundColor: '#123E70', overflow: 'hidden' },
+  hero: { width: '100%', height: 216, backgroundColor: '#123E70', overflow: 'hidden' },
   heroImage: { width: '100%', height: '100%', opacity: 1 }, heroShade: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(5,35,67,0.14)' },
-  heroCopy: { alignItems: 'center', marginTop: 66, gap: 6 }, eyebrow: { fontSize: 10, letterSpacing: 3, fontWeight: '800', color: '#D7EAFE' },
-  brand: { fontSize: 38, letterSpacing: -1.2, fontWeight: '800', color: '#FFFFFF', textShadowColor: 'rgba(6,26,48,0.3)', textShadowRadius: 12 },
+  heroCopy: { alignItems: 'center', marginTop: 46, gap: 6 }, eyebrow: { fontSize: 10, letterSpacing: 3, fontWeight: '800', color: '#D7EAFE' },
+  brand: { fontSize: 34, letterSpacing: -1.2, fontWeight: '800', color: '#FFFFFF', textShadowColor: 'rgba(6,26,48,0.3)', textShadowRadius: 12 },
   tagline: { color: '#ECF6FF', fontSize: 14, letterSpacing: 0.5 },
-  menu: { marginTop: -64, paddingHorizontal: 18, width: '100%', maxWidth: 560, alignSelf: 'center', gap: 10 },
+  difficultyRow: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 56, padding: 14, borderRadius: 16, backgroundColor: theme.surface },
+  difficultyTitle: { flex: 1, color: theme.navy, fontWeight: '700', fontSize: 14 }, difficultyValue: { color: theme.muted, fontSize: 14 },
+  menu: { marginTop: -26, paddingHorizontal: 18, width: '100%', maxWidth: 560, alignSelf: 'center', gap: 10 },
 });

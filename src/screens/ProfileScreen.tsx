@@ -1,8 +1,9 @@
+import { StatusBar } from 'expo-status-bar';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused, useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import type { TabParamList } from '../navigation';
 import { useLanguage } from '../ui/LanguageContext';
@@ -22,6 +23,7 @@ const badgeIcons = { 'first-discovery': 'footsteps-outline', curious: 'compass-o
 
 export function ProfileScreen() {
   const { language } = useLanguage();
+  const focused = useIsFocused();
   const { progress, status, update } = useProgress();
   const { setMapId } = useMap();
   const navigation = useNavigation<BottomTabNavigationProp<TabParamList, 'Profile'>>();
@@ -44,6 +46,7 @@ export function ProfileScreen() {
   const badges = [...journey.achievements].sort((a,b) => Number(b.earned) - Number(a.earned)).slice(0,3);
   const badge = (id: AchievementId, earned: boolean, size = 25) => <View style={[styles.badgeIcon, { backgroundColor: earned ? theme.mode['name-it'].tint : theme.paper }]}><Ionicons name={badgeIcons[id]} size={size} color={earned ? theme.mode['name-it'].foreground : theme.muted} /></View>;
   return <SafeAreaView edges={['top']} style={styles.screen}>
+    {focused && <StatusBar style="auto" />}
     <ScrollView ref={scroll} contentContainerStyle={styles.content}>
       <View style={styles.titleRow}><Text accessibilityRole="header" style={styles.title}>{c.profile}</Text><Pressable accessibilityRole="button" accessibilityLabel={p.howXP} style={styles.iconButton} onPress={() => setSheet('xp')}><Ionicons name="help-circle-outline" size={24} color={theme.muted} /></Pressable></View>
       <ProgressStatus language={language} />

@@ -40,3 +40,9 @@ existing progress store; switching tabs does not create a new storage schema.
 the pack registry; Europe IDs/geometry are preserved, while four generated packs
 share the renderer and modes. Scores/learning use the existing pack/mode key
 contract. See `docs/continent-maps.md` for data coverage and regeneration.
+
+
+Profile progression is derived by `explorerProgress.ts` from cumulative learning
+and unique discoveries, independent of bounded score history. `explorer.ts` owns
+cosmetic IDs/stages; `ExplorerAvatar` renders bundled human portraits. Schema 4
+persists only the selected cosmetic ID through the existing serialized store.

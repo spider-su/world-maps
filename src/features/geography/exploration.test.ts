@@ -11,7 +11,7 @@ describe('country exploration tracking', () => {
   it('migrates v2 progress without dropping scores or learning', () => {
     const old = { ...initialProgress, schemaVersion: 2, explored: undefined, sessions: [] };
     const parsed = parseProgress(JSON.stringify(old));
-    expect(parsed.schemaVersion).toBe(3);
+    expect(parsed.schemaVersion).toBe(4);
     expect(parsed.explored).toEqual([]);
     expect(parsed.learning).toEqual(old.learning);
   });

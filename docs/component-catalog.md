@@ -132,3 +132,18 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 - `CountryGallery`: one opt-in photos action with Online hint, responsive image
   widths, pagination dots, full credits and source/license links; one Wikipedia
   link below. Per-image loading/retry and native request headers are retained.
+
+## Explorer profile
+
+- `explorerProgress(progress)`: derives global XP, level, outfit stage, six
+  achievements and per-map discovery from saved facts. Independent of map choice,
+  difficulty and bounded session history; current mastery never reduces rewards.
+- `ExplorerAvatar`: bundled human portrait, cosmetic `ExplorerId`, earned stage,
+  size and localized accessible label. Shared by Profile and outfit previews.
+- `explorer.ts`: stable cosmetic IDs and outfit milestones. `profileCopy` owns
+  localized ranks, outfit names, achievements and reward explanation.
+- `ProfileScreen`: shared progress, avatar selection through serialized writes,
+  secondary outfit/achievement/XP sheets and map-to-Library navigation. Loading/
+  read errors hide unconfirmed progression; save failures retain retry controls.
+- Progress schema 4 adds the cosmetic ID with tested v2/v3 migration; keys, score
+  history, learning and preferences are retained. See `docs/explorer-progression.md`.

@@ -139,3 +139,10 @@ For each future component, replace generic status with dated evidence and the de
   preserves every target and quiz defaults. Gallery stays opt-in with concise
   controls, pagination and full attribution. Removed the now-unused
   `CountryAtlasPortrait` and coordinate formatting helpers. No data/schema changes.
+
+- 2026-10-27 Explorer Profile: added pure derived XP/levels and six achievements,
+  five earned outfit stages and three bundled human SVG explorers. Profile shares
+  one journey across every map; mastery remains separate. Schema 4 adds only the
+  chosen cosmetic ID, preserving legacy learning/history/preferences and storage
+  keys. Existing serialized save/read recovery is reused, including avatar-sheet
+  retry. No runtime dependency or network service. See explorer-progression.md.

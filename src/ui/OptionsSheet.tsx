@@ -5,8 +5,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { themeForScheme } from './worldMapsTheme';
 
 /** Secondary controls live here so they never cover the playable map. */
-export function OptionsSheet({ visible, title, closeLabel, onClose, children }: {
-  visible: boolean; title: string; closeLabel: string; onClose: () => void; children: ReactNode;
+export function OptionsSheet({ visible, title, closeLabel, onClose, children, heading }: {
+  visible: boolean; title: string; closeLabel: string; onClose: () => void; children: ReactNode; heading?: ReactNode;
 }) {
   const theme = themeForScheme(useColorScheme());
   return <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
@@ -14,7 +14,7 @@ export function OptionsSheet({ visible, title, closeLabel, onClose, children }: 
       <Pressable style={StyleSheet.absoluteFill} accessible={false} importantForAccessibility="no" tabIndex={-1} onPress={onClose} />
       <SafeAreaView edges={['bottom']} style={[styles.sheet, { backgroundColor: theme.surface }]} accessibilityViewIsModal>
         <View style={[styles.handle, { backgroundColor: theme.border }]} />
-        <View style={styles.header}><Text accessibilityRole="header" style={[styles.title, { color: theme.navy }]}>{title}</Text>
+        <View style={styles.header}><View style={styles.heading}>{heading ?? <Text accessibilityRole="header" style={[styles.title, { color: theme.navy }]}>{title}</Text>}</View>
           <Pressable accessibilityRole="button" accessibilityLabel={closeLabel} onPress={onClose} style={styles.close}><Ionicons name="close" size={23} color={theme.navy} /></Pressable>
         </View>
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">{children}</ScrollView>
@@ -28,5 +28,6 @@ const styles = StyleSheet.create({
   handle: { width: 32, height: 4, borderRadius: 2, alignSelf: 'center', marginTop: 10 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 22, paddingRight: 12, paddingVertical: 5, gap: 12 },
   title: { flex: 1, fontWeight: '800', fontSize: 19 }, close: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
+  heading: { flex: 1 },
   content: { padding: 22, paddingTop: 8, gap: 24, paddingBottom: 24 },
 });

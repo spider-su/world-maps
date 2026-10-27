@@ -124,3 +124,18 @@ For each future component, replace generic status with dated evidence and the de
   map/facts and handles image/link failures. Removed the obsolete per-card single
   photo failure state. Added no runtime dependency or persistence change; see
   `docs/wikipedia-gallery.md` for metadata generation and source attribution.
+
+- 2026-10-27 compact UI: reused mode, map, difficulty and options components for
+  a two-column Home launcher and continuous ocean play surface. `MapSelector`
+  becomes a summary plus full vertical chooser; `EuropeMap.toolsVisible` lets
+  play options disclose secondary controls while keeping Fit visible. Completion
+  replaces answers/prompt with compact feedback, audio and Next. Short tab labels
+  retain existing route IDs. No dependencies, game rules or storage changes.
+
+- 2026-10-27 Learn atlas: removed the persistent instruction card, duplicate atlas,
+  coordinate/code tiles and repeated region/footer. Reused the country heading
+  across preview, sticky detail-sheet heading and collection. Learn has named
+  small-country chips and collision-managed labels; width-aware picker layout
+  preserves every target and quiz defaults. Gallery stays opt-in with concise
+  controls, pagination and full attribution. Removed the now-unused
+  `CountryAtlasPortrait` and coordinate formatting helpers. No data/schema changes.

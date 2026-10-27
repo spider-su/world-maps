@@ -3,6 +3,7 @@ import { capitalName, countryName } from './countryFacts';
 import type { FindClue, GameMode, NameAnswer } from './modes';
 
 const en = {
+  countryGroup: 'Countries', countries: 'countries', mapsTab: 'Maps', libraryTab: 'Library', modeCaptions: { 'hot-cold': 'Follow distance clues', 'find-it': 'Tap the country', 'name-it': 'Choose its name', learn: 'Explore countries' },
   offlineMap: 'Offline map', learnAllMaps: 'Learn includes every country on this map.',
   zoomCountries: 'Zoom to nearby countries',
   playOptions: 'Play options', countryCollection: 'Country collection', collectionHint: 'Explore countries by region and learn at your own pace.', backToCollection: 'Back to collection', searchCountry: 'Search country or capital', noCountriesFound: 'No matching countries', profile: 'Profile', countriesExplored: 'Countries explored', roundsPlayed: 'Rounds played', regionProgress: 'Regions', mapTools: 'Map tools', moreDetails: 'Country details', cold: 'Cold', hot: 'Hot',
@@ -45,6 +46,7 @@ const en = {
 };
 type Copy = typeof en;
 const pl: Copy = {
+  countryGroup: 'Państwa', countries: 'państw', mapsTab: 'Mapy', libraryTab: 'Kolekcja', modeCaptions: { 'hot-cold': 'Śledź wskazówki', 'find-it': 'Wskaż państwo', 'name-it': 'Wybierz nazwę', learn: 'Poznawaj państwa' },
   offlineMap: 'Mapa offline', learnAllMaps: 'Nauka obejmuje wszystkie państwa na tej mapie.',
   zoomCountries: 'Przybliż pobliskie państwa',
   playOptions: 'Opcje gry', countryCollection: 'Kolekcja państw', collectionHint: 'Poznawaj państwa według regionów we własnym tempie.', backToCollection: 'Powrót do kolekcji', searchCountry: 'Szukaj państwa lub stolicy', noCountriesFound: 'Brak wyników', profile: 'Profil', countriesExplored: 'Odkryte państwa', roundsPlayed: 'Rozegrane rundy', regionProgress: 'Regiony', mapTools: 'Narzędzia mapy', moreDetails: 'Informacje o państwie', cold: 'Zimno', hot: 'Ciepło',
@@ -86,6 +88,7 @@ const pl: Copy = {
   clueType: 'Podpowiedź: znajdź', answerType: 'Odpowiedź: nazwij', findClues: { name: 'Nazwa', capital: 'Stolica', flag: 'Flaga', mixed: 'Mieszane' }, nameAnswers: { country: 'Państwo', capital: 'Stolica' }, flagPrompt: 'Znajdź państwo z tą flagą',
 };
 const ru: Copy = {
+  countryGroup: 'Страны', countries: 'стран', mapsTab: 'Карты', libraryTab: 'Коллекция', modeCaptions: { 'hot-cold': 'Следуй подсказкам', 'find-it': 'Укажи страну', 'name-it': 'Выбери название', learn: 'Изучай страны' },
   offlineMap: 'Офлайн-карта', learnAllMaps: 'Обучение включает все страны на этой карте.',
   zoomCountries: 'Приблизить соседние страны',
   playOptions: 'Настройки игры', countryCollection: 'Коллекция стран', collectionHint: 'Изучайте страны по регионам в своём темпе.', backToCollection: 'Назад к коллекции', searchCountry: 'Найти страну или столицу', noCountriesFound: 'Страны не найдены', profile: 'Профиль', countriesExplored: 'Открытые страны', roundsPlayed: 'Сыграно раундов', regionProgress: 'Регионы', mapTools: 'Инструменты карты', moreDetails: 'О стране', cold: 'Холодно', hot: 'Горячо',

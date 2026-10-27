@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { expandPicker, PICKER_SIZE, pickerTargets } from './mapPicker';
+import { maps } from './maps';
 import { selectionAlternatives } from './selection';
 import { INITIAL_VIEWPORT, MAX_ZOOM, frame, normalize } from './viewport';
 
@@ -45,5 +46,28 @@ describe('on-map country picker', () => {
     expect(targets).toHaveLength(1);
     expect(targets[0]!.members[0]).toMatchObject({ id: 'AND', number: 1 });
     expect(pickerTargets([], INITIAL_VIEWPORT, 390, 500)).toEqual([]);
+  });
+});
+
+describe('named Learn targets', () => {
+  it('keeps wider labels separate, on-screen and reachable across every map', () => {
+    for (const map of Object.values(maps)) {
+      const locations = [...map.markers, ...map.shapes.filter(s => s.path && s.area < 700).map(s => ({ id: s.id, x: s.labelX, y: s.labelY }))].map((p, number) => ({ ...p, number }));
+      for (const size of [80,112]) for (const [width,height] of [[280,180],[320,480],[412,700]]) for (const zoom of [1.8,4,8]) for (const point of locations) {
+        const viewport = normalize({zoom,center:point}, height! / width!);
+        const visible = frame(viewport, height! / width!);
+        const targets = pickerTargets(locations, viewport, width!, height!, size);
+        const ids = locations.filter(p => p.x >= visible.x && p.x <= visible.x + visible.w && p.y >= visible.y && p.y <= visible.y + visible.h).map(p => p.id).sort();
+        expect(targets.flatMap(t => t.members.map(m => m.id)).sort()).toEqual(ids);
+        for (const [index,t] of targets.entries()) {
+          expect(t.x).toBeGreaterThanOrEqual((t.width ?? size)/2);
+          expect(t.x).toBeLessThanOrEqual(width! - (t.width ?? size)/2);
+          expect(t.y).toBeGreaterThanOrEqual(24);
+          expect(t.y).toBeLessThanOrEqual(height! - 24);
+          for (const other of targets.slice(index+1)) expect(Math.abs(t.x-other.x) >= ((t.width ?? size) + (other.width ?? size))/2 || Math.abs(t.y-other.y) >= 48).toBe(true);
+          if (zoom === 8) expect(t.members).toHaveLength(1);
+        }
+      }
+    }
   });
 });

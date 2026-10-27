@@ -16,6 +16,10 @@ describe('map label visibility', () => {
   it('prioritizes guessed names and avoids overlapping labels', () => {
     expect(mapLabels(countries, true, ['B'], overview, 400).map(item => item.id)).toEqual(['B', 'C']);
   });
+  it('leaves room for the named Learn picker', () => {
+    const reserved = [{left: 270, right: 330, top: 76, bottom: 124}];
+    expect(mapLabels(countries, true, [], overview, 400, reserved).map(item => item.id)).toEqual(['A']);
+  });
   it('reveals more labels when zoom gives them room and excludes offscreen names', () => {
     const detail = { x: 80, y: 80, w: 100, h: 100 };
     expect(mapLabels(countries, true, [], detail, 400).map(item => item.id)).toEqual(['A', 'B']);

@@ -38,9 +38,8 @@ export function ModeSelector({ value, onChange, language = 'en', findClue = 'mix
               </View>
               <View style={styles.copy}>
                 <Text style={[styles.label, selected && styles.selectedLabel]}>{c.modes[id].title}</Text>
-                <Text style={[styles.description, selected && styles.selectedDescription]} numberOfLines={2}>{c.modes[id].description}</Text>
+                <Text style={[styles.description, selected && styles.selectedDescription]}>{c.modeCaptions[id]}</Text>
               </View>
-              <Ionicons name="chevron-forward" size={16} color={selected ? theme.surface : theme.muted} />
             </Pressable>
           );
         })}
@@ -87,10 +86,10 @@ const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
   variantText: { color: theme.brandDark, fontWeight: '700', fontSize: 12 },
   variantSelectedText: { color: '#FFF' },
   wrapper: { gap: 8 },
-  container: { gap: 8 },
+  container: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   option: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    minHeight: 76, paddingHorizontal: 12, paddingVertical: 10,
+    flexDirection: 'column', alignItems: 'flex-start', gap: 10, flexGrow: 1, flexBasis: '46%',
+    minHeight: 140, paddingHorizontal: 12, paddingVertical: 10,
     backgroundColor: theme.surface, borderRadius: 16,
     borderWidth: 1, borderColor: theme.paper,
     shadowColor: '#123E70', shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, elevation: 2,
@@ -98,7 +97,7 @@ const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
   selected: { backgroundColor: theme.brandDark, borderColor: theme.brandDark },
   iconTile: { width: 48, height: 48, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   copy: { flex: 1, gap: 3 },
-  label: { fontSize: 15, fontWeight: '800', color: theme.navy },
+  label: { fontSize: 16, fontWeight: '800', color: theme.navy },
   selectedLabel: { color: theme.surface },
   description: { fontSize: 12, lineHeight: 17, color: theme.muted },
   selectedDescription: { color: '#D6E8F7' },

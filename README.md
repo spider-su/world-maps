@@ -52,7 +52,7 @@ licenses are available in Settings and [data attribution](docs/country-data.md).
 
 ### Difficulty
 
-Choose a level in Play options before starting a quiz. **Normal** is the default
+Choose a level from the compact Difficulty row on Home before starting a quiz. **Normal** is the default
 (large/medium outlines, with at least four choices); **Easy** uses the seven largest
 outlines on the selected map; **Difficult** uses every location on that map. Size is
 projected map area, not a ranking by national land area. Excluded countries remain
@@ -117,3 +117,23 @@ Country details include a Wikipedia article link and optional credited photograp
 of places and landscapes. Tap **Show photos** to load images online; country facts,
 flags, maps and progress continue working offline. Source/author and license links
 are shown for each image. See [Wikipedia gallery](docs/wikipedia-gallery.md).
+
+### Compact Home and play UI
+
+Home offers one map chooser, four direct-launch mode tiles and a saved difficulty
+selector. The five tabs use short labels: Home, Maps, Library, Profile and Settings.
+During play, tabs hide and the map fills the available width on a continuous ocean
+surface. Fit map stays visible; Play options contains restart and secondary map
+controls. Name It replaces its answers with concise feedback and Next country
+when solved. Learn opens full facts and optional photos from its compact country
+card. See [UI screenshots and verification](docs/evidence/compact-ui/README.md).
+
+### Learn atlas
+
+Learn shows country names and a small initial hint, then a selected-country preview
+with flag, capital and pronunciation. Tap its identity area to open essentials and
+optional photos/Wikipedia; the heading and close control stay visible while
+scrolling. Small-country controls use names in Learn and remain anonymous in
+quizzes. Country details are shared with Library. Coordinates, codes and the
+repeated mini-map were removed from the presentation; offline maps/facts and
+photo attribution are preserved. See [Learn UI evidence](docs/evidence/learn-atlas/README.md).

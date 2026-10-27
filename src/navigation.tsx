@@ -1,5 +1,4 @@
 import { MapProvider, useMap } from './features/geography/MapContext';
-import { mapName } from './features/geography/maps';
 import { useState } from 'react';
 import type { FindClue, NameAnswer } from './features/geography/modes';
 import { EuropeScreen } from './screens/EuropeScreen';
@@ -39,10 +38,10 @@ function Tabs() {
       <Tab.Screen name="Home" options={{ tabBarLabel: c.home, tabBarIcon: ({ color, size }) => <Ionicons name="home-outline" color={color} size={size} /> }}>
         {() => <HomeScreen findClue={findClue} nameAnswer={nameAnswer} />}
       </Tab.Screen>
-      <Tab.Screen name="Europe" options={{ tabBarLabel: mapName(mapId, language), tabBarIcon: ({ color, size }) => <Ionicons name="earth-outline" color={color} size={size} /> }}>
+      <Tab.Screen name="Europe" options={{ tabBarLabel: c.mapsTab, tabBarIcon: ({ color, size }) => <Ionicons name="earth-outline" color={color} size={size} /> }}>
         {() => <EuropeScreen findClue={findClue} onFindClue={setFindClue} nameAnswer={nameAnswer} onNameAnswer={setNameAnswer} />}
       </Tab.Screen>
-      <Tab.Screen name="Explore" children={() => <ExploreScreen key={mapId} />} options={{ tabBarLabel: c.countryCollection, tabBarIcon: ({ color, size }) => <Ionicons name="book-outline" color={color} size={size} /> }} />
+      <Tab.Screen name="Explore" children={() => <ExploreScreen key={mapId} />} options={{ tabBarLabel: c.libraryTab, tabBarIcon: ({ color, size }) => <Ionicons name="book-outline" color={color} size={size} /> }} />
       <Tab.Screen name="Profile" component={ProfileScreen} options={{ tabBarLabel: c.profile, tabBarIcon: ({ color, size }) => <Ionicons name="person-outline" color={color} size={size} /> }} />
       <Tab.Screen name="Settings" component={SettingsScreen} options={{ tabBarLabel: c.settings, tabBarIcon: ({ color, size }) => <Ionicons name="settings-outline" color={color} size={size} /> }} />
     </Tab.Navigator>

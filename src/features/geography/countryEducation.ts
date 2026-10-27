@@ -27,23 +27,10 @@ export function countryRegion(id: string, language: Language): string {
   return map && map.id !== 'europe' ? mapName(map.id, language) : regionNames[language][regionById[id] ?? 'crossroads'];
 }
 
-export function countryCoordinates(id: string): { latitude: number; longitude: number } | undefined {
-  const entry = mapForCountry(id)?.pack.locations.find(country => country.id === id);
-  return entry && { latitude: entry.latitude, longitude: entry.longitude };
-}
-
-export function geographicCoordinate(value: number, axis: 'latitude' | 'longitude'): string {
-  const cardinal = axis === 'latitude' ? (value < 0 ? 'S' : 'N') : value < 0 ? 'W' : 'E';
-  return `${Math.abs(value).toFixed(1)}°${cardinal}`;
-}
-
-export const educationCopy: Record<Language, {
-  atlas: string; region: string; coordinates: string; learnMore: string;
-  location: string; countryCode: string; explore: string; landmark: string;
-}> = {
-  en: { atlas: 'Physical atlas · highlighted country', region: 'Region', coordinates: 'Map position', learnMore: 'Discover on the map', location: 'Location', countryCode: 'Country code', explore: 'Tap another country to keep exploring', landmark: 'Famous landmark' },
-  pl: { atlas: 'Atlas fizyczny · wyróżnione państwo', region: 'Region', coordinates: 'Położenie na mapie', learnMore: 'Odkrywaj na mapie', location: 'Położenie', countryCode: 'Kod państwa', explore: 'Dotknij kolejnego państwa, aby odkrywać dalej', landmark: 'Znane miejsce' },
-  ru: { atlas: 'Физический атлас · выделенная страна', region: 'Регион', coordinates: 'Положение на карте', learnMore: 'Изучайте на карте', location: 'Расположение', countryCode: 'Код страны', explore: 'Нажмите на другую страну, чтобы продолжить', landmark: 'Известное место' },
+export const educationCopy: Record<Language, { landmark: string }> = {
+  en: { landmark: 'Known for' },
+  pl: { landmark: 'Znane miejsce' },
+  ru: { landmark: 'Известное место' },
 };
 
 /** Short educational examples; absent entries simply omit this optional tile. */

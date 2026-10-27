@@ -34,8 +34,8 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 - `speechController`: serialized pronunciation with installed-voice matching,
   cancellation and bounded voice discovery. EN/PL/RU share `LANGUAGE_OPTIONS`.
 
-- `CountryInfoCard` / `CountryAtlasPortrait`: offline selected-country card with
-  bundled atlas crop, localized capital, region, coordinates and optional landmark.
+- `CountryInfoCard` / `CountryInfoHeading`: compact country identity and expanded
+  essentials with localized capital, region, optional landmark and opt-in gallery.
 - `GAME_MODES` contains four public Home modes; `GameMode` also accepts legacy
   capital mode IDs for stored progress. `modePackId` preserves all existing IDs.
 
@@ -80,8 +80,6 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
   is restricted to Europe; other packs use bundled vector fills.
 - `difficultyPack(level, map?)`: derives eligible countries from each map's outline
   areas; normal retains at least four targets for multiple-choice modes.
-- `CountryAtlasPortrait`: uses the selected map for shared country IDs; non-Europe
-  portraits show the same offline vector geometry as gameplay.
 
 ## Wikipedia discovery
 
@@ -110,3 +108,27 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
   pronunciation and Next. Learn has no empty dock before country selection.
 - Navigation labels are Home / Maps / Library / Profile / Settings; route IDs and
   selected-map sharing are unchanged.
+
+## Learn atlas presentation
+
+- `EuropeMap.learn`: names the polygon/picker controls without exposing quiz
+  answers. Named picker chips use 80–112dp width based on font scale, retaining
+  48dp tap height, clustering, leader lines and the selection guard. `mapPicker`
+  accepts optional label width, narrows max-zoom fans when space is constrained
+  and reports the effective width. Default quiz layout is unchanged.
+- `mapLabels` accepts optional reserved screen rectangles so country names do not
+  overlap Learn's named picker chips.
+- `CountryInfoHeading`: shared flag/name/region/pronunciation row. Compact mode
+  with `onDetails` makes the identity area a button (capital included in subtitle).
+- `CountryInfoCard.showHeader`: defaults true for collection/preview; false when
+  the surrounding sheet supplies `CountryInfoHeading` as its sticky heading.
+  Expanded contents are capital, optional landmark and `CountryGallery`.
+- `OptionsSheet.heading`: optional custom heading; the heading and Close remain
+  above its scrollable contents. Existing title-only sheets behave as before.
+- Learn starts with collision-managed map names and a small selection hint;
+  selection removes the hint. Named controls remain available; quizzes stay
+  anonymous. The unused second-atlas component and technical display helpers
+  were removed; map geometry, source metadata and licenses remain intact.
+- `CountryGallery`: one opt-in photos action with Online hint, responsive image
+  widths, pagination dots, full credits and source/license links; one Wikipedia
+  link below. Per-image loading/retry and native request headers are retained.

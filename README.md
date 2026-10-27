@@ -127,3 +127,13 @@ surface. Fit map stays visible; Play options contains restart and secondary map
 controls. Name It replaces its answers with concise feedback and Next country
 when solved. Learn opens full facts and optional photos from its compact country
 card. See [UI screenshots and verification](docs/evidence/compact-ui/README.md).
+
+### Learn atlas
+
+Learn shows country names and a small initial hint, then a selected-country preview
+with flag, capital and pronunciation. Tap its identity area to open essentials and
+optional photos/Wikipedia; the heading and close control stay visible while
+scrolling. Small-country controls use names in Learn and remain anonymous in
+quizzes. Country details are shared with Library. Coordinates, codes and the
+repeated mini-map were removed from the presentation; offline maps/facts and
+photo attribution are preserved. See [Learn UI evidence](docs/evidence/learn-atlas/README.md).

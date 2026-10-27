@@ -7,7 +7,7 @@ import { SvgXml } from 'react-native-svg';
 import { OptionsSheet } from '../ui/OptionsSheet';
 import { useLanguage } from '../ui/LanguageContext';
 import { themeForScheme, type WorldMapsPalette } from '../ui/worldMapsTheme';
-import { CountryInfoCard } from '../features/geography/CountryInfoCard';
+import { CountryInfoCard, CountryInfoHeading } from '../features/geography/CountryInfoCard';
 import { EuropeMap } from '../features/geography/EuropeMap';
 import { gamePrompt, gameCopy } from '../features/geography/copy';
 import { CLUE_COLORS } from '../features/geography/mapColors';
@@ -39,7 +39,7 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
   const [showMapTools, setShowMapTools] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [showBorders, setShowBorders] = useState(true);
-  const [showNames, setShowNames] = useState(false);
+  const [showNames, setShowNames] = useState(mode === 'learn');
   const [round, setRound] = useState<Round>(() => newRound());
   const [roundIndex, setRoundIndex] = useState(0);
   const clue = mode === 'capital-find' ? 'capital' : findClueForRound(findClue, roundIndex);
@@ -138,17 +138,18 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
       <Pressable accessibilityRole="button" accessibilityLabel={c.playOptions} style={styles.iconButton} onPress={() => setShowOptions(true)}><Ionicons name="ellipsis-horizontal" size={23} color={theme.navy} /></Pressable>
     </View>
     <View style={styles.playArea}>
-      {!completed && <View style={styles.promptRow}>
+      {!completed && mode !== 'learn' && <View style={styles.promptRow}>
         {mode === 'find-it' && clue === 'flag' && !completed && <View accessible accessibilityLabel={c.flagPrompt}><SvgXml xml={countryFacts[target.id]?.flagSvg ?? ''} width={64} height={44} /></View>}
         <Text style={styles.prompt} accessibilityLiveRegion="polite">{progressLoaded ? prompt : c.loading}</Text>
-        {replayId && mode !== 'learn' && <Pressable accessibilityRole="button" accessibilityLabel={c.hear} style={styles.replay}
+        {replayId && <Pressable accessibilityRole="button" accessibilityLabel={c.hear} style={styles.replay}
           onPress={() => speak(mode === 'capital-find' || (mode === 'find-it' && clue === 'capital') ? capitalName(replayId, language) : countryName(replayId, language))}>
           <Ionicons name="volume-high" size={21} color={theme.brand} />
         </Pressable>}
       </View>}
+      {mode === 'learn' && (!feedback || !progressLoaded) && <Text style={styles.learnHint} accessibilityLiveRegion="polite">{progressLoaded ? c.learnPrompt : c.loading}</Text>}
       <View style={styles.mapArea}>
         <EuropeMap map={map} key={`${mode}:${round.startedAt}:${round.targetId}`} fill toolsVisible={showMapTools} results={resultById} revealedIds={completedIds} showNames={showNames && canShowNames}
-          atlas={mode === 'learn'} showBorders={showBorders} selectableIds={mode === 'learn' ? undefined : pack.locations.map(location => location.id)} onSelect={selectCountry} enabled={progressLoaded && !completed && mode !== 'name-it' && mode !== 'capital-name'} language={language} targetId={(mode === 'name-it' || mode === 'capital-name') && !completed ? target.id : undefined} />
+          learn={mode === 'learn'} atlas={mode === 'learn'} showBorders={showBorders} selectableIds={mode === 'learn' ? undefined : pack.locations.map(location => location.id)} onSelect={selectCountry} enabled={progressLoaded && !completed && mode !== 'name-it' && mode !== 'capital-name'} language={language} targetId={(mode === 'name-it' || mode === 'capital-name') && !completed ? target.id : undefined} />
 
       </View>
       {(mode !== 'learn' || feedback || speechFailed || status !== 'ready') && <ScrollView style={[styles.dock, { maxHeight: height * (fontScale > 1.3 ? 0.5 : 0.38) }]} contentContainerStyle={styles.dockContent} keyboardShouldPersistTaps="handled">
@@ -190,8 +191,8 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
       {mode !== 'learn' && <Text style={styles.sheetHint}>{c.levels[difficulty]} · {c.levelHints[difficulty]}{ '\n' }{c.history} · {c.solved}: {stats.played}</Text>}
       <ProgressStatus language={language} />
     </OptionsSheet>
-    <OptionsSheet visible={showDetails && !!feedback} title={c.moreDetails} closeLabel={c.close} onClose={() => setShowDetails(false)}>
-      {mode === 'learn' && feedback && <CountryInfoCard id={feedback.id} language={language} onSpeak={() => speak(countryName(feedback.id, language))} />}
+    <OptionsSheet heading={feedback ? <CountryInfoHeading id={feedback.id} language={language} onSpeak={() => speak(countryName(feedback.id, language))} /> : undefined} visible={showDetails && !!feedback} title={c.moreDetails} closeLabel={c.close} onClose={() => setShowDetails(false)}>
+      {mode === 'learn' && feedback && <CountryInfoCard showHeader={false} id={feedback.id} language={language} onSpeak={() => speak(countryName(feedback.id, language))} />}
     </OptionsSheet>
   </SafeAreaView>;
 }
@@ -201,6 +202,7 @@ const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
   iconButton: { width: 44, height: 44, borderRadius: 22, backgroundColor: theme.surface, alignItems: 'center', justifyContent: 'center' },
   heading: { flexDirection: 'row', alignItems: 'center', gap: 8, flexShrink: 1 }, modeTitle: { fontSize: 16, fontWeight: '800', color: theme.navy, flexShrink: 1 },
   playArea: { flex: 1, width: '100%', maxWidth: 900, alignSelf: 'center', paddingBottom: 8, gap: 0 },
+  learnHint: { color: theme.muted, fontSize: 12, textAlign: 'center', paddingHorizontal: 16, paddingVertical: 6 },
   promptRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginHorizontal: 12, marginTop: 6, paddingHorizontal: 14, paddingVertical: 12, backgroundColor: theme.surface, borderRadius: 18, minHeight: 60 },
   prompt: { flex: 1, color: theme.navy, fontSize: 18, fontWeight: '800', lineHeight: 24 },
   replay: { width: 44, minHeight: 44, borderRadius: 20, backgroundColor: theme.ocean, alignItems: 'center', justifyContent: 'center' },

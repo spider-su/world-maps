@@ -31,16 +31,17 @@ interface Props {
   showBorders?: boolean;
   selectableIds?: readonly string[];
   toolsVisible?: boolean;
+  learn?: boolean;
 }
 
 /** Shared, offline renderer. Country geometry remains authoritative for taps. */
-export function EuropeMap({ results, revealedIds, showNames, onSelect, language, enabled = true, preview = false, fill = false, targetId, selectableIds, toolsVisible = false, atlas = false, showBorders = true, map = maps.europe }: Props) {
+export function EuropeMap({ results, revealedIds, showNames, onSelect, language, enabled = true, preview = false, fill = false, targetId, selectableIds, toolsVisible = false, learn = false, atlas = false, showBorders = true, map = maps.europe }: Props) {
   const shapes = map.shapes;
   const contextShapes = map.context;
   const markers = map.markers;
   const selectionAlternatives = [...markers, ...shapes.filter(s => s.path && s.area < 700).map(s => ({ id: s.id, x: s.labelX, y: s.labelY }))];
   const physicalAtlas = atlas && map.id === 'europe';
-  const { width } = useWindowDimensions();
+  const { width, fontScale } = useWindowDimensions();
   const atlasClipId = `atlas-land-${useId()}`;
   const theme = themeForScheme(useColorScheme());
   const styles = makeStyles(theme);
@@ -64,8 +65,12 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
   const visible = frame(viewport, aspect);
   const eligible = (id: string) => !selectableIds || selectableIds.includes(id);
   const c = gameCopy[language];
-  const picker = !preview && enabled ? pickerTargets(selectionAlternatives.map((location, index) => ({ ...location, number: index + 1 })).filter(location => eligible(location.id)), viewport, mapWidth, mapHeight) : [];
-  const labels = mapLabels(shapes.map(shape => ({ ...shape, name: countryName(shape.id, language) })), showNames, revealedIds, visible, mapWidth);
+  const pickerSize = learn ? Math.max(80, Math.min(112, 80 * fontScale)) : PICKER_SIZE;
+  const picker = !preview && enabled ? pickerTargets(selectionAlternatives.map((location, index) => ({ ...location, number: index + 1 })).filter(location => eligible(location.id)), viewport, mapWidth, mapHeight, pickerSize) : [];
+  const labels = mapLabels(shapes.map(shape => ({ ...shape, name: countryName(shape.id, language) })), showNames, revealedIds, visible, mapWidth, learn ? picker.map(target => ({
+    left: target.x - (target.width ?? pickerSize) / 2, right: target.x + (target.width ?? pickerSize) / 2,
+    top: target.y - PICKER_SIZE / 2, bottom: target.y + PICKER_SIZE / 2,
+  })) : []);
   const begin = useCallback(() => { selectionGuard.begin(); gesture.current = { viewport: current.current, pinchDistance: 0 }; }, [selectionGuard]);
   const move = useCallback<NonNullable<Parameters<typeof PanResponder.create>[0]['onPanResponderMove']>>((event, state) => {
     const [a, b] = event.nativeEvent.touches;
@@ -108,7 +113,7 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
         {contextShapes.map(shape => <Path key={shape.id} d={shape.path} fillRule="evenodd" fill={theme.oceanDeep} stroke={atlas && !showBorders ? 'transparent' : theme.border} strokeWidth={0.6 / viewport.zoom} />)}
         {shapes.filter(s => s.path).map((shape, index) => {
           const props = { d: shape.path, fill: !eligible(shape.id) ? theme.oceanDeep : shape.id === targetId ? '#F5AD18' : results.has(shape.id) ? physicalAtlas ? 'rgba(37,99,235,0.35)' : CLUE_COLORS[results.get(shape.id)!] : physicalAtlas ? 'transparent' : theme.mapLand, stroke: atlas && !showBorders ? 'transparent' : physicalAtlas ? theme.border : theme.mapBorder, strokeWidth: Math.max(0.65, 2 / viewport.zoom) };
-          return preview || !enabled || !eligible(shape.id) ? <Path key={shape.id} {...props} fillRule="evenodd" /> : <CountryPath key={shape.id} {...props} accessibilityLabel={`${c.mapCountry} ${index + 1}`} onSelect={() => { if (selectionGuard.canSelect(Date.now())) onSelect(shape.id); }} />;
+          return preview || !enabled || !eligible(shape.id) ? <Path key={shape.id} {...props} fillRule="evenodd" /> : <CountryPath key={shape.id} {...props} accessibilityLabel={learn ? countryName(shape.id, language) : `${c.mapCountry} ${index + 1}`} onSelect={() => { if (selectionGuard.canSelect(Date.now())) onSelect(shape.id); }} />;
         })}
         {!preview && labels.map(location => <SvgText key={location.id} x={location.labelX} y={location.labelY}
           fontSize={11 * visible.w / mapWidth} fontFamily="sans-serif" fontWeight="700" textAnchor="middle" fill={theme.navy} pointerEvents="none">{location.name}</SvgText>)}
@@ -125,16 +130,17 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
           {picker.flatMap(target => target.members.map(member => <Line key={member.id} x1={member.screenX} y1={member.screenY} x2={target.x} y2={target.y} stroke={theme.brand} strokeWidth={1.5} opacity={0.65} />))}
         </Svg>
         {picker.map(target => {
+          const targetWidth = target.width ?? pickerSize;
           const member = target.members[0]!;
           const single = target.members.length === 1;
-          const label = single ? showNames || revealedIds.includes(member.id) ? countryName(member.id, language) : `${c.marker} ${member.number}` : `${c.zoomCountries} · ${target.members.length}`;
+          const label = single ? learn || showNames || revealedIds.includes(member.id) ? countryName(member.id, language) : `${c.marker} ${member.number}` : `${c.zoomCountries} · ${target.members.length}`;
           const result = single ? results.get(member.id) : undefined;
           return <Pressable key={target.members.map(p => p.id).join(':')} accessibilityRole="button" accessibilityLabel={label}
-            style={[styles.pickerTarget, { left: target.x - PICKER_SIZE / 2, top: target.y - PICKER_SIZE / 2 }]}
-            onPress={() => { if (!selectionGuard.canSelect(Date.now())) return; if (single) onSelect(member.id); else setViewport(expandPicker(target, viewport, mapWidth, mapHeight)); }}>
-            <View style={[styles.pickerPin, !single && styles.pickerGroup, result && { borderColor: CLUE_COLORS[result] }]}>
-              {!single && <Ionicons name="layers-outline" size={14} color={theme.brand} />}
-              <Text style={styles.pickerNumber}>{single ? member.number : target.members.length}</Text>
+            style={[styles.pickerTarget, { width: targetWidth, left: target.x - targetWidth / 2, top: target.y - PICKER_SIZE / 2 }]}
+            onPress={() => { if (!selectionGuard.canSelect(Date.now())) return; if (single) onSelect(member.id); else setViewport(expandPicker(target, viewport, mapWidth, mapHeight, pickerSize)); }}>
+            <View style={[styles.pickerPin, !single && styles.pickerGroup, learn && [styles.learnPin, { width: targetWidth - 4 }], result && { borderColor: CLUE_COLORS[result] }]}>
+              {!single && !learn && <Ionicons name="layers-outline" size={14} color={theme.brand} />}
+              <Text style={[styles.pickerNumber, learn && styles.learnPinText]}>{learn ? single ? countryName(member.id, language) : `${c.countryGroup} · ${target.members.length}` : single ? member.number : target.members.length}</Text>
             </View>
           </Pressable>;
         })}
@@ -158,6 +164,8 @@ const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
   pickerTarget: { position: 'absolute', width: PICKER_SIZE, height: PICKER_SIZE, alignItems: 'center', justifyContent: 'center' },
   pickerPin: { width: 34, height: 34, borderRadius: 17, backgroundColor: theme.surface, borderWidth: 2, borderColor: theme.brand, alignItems: 'center', justifyContent: 'center', shadowColor: '#123E70', shadowOpacity: 0.18, shadowRadius: 3, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
   pickerGroup: { width: 44, height: 44, borderRadius: 22, borderColor: theme.border, backgroundColor: theme.surface },
+  learnPin: { minHeight: 36, height: 'auto', borderRadius: 10, borderWidth: 1, paddingHorizontal: 4, paddingVertical: 4 },
+  learnPinText: { fontSize: 10, lineHeight: 13, textAlign: 'center' },
   pickerNumber: { color: theme.navy, fontSize: 12, fontWeight: '800' },
   tools: { position: 'absolute', bottom: 12, right: 12, alignItems: 'flex-end', gap: 8, maxWidth: '85%' },
   quickTools: { flexDirection: 'row', gap: 6 },

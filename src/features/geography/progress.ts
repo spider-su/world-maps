@@ -1,7 +1,7 @@
 import { isExplorer, type ExplorerId } from './explorer';
 import type { Round } from './engine';
 import { DEFAULT_DIFFICULTY, isDifficulty, type Difficulty } from './difficulty';
-import { migrateLearning, parseLearning, type LearningProgress, type PracticeMode } from './learning';
+import { parseLearning, type LearningProgress, type PracticeMode } from './learning';
 
 export const MAX_HISTORY = 100;
 
@@ -90,8 +90,7 @@ export function parseProgress(raw: string | null): GameProgress {
     const value: unknown = JSON.parse(raw);
     if (!value || typeof value !== 'object') return initialProgress;
     const candidate = value as Partial<GameProgress>;
-    const savedVersion = (candidate as { schemaVersion?: number }).schemaVersion;
-    if (typeof savedVersion === 'number' && savedVersion > 4) throw new Error('Unsupported progress version');
+    if (candidate.schemaVersion !== 4) throw new Error('Unsupported progress version');
     const sessions = Array.isArray(candidate.sessions) ? candidate.sessions.filter(isSession).slice(-MAX_HISTORY) : [];
     return {
       difficulty: isDifficulty(candidate.difficulty) ? candidate.difficulty : DEFAULT_DIFFICULTY,
@@ -99,7 +98,7 @@ export function parseProgress(raw: string | null): GameProgress {
       explorer: isExplorer(candidate.explorer) ? candidate.explorer : 'amber',
       explored: Array.isArray(candidate.explored) ? [...new Set(candidate.explored.filter((id): id is string => typeof id === 'string' && /^[A-Z]{3}$/.test(id)))] : [],
       practiceMode: candidate.practiceMode === 'random' ? 'random' : 'adaptive',
-      learning: (savedVersion === 2 || savedVersion === 3 || savedVersion === 4) ? parseLearning(candidate.learning) : migrateLearning(sessions),
+      learning: parseLearning(candidate.learning),
       voiceEnabled: typeof candidate.voiceEnabled === 'boolean' ? candidate.voiceEnabled : true,
       sessions,
     };

@@ -1,4 +1,9 @@
-# Optional background music — Europe Learn prototype
+# Optional background music — original Europe Learn prototype (historical)
+
+> This section records the initial pilot. The current implementation extends playback
+> to five regions and optional quiz effects (see later sections). For current release
+> validation use [current POC checklist](poc-current-checklist.md).
+
 
 This first audio milestone deliberately limits playback to **Europe → Learn**. Sound is off by default.
 

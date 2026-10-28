@@ -8,15 +8,11 @@ describe('country exploration tracking', () => {
     expect(recordExploration(state, 'POL')).toBe(state);
     expect(recordExploration(state, 'not an id')).toBe(state);
   });
-  it('migrates v2 progress without dropping scores or learning', () => {
-    const old = { ...initialProgress, schemaVersion: 2, explored: undefined, sessions: [] };
-    const parsed = parseProgress(JSON.stringify(old));
-    expect(parsed.schemaVersion).toBe(4);
-    expect(parsed.explored).toEqual([]);
-    expect(parsed.learning).toEqual(old.learning);
+  it('rejects obsolete progress schema', () => {
+    expect(() => parseProgress(JSON.stringify({ ...initialProgress, schemaVersion: 2 }))).toThrow('Unsupported progress version');
   });
   it('parses explored IDs defensively', () => {
-    const parsed = parseProgress(JSON.stringify({ schemaVersion: 3, explored: ['POL', 'POL', 1, 'not-id', 'ITA'] }));
+    const parsed = parseProgress(JSON.stringify({ ...initialProgress, explored: ['POL', 'POL', 1, 'not-id', 'ITA'] }));
     expect(parsed.explored).toEqual(['POL','ITA']);
   });
 });

@@ -3,7 +3,7 @@
 Offline geography learning game built with Expo / React Native from
 [mobile_template](https://github.com/spider-su/mobile_template).
 
-Five bundled maps cover Europe, Asia, Africa, South America and Oceania.
+Six bundled maps cover Europe, Asia, Africa, North America, South America and Oceania.
 See [continent coverage and generation](docs/continent-maps.md).
 
 Europe retains 47 selectable locations (41 polygons
@@ -21,8 +21,7 @@ npx expo-doctor
 npx expo start --web --host lan --port 8081
 ```
 
-See the [current POC acceptance checklist](docs/poc-current-checklist.md),
-[historical POC stages and evidence](docs/poc-roadmap.md),
+See [POC stages and evidence](docs/poc-roadmap.md),
 [map data and attribution](docs/europe-map-assets.md), and
 [game rules](docs/geography-game-draft.md). Unused template code (demo screens,
 generic adapters and the init script) has been removed; remaining template-era
@@ -42,13 +41,13 @@ Use JDK 17 / Android SDK, then `npm run build:android:preview`. The generated
 It does not require Metro. The local verified preview is arm64-v8a; CI defaults to
 arm64-v8a + x86_64. This is not a store build.
 
-Historical 2026-10-25 validation: 53 tests, Expo Doctor 21/21, Android API 35 emulator and
-production web smoke pass. These results predate the five-continent, audio and dark-mode additions. New APK/device verification and iOS remain pending.
+2026-10-25 validation: 53 tests, Expo Doctor 21/21, Android API 35 emulator and
+production web smoke pass. Physical Android, audible speech and iOS remain pending.
 See [exact build/device evidence and limitations](docs/poc-testing.md).
 
 Completed scores and voice/language preferences survive relaunch; unfinished rounds
 are intentionally not restored. Statistics describe the most recent 100 completed
-rounds. Light and dark appearances are supported; the original light-only POC was superseded. Learning data is bundled and its
+rounds. One light theme is supported in this POC. Learning data is bundled and its
 licenses are available in Settings and [data attribution](docs/country-data.md).
 
 ### Difficulty
@@ -80,7 +79,7 @@ clean political map. [Source, license and regeneration](docs/atlas-data.md).
 
 ### Languages and pronunciation
 
-Choose English, Polish or Russian in Settings. All country names/capitals (including editorial PL/RU capital names for the newer continents) and game
+Choose English, Polish or Russian in Settings. All country names/capitals and game
 prompts update without changing scores. Pronunciation uses installed device voices;
 missing voices produce an inline message. See [speech behavior](docs/languages-and-speech.md).
 
@@ -104,12 +103,12 @@ from the accurate bundled gameplay geography.
 
 ## Continent maps
 
-Choose Europe, Asia, Africa, South America or Oceania on Home or the map tab.
+Choose Europe, Asia, Africa, North America, South America or Oceania on Home or the map tab.
 All four modes use the selected offline map. Easy selects seven large outlines;
 Normal selects large/medium outlines (at least four for answer choices); Difficult
 and Learn include every location. Scores and practice are separate for each map.
-New continent maps use vector fills; physical relief remains available for Europe.
-Map selection and Find It/Name It quiz variants are stored on device and restored after relaunch (Europe/Mixed/Country on a fresh install).
+All continent maps use accurate, selectable Natural Earth geometry. Learn and Maps previews now render offline georeferenced relief (NASA Blue Marble for non-European maps, the existing Europe atlas for Europe); quiz modes retain clear political colors.
+Map and quiz variant choices persist across restarts; first launches default to Europe.
 See [coverage, sources and generation](docs/continent-maps.md).
 
 ### Wikipedia discovery
@@ -146,3 +145,11 @@ explorer gains outfits at levels 1, 3, 6, 10 and 15, alongside six achievement
 badges. Avatar choice and existing progress stay on device; all five maps share
 one player level. Existing saved learning counts toward XP. See
 [progression rules and migration](docs/explorer-progression.md).
+
+### Regional audio and readable geography
+
+All six continents have original offline Learn music tracks with an opt-in Settings
+control and preview. Optional quiz success sounds are separate from voice playback.
+Atlas country labels use dark ink with a white outline for visibility on bright
+terrain in light and dark mode. Test the exact APK on device before distributing.
+See [continent coverage and imagery](docs/continent-maps.md).

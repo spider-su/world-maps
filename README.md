@@ -108,7 +108,7 @@ All four modes use the selected offline map. Easy selects seven large outlines;
 Normal selects large/medium outlines (at least four for answer choices); Difficult
 and Learn include every location. Scores and practice are separate for each map.
 All continent maps use accurate, selectable Natural Earth geometry. Learn and Maps previews now render offline georeferenced relief (NASA Blue Marble for non-European maps, the existing Europe atlas for Europe); quiz modes retain clear political colors.
-Map selection lasts for the app session and defaults to Europe on relaunch.
+Map and quiz variant selections persist across relaunches; first installs default to Europe.
 See [coverage, sources and generation](docs/continent-maps.md).
 
 ### Wikipedia discovery

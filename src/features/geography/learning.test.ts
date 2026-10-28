@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { initialProgress, parseProgress, sessionFromRound } from './progress';
+import { initialProgress, parseProgress } from './progress';
 import { attempts, learningSummary, mastered, practiceTarget, practiceWeight, recordPractice, type LearningProgress } from './learning';
 import type { GeographyPack, Round } from './engine';
 const round: Round = { packId: 'europe', targetId: 'POL', guesses: [], startedAt: 1 };

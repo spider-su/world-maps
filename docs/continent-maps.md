@@ -2,9 +2,9 @@
 
 The app includes Europe (47 locations, unchanged), Asia (50), Africa (54),
 North America (23), South America (12) and Oceania (14). Choose a map on Home or the map tab; the
-selection is shared across tabs for the current app session. All four modes,
+selection is shared across tabs and saved across app sessions. All four modes,
 country collection, details, difficulty and learning summaries follow that map.
-Europe remains the default after relaunch until the separate saved-map-preference PR is merged. Completed scores and learning persist
+Europe remains the default for new installs, while returning users resume their last selected map. Completed scores and learning persist
 under separate `<continent>-countries[:mode]` IDs. Existing Europe IDs, progress
 schema, storage keys and preferences are unchanged. Explored IDs and restored
 guesses are no longer truncated to the old Europe-sized limits.

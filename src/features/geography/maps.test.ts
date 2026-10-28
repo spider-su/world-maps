@@ -55,8 +55,8 @@ describe('offline continent packs', () => {
       expect(map.projection).toBeDefined();
       expect(map.shapes.length).toBeGreaterThan(0);
     }
-    expect(countryFacts.USA.capital.pl).toBe('Waszyngton');
-    expect(countryFacts.MEX.capital.ru).toBe('Мехико');
+    expect(countryFacts.USA?.capital.pl).toBe('Waszyngton');
+    expect(countryFacts.MEX?.capital.ru).toBe('Мехико');
   });
   it('keeps shared-border guesses close, and date-line islands near one another', () => {
     expect(maps.africa.distances!['KEN:TZA']).toBe(0);

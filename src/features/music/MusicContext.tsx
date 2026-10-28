@@ -47,7 +47,6 @@ export function MusicProvider({ children }: { children: ReactNode }) {
       setTrackReady(status.isLoaded);
       if (status.error) setPlaybackError(status.error);
     });
-    setTrackReady(player.isLoaded);
     playerRef.current = player;
     void setAudioModeAsync({ playsInSilentMode: false, shouldPlayInBackground: false, interruptionMode: 'mixWithOthers' }).catch(() => setError(true));
     return () => { subscription.remove(); player.pause(); player.release(); playerRef.current = null; };

@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { useFocusEffect } from '@react-navigation/native';
 import { useMusic } from '../features/music/MusicContext';
+import { completionCue } from '../features/music/soundPolicy';
 import { useCallback, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View, useColorScheme, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -27,7 +28,7 @@ import { canRevealNames, canReplayPrompt, replayCountryId, answerChoices, modePa
 
 export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnswer = 'country', map = maps.europe }: { map?: MapDefinition; mode: GameMode; onBack: () => void; findClue?: FindClue; nameAnswer?: NameAnswer }) {
   const { language } = useLanguage();
-  const { setLearning } = useMusic();
+  const { setLearning, playEffect } = useMusic();
   useFocusEffect(useCallback(() => {
     setLearning(mode === 'learn');
     return () => setLearning(false);
@@ -72,8 +73,10 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
     if (nextRound.completedAt !== undefined && progressLoaded) {
       const session = sessionFromRound(nextRound, difficulty);
       update(current => recordSession(current, { ...session, packId: modePackId(session.packId, mode) }));
+      const cue = completionCue(mode, nextRound.guesses.length);
+      if (cue) playEffect(cue);
     }
-  }, [progressLoaded, update, mode, difficulty]);
+  }, [progressLoaded, update, mode, difficulty, playEffect]);
 
   const selectCountry = useCallback((id: string) => {
     if (!progressLoaded) return;

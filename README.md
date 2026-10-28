@@ -21,7 +21,7 @@ npx expo-doctor
 npx expo start --web --host lan --port 8081
 ```
 
-See [POC stages and evidence](docs/poc-roadmap.md),
+See the [current acceptance checklist](docs/poc-current-checklist.md), [historical POC stages](docs/poc-roadmap.md),
 [map data and attribution](docs/europe-map-assets.md), and
 [game rules](docs/geography-game-draft.md). Unused template code (demo screens,
 generic adapters and the init script) has been removed; remaining template-era
@@ -47,7 +47,7 @@ See [exact build/device evidence and limitations](docs/poc-testing.md).
 
 Completed scores and voice/language preferences survive relaunch; unfinished rounds
 are intentionally not restored. Statistics describe the most recent 100 completed
-rounds. One light theme is supported in this POC. Learning data is bundled and its
+rounds. Light and dark themes are supported. Learning data is bundled and its
 licenses are available in Settings and [data attribution](docs/country-data.md).
 
 ### Difficulty
@@ -60,16 +60,14 @@ visible in muted gray and cannot be guessed. Name It draws all four options from
 the selected pool. Learn always includes every country.
 
 The level is saved with preferences and completed rounds; quiz history is filtered
-by mode and level. Older rounds remain intact and count as Difficult because they
-used the full pool. See [difficulty validation](docs/difficulty-testing.md).
+by mode and level. Rounds without difficulty metadata are interpreted as Difficult; canonical v4 progress is the supported pre-release format. See [difficulty validation](docs/difficulty-testing.md).
 
 ### Country learning
 
 Home offers Adaptive or Random practice. Adaptive revisits recent misses and older
 practice while reducing repeats of mastered countries. Home/Settings show local
-selected-map learning statistics and per-country accuracy. Existing scores migrate once
-without being reset; misses from unfinished rounds are retained. See
-[learning model and migration](docs/country-learning.md).
+selected-map learning statistics and per-country accuracy. Learning records and misses from unfinished rounds persist in canonical v4; older experimental schemas are not migrated. See
+[learning model](docs/country-learning.md).
 
 ### Atlas and quiz appearance
 
@@ -92,7 +90,7 @@ and iOS validation remain separate pending gates.
 
 The shell and game prompts share `gameCopy` / `gamePrompt` for EN/PL/RU. Find It
 clues support country, capital and flag; Name It supports country or capital answers.
-Legacy capital mode storage IDs remain compatible with saved progress.
+Mode-specific pack IDs remain stable inside the canonical v4 progress document.
 
 Home and gameplay now use a map-first layout inspired by the UI sketch. The middle Europe tab
 contains the offline region summary, difficulty, practice and quiz options. During play, the header
@@ -142,8 +140,8 @@ photo attribution are preserved. See [Learn UI evidence](docs/evidence/learn-atl
 
 Profile rewards first country discoveries and successful quizzes with XP. A human
 explorer gains outfits at levels 1, 3, 6, 10 and 15, alongside six achievement
-badges. Avatar choice and existing progress stay on device; all five maps share
-one player level. Existing saved learning counts toward XP. See
+badges. Avatar choice and existing progress stay on device; all six maps share
+one player level. Current saved learning counts toward XP. See
 [progression rules and migration](docs/explorer-progression.md).
 
 ### Regional audio and readable geography

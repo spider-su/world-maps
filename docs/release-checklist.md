@@ -6,9 +6,14 @@
 - [ ] Run `npm ci`, `npm run ci` and `npx expo-doctor`
 - [ ] Run a production web export (`npx expo export --platform web`)
 
+## Canonical data contract
+- [ ] Confirm the build uses the current `develop` canonical progress schema v4, not older main-based APK logic
+- [ ] Use clean test data for old experimental schemas; do not claim compatibility migrations
+- [ ] Verify fresh install, force-stop, restart and update-over-install retain canonical v4 progress
+
 ## Device acceptance
 - [ ] Validate continent and Find It/Name It variant preferences survive force-stop and app upgrade
-- [ ] Check all five maps, Polish/Russian capital localization, and both dark/light appearances
+- [ ] Check all six maps, Polish/Russian capital localization, and both dark/light appearances
 - [ ] Check offline region music previews and optional quiz sounds on real hardware (media volume, focus, speech priority)
 - [ ] Use [current POC checklist](poc-current-checklist.md) for detailed feature-by-feature regression checks
 

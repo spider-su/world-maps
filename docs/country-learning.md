@@ -25,4 +25,4 @@ Home shows the saved practice selector. Home and Settings show Europe coverage,
 mastery, needing-practice and attempt accuracy, with an expandable country list.
 A country counts as mastered when at least one quiz mode meets the displayed rule;
 it is not a claim of retention across every mode or a validated learning measure.
-No backend, account, XP, or new runtime dependency is involved.
+No backend, account, or new runtime dependency is involved. Explorer XP is derived separately from cumulative learning and discoveries.

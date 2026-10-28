@@ -21,7 +21,8 @@ npx expo-doctor
 npx expo start --web --host lan --port 8081
 ```
 
-See [POC stages and evidence](docs/poc-roadmap.md),
+See the [current POC acceptance checklist](docs/poc-current-checklist.md),
+[historical POC stages and evidence](docs/poc-roadmap.md),
 [map data and attribution](docs/europe-map-assets.md), and
 [game rules](docs/geography-game-draft.md). Unused template code (demo screens,
 generic adapters and the init script) has been removed; remaining template-era
@@ -41,13 +42,13 @@ Use JDK 17 / Android SDK, then `npm run build:android:preview`. The generated
 It does not require Metro. The local verified preview is arm64-v8a; CI defaults to
 arm64-v8a + x86_64. This is not a store build.
 
-2026-10-25 validation: 53 tests, Expo Doctor 21/21, Android API 35 emulator and
-production web smoke pass. Physical Android, audible speech and iOS remain pending.
+Historical 2026-10-25 validation: 53 tests, Expo Doctor 21/21, Android API 35 emulator and
+production web smoke pass. These results predate the five-continent, audio and dark-mode additions. New APK/device verification and iOS remain pending.
 See [exact build/device evidence and limitations](docs/poc-testing.md).
 
 Completed scores and voice/language preferences survive relaunch; unfinished rounds
 are intentionally not restored. Statistics describe the most recent 100 completed
-rounds. One light theme is supported in this POC. Learning data is bundled and its
+rounds. Light and dark appearances are supported; the original light-only POC was superseded. Learning data is bundled and its
 licenses are available in Settings and [data attribution](docs/country-data.md).
 
 ### Difficulty
@@ -79,7 +80,7 @@ clean political map. [Source, license and regeneration](docs/atlas-data.md).
 
 ### Languages and pronunciation
 
-Choose English, Polish or Russian in Settings. All country names/capitals and game
+Choose English, Polish or Russian in Settings. All country names/capitals (including editorial PL/RU capital names for the newer continents) and game
 prompts update without changing scores. Pronunciation uses installed device voices;
 missing voices produce an inline message. See [speech behavior](docs/languages-and-speech.md).
 
@@ -108,7 +109,7 @@ All four modes use the selected offline map. Easy selects seven large outlines;
 Normal selects large/medium outlines (at least four for answer choices); Difficult
 and Learn include every location. Scores and practice are separate for each map.
 New continent maps use vector fills; physical relief remains available for Europe.
-Map selection lasts for the app session and defaults to Europe on relaunch.
+Map selection and Find It/Name It quiz variants are stored on device and restored after relaunch (Europe/Mixed/Country on a fresh install).
 See [coverage, sources and generation](docs/continent-maps.md).
 
 ### Wikipedia discovery

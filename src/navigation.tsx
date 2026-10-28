@@ -1,3 +1,4 @@
+import { MusicProvider } from './features/music/MusicContext';
 import { MapProvider, useMap } from './features/geography/MapContext';
 import { useState } from 'react';
 import type { FindClue, NameAnswer } from './features/geography/modes';
@@ -51,5 +52,5 @@ function Tabs() {
 export function AppNavigation() {
   const theme = themeForScheme(useColorScheme());
   const base = useColorScheme() === 'dark' ? DarkTheme : DefaultTheme;
-  return <NavigationContainer theme={{ ...base, colors: { ...base.colors, background: theme.paper, card: theme.surface, text: theme.navy, border: theme.border, primary: theme.brand } }}><MapProvider><Tabs /></MapProvider></NavigationContainer>;
+  return <NavigationContainer theme={{ ...base, colors: { ...base.colors, background: theme.paper, card: theme.surface, text: theme.navy, border: theme.border, primary: theme.brand } }}><MapProvider><MusicProvider><Tabs /></MusicProvider></MapProvider></NavigationContainer>;
 }

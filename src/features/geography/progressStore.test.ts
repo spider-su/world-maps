@@ -47,3 +47,16 @@ describe('serialized progress persistence', () => {
     expect(save.mock.lastCall?.[0].sessions).toEqual([session]);
   });
 });
+
+it('serializes avatar choices with game progress and preserves both through save recovery', async () => {
+  const save=vi.fn().mockRejectedValueOnce(new Error('full')).mockRejectedValueOnce(new Error('still full')).mockResolvedValue(undefined);
+  const store=createProgressStore({load:async()=>initialProgress,save});
+  await store.load();
+  store.update(progress=>({...progress,explorer:'ocean'}));
+  store.update(progress=>recordSession(progress,session));
+  await store.flush();
+  expect(store.getSnapshot().status).toBe('save-error');
+  await store.retry();
+  expect(save.mock.lastCall?.[0]).toMatchObject({explorer:'ocean',sessions:[session]});
+  expect(store.getSnapshot().status).toBe('ready');
+});

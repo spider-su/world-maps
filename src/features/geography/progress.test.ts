@@ -38,3 +38,18 @@ describe('local game progress', () => {
     });
   });
 });
+
+describe('explorer preference migration', () => {
+  it('upgrades v3 without replacing its learning, discoveries or preferences', () => {
+    const old = { ...initialProgress, schemaVersion:3, explorer:undefined, explored:['POL'], voiceEnabled:false, difficulty:'easy', practiceMode:'random',
+      learning:{'europe-countries':{POL:{correct:3,incorrect:1,firstTry:2,lastPracticed:10,recent:[true,false,true],lastRound:9,lastGuesses:['POL']}}} };
+    const restored=parseProgress(JSON.stringify(old));
+    expect(restored).toEqual({...old,schemaVersion:4,explorer:'amber'});
+    expect(parseProgress(JSON.stringify(restored))).toEqual(restored);
+  });
+  it('preserves every avatar choice and safely defaults an unknown one', () => {
+    for (const explorer of ['amber','ocean','forest'] as const) expect(parseProgress(JSON.stringify({...initialProgress,explorer})).explorer).toBe(explorer);
+    expect(parseProgress(JSON.stringify({...initialProgress,explorer:'unknown'})).explorer).toBe('amber');
+    expect(() => parseProgress(JSON.stringify({...initialProgress,schemaVersion:5}))).toThrow('Unsupported progress version');
+  });
+});

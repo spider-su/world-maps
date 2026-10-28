@@ -1,6 +1,6 @@
 # Local country learning and practice
 
-Progress schema 2 retains the existing storage key and completed-session history.
+Learning counters were introduced in schema 2; current progress schema 4 retains the existing storage key and completed-session history.
 Missing-version data migrates valid retained sessions once into per-target,
 per-mode counters; scores and voice preference are unchanged. Version 2 reads its
 own counters, including misses in unfinished rounds, instead of rebuilding from

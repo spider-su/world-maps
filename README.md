@@ -137,3 +137,11 @@ scrolling. Small-country controls use names in Learn and remain anonymous in
 quizzes. Country details are shared with Library. Coordinates, codes and the
 repeated mini-map were removed from the presentation; offline maps/facts and
 photo attribution are preserved. See [Learn UI evidence](docs/evidence/learn-atlas/README.md).
+
+### Explorer profile
+
+Profile rewards first country discoveries and successful quizzes with XP. A human
+explorer gains outfits at levels 1, 3, 6, 10 and 15, alongside six achievement
+badges. Avatar choice and existing progress stay on device; all five maps share
+one player level. Existing saved learning counts toward XP. See
+[progression rules and migration](docs/explorer-progression.md).

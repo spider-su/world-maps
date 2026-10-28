@@ -12,9 +12,11 @@ import { INITIAL_VIEWPORT } from './viewport';
 
 describe('offline continent packs', () => {
   it('ships explicit complete coverage and keeps historic Europe identity', () => {
-    expect(MAP_IDS.map(id => maps[id].pack.locations.length)).toEqual([47,50,54,12,14]);
+    expect(MAP_IDS.map(id => maps[id].pack.locations.length)).toEqual([47,50,54,23,12,14]);
     expect(maps.europe.pack.id).toBe('europe-countries');
     expect(maps.asia.pack.locations.some(l => l.id === 'RUS')).toBe(true);
+    expect(maps['north-america'].pack.locations.some(l => l.id === 'CAN')).toBe(true);
+    expect(maps['north-america'].pack.locations.some(l => l.id === 'JAM')).toBe(true);
     expect(maps.oceania.pack.locations.some(l => l.id === 'KIR')).toBe(true);
   });
   for (const id of MAP_IDS) it(`${id}: all difficulties support quizzes, facts, selection and distance clues`, () => {
@@ -46,6 +48,15 @@ describe('offline continent packs', () => {
         }
       }
     }
+  });
+  it('provides geographically aligned relief metadata and readable labels for each new continent', () => {
+    for (const id of MAP_IDS.filter(id => id !== 'europe')) {
+      const map = maps[id];
+      expect(map.projection).toBeDefined();
+      expect(map.shapes.length).toBeGreaterThan(0);
+    }
+    expect(countryFacts.USA.capital.pl).toBe('Waszyngton');
+    expect(countryFacts.MEX.capital.ru).toBe('Мехико');
   });
   it('keeps shared-border guesses close, and date-line islands near one another', () => {
     expect(maps.africa.distances!['KEN:TZA']).toBe(0);

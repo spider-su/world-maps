@@ -5,6 +5,7 @@ export const REGION_TRACKS: Record<MapId, number> = {
   europe: require('../../../assets/audio/europe-learn.wav'),
   asia: require('../../../assets/audio/asia-learn.wav'),
   africa: require('../../../assets/audio/africa-learn.wav'),
+  'north-america': require('../../../assets/audio/north-america-learn.wav'),
   'south-america': require('../../../assets/audio/south-america-learn.wav'),
   oceania: require('../../../assets/audio/oceania-learn.wav'),
 };

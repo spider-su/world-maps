@@ -1,5 +1,7 @@
-import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View, useColorScheme } from 'react-native';
+import { useCallback, useMemo, useState } from 'react';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+import { StatusBar } from 'expo-status-bar';
+import { BackHandler, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SvgXml } from 'react-native-svg';
 import { Ionicons } from '@expo/vector-icons';
@@ -28,6 +30,12 @@ export function ExploreScreen() {
   const [region, setRegion] = useState<RegionId>('all');
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<string | null>(null);
+  const focused = useIsFocused();
+  useFocusEffect(useCallback(() => {
+    if (!selected) return;
+    const handler = BackHandler.addEventListener('hardwareBackPress', () => { setSelected(null); return true; });
+    return () => handler.remove();
+  }, [selected]));
   const { speak } = useCountrySpeech(progress.voiceEnabled, language);
   const locations = mapId === 'europe' ? regionCountries(region) : map.pack.locations;
   const countries = useMemo(() => locations.filter(item =>
@@ -38,6 +46,7 @@ export function ExploreScreen() {
   const statistics = learningSummary(progress.learning, map.pack.id, locations.map(item => item.id));
   const choose = (id: string) => { if (status === 'loading' || status === 'read-error') return; update(p => recordExploration(p, id)); setSelected(id); speak(countryName(id, language)); };
   return <SafeAreaView edges={['top']} style={styles.screen}>
+    {focused && <StatusBar style="dark" />}
     {selected ? <ScrollView contentContainerStyle={styles.content}>
       <ProgressStatus language={language} />
       <Pressable accessibilityRole="button" onPress={() => setSelected(null)} style={styles.back}>

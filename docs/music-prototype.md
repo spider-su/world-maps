@@ -21,3 +21,27 @@ This first audio milestone deliberately limits playback to **Europe → Learn**.
 6. Exercise storage failure/retry and system interruptions (phone call, external music); verify no crashes.
 
 The WAV is a small prototype, not the five-region final soundtrack. Review actual perceived volume and seamlessness on real devices before producing longer, region-specific licensed compositions. Do not auto-play without user consent.
+
+## Regional themes and optional feedback (next milestone)
+
+The audio controller now chooses one offline original instrumental loop for each of the five selectable maps:
+- Europe: the existing gentle ambient theme
+- Asia: bright plucked notes over a soft drone
+- Africa: warm low notes with gentle rhythmic pulses
+- South America: light acoustic-style arpeggios
+- Oceania: spacious, airy sustained tones
+
+These are simple creative soundscapes, **not attempts to represent the many musical cultures across a continent**. All tracks are original programmatically synthesized WAV files with no third-party sampling, royalty or streaming requirements.
+
+The one active music player is released/replaced when the map changes. Music stays opt-in, active only while a Learn game is focused, and pauses when the app backgrounds or pronunciation begins. Settings previews the theme for the currently selected map. The original Europe-only persisted enabled/volume preferences migrate without data loss.
+
+Two short, original effects are preloaded and play only when **Quiz sound effects** is separately enabled (off by default). The short *complete* cue celebrates a round solved on the first try; the subdued *correct* cue celebrates all other completed rounds. Wrong guesses and Learn taps do not trigger success effects. Spoken names always have priority over effects.
+
+### Test before merging
+
+- In Maps, choose each continent, then open Learn and confirm each region has a distinct looping sound. Switch continents while a track is playing and verify the old track stops.
+- With music disabled, use Settings → Test music to preview the currently selected continent; leave Settings to stop the preview.
+- Toggle effects independently of music; complete a first-try round and a multi-guess round, and confirm only one corresponding cue plays for each.
+- With voice enabled, confirm country speech stays clear and automatically interrupts music/effects.
+- Verify foreground/background, silent mode, Android media volume, startup preference restoration, audio-load errors, and a full APK smoke test.
+- The earlier Europe-only prototype was not conclusively audible on every tester device; this remains an essential hands-on acceptance criterion, not something unit tests can prove.

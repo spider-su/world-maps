@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { initialProgress, parseProgress, sessionFromRound } from './progress';
-import { attempts, learningSummary, mastered, migrateLearning, practiceTarget, practiceWeight, recordPractice, type LearningProgress } from './learning';
+import { attempts, learningSummary, mastered, practiceTarget, practiceWeight, recordPractice, type LearningProgress } from './learning';
 import type { GeographyPack, Round } from './engine';
 const round: Round = { packId: 'europe', targetId: 'POL', guesses: [], startedAt: 1 };
 const pack: GeographyPack = { id: 'europe', title: 'Europe', kind: 'country', locations: ['POL', 'DEU', 'FRA'].map(id => ({ id, name: id, latitude: 50, longitude: 10 })) };
@@ -16,17 +16,16 @@ describe('country learning and adaptive practice', () => {
     expect(first['europe:name-it']!.POL!.firstTry).toBe(1);
     expect(recordPractice(first, 'europe:name-it', { ...round, completedAt: 8 }, 'POL', 9)).toBe(first);
   });
-  it('migrates existing history once and retains scored sessions and preferences', () => {
-    const session = sessionFromRound({ ...round, guesses: ['DEU', 'POL'], completedAt: 3 });
-    const migrated = parseProgress(JSON.stringify({ sessions: [session], voiceEnabled: false }));
-    expect(migrated.sessions).toEqual([session]);
-    expect(migrated.voiceEnabled).toBe(false);
-    expect(migrated.schemaVersion).toBe(4);
-    expect(migrated.learning.europe!.POL).toMatchObject({ correct: 1, incorrect: 1, firstTry: 0 });
-    const withMiss = { ...migrated, learning: recordPractice(migrated.learning, 'europe', { ...round, startedAt: 8 }, 'FRA', 9) };
-    expect(parseProgress(JSON.stringify(withMiss))).toEqual(withMiss);
-    expect(migrateLearning([session, session])).toEqual(migrateLearning([session]));
-    expect(() => parseProgress('{"schemaVersion":99}')).toThrow('Unsupported progress version');
+  it('round-trips canonical v4 learning and rejects legacy documents', () => {
+    const learning = recordPractice({}, 'europe', round, 'DEU', 2);
+    const progress = { ...initialProgress, learning, voiceEnabled: false };
+    expect(parseProgress(JSON.stringify(progress))).toEqual(progress);
+    expect(() => parseProgress(JSON.stringify({ ...progress, schemaVersion: 2 }))).toThrow('Unsupported progress version');
+  });
+  it('preserves records with lastRound -1 (unplayed sentinel)', () => {
+    const record = { correct: 0, incorrect: 0, firstTry: 0, lastPracticed: 0, recent: [], lastRound: -1, lastGuesses: [] };
+    const progress = { ...initialProgress, learning: { europe: { POL: record } } };
+    expect(parseProgress(JSON.stringify(progress)).learning.europe?.POL).toEqual(record);
   });
   it('bounds recent answers and reports mastered, missed, unpracticed and accuracy', () => {
     let learning: LearningProgress = {};

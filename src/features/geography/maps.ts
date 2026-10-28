@@ -34,7 +34,7 @@ export const maps: Record<MapId, MapDefinition> = {
   asia: continent('asia'), africa: continent('africa'), 'north-america': {
     id: 'north-america',
     pack: { id: 'north-america-countries', title: northAmerica.title, kind: 'country', locations: northAmerica.countries.map(({ id, name, latitude, longitude }) => ({ id, name, latitude, longitude, geometryId: id })) },
-    shapes: northAmerica.countries, context: northAmerica.context, markers: northAmerica.countries.filter(s => !s.path || s.area < 3).map(s => ({ id: s.id, x: s.labelX, y: s.labelY })), distances: northAmerica.distances,
+    shapes: northAmerica.countries, context: northAmerica.context, markers: northAmerica.countries.filter(s => !s.path).map(s => ({ id: s.id, x: s.labelX, y: s.labelY })), distances: northAmerica.distances,
     projection: northAmerica.projection,
   }, 'south-america': continent('south-america'), oceania: continent('oceania'),
 };

@@ -21,7 +21,7 @@ import { ProgressStatus } from '../features/geography/ProgressStatus';
 import { useCountrySpeech } from '../features/geography/useCountrySpeech';
 import { capitalName, countryName, countryFacts } from '../features/geography/countryFacts';
 import { practiceTarget, recordPractice } from '../features/geography/learning';
-import { canRevealNames, replayCountryId, answerChoices, modePackId, nameItAnswer, type GameMode, type FindClue, type NameAnswer, findClueForRound } from '../features/geography/modes';
+import { canRevealNames, canReplayPrompt, replayCountryId, answerChoices, modePackId, nameItAnswer, type GameMode, type FindClue, type NameAnswer, findClueForRound } from '../features/geography/modes';
 
 export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnswer = 'country', map = maps.europe }: { map?: MapDefinition; mode: GameMode; onBack: () => void; findClue?: FindClue; nameAnswer?: NameAnswer }) {
   const { language } = useLanguage();
@@ -141,7 +141,7 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
       {!completed && mode !== 'learn' && <View style={styles.promptRow}>
         {mode === 'find-it' && clue === 'flag' && !completed && <View accessible accessibilityLabel={c.flagPrompt}><SvgXml xml={countryFacts[target.id]?.flagSvg ?? ''} width={64} height={44} /></View>}
         <Text style={styles.prompt} accessibilityLiveRegion="polite">{progressLoaded ? prompt : c.loading}</Text>
-        {replayId && <Pressable accessibilityRole="button" accessibilityLabel={c.hear} style={styles.replay}
+        {replayId && canReplayPrompt(mode, clue, completed) && <Pressable accessibilityRole="button" accessibilityLabel={c.hear} style={styles.replay}
           onPress={() => speak(mode === 'capital-find' || (mode === 'find-it' && clue === 'capital') ? capitalName(replayId, language) : countryName(replayId, language))}>
           <Ionicons name="volume-high" size={21} color={theme.brand} />
         </Pressable>}

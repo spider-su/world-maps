@@ -15,6 +15,8 @@ import { useMap } from '../features/geography/MapContext';
 import { mapName } from '../features/geography/maps';
 import { gameCopy } from '../features/geography/copy';
 import { recordExploration } from '../features/geography/progress';
+import { ProgressStatus } from '../features/geography/ProgressStatus';
+import { MapSelector } from '../features/geography/MapSelector';
 
 export function ExploreScreen() {
   const { map, mapId } = useMap();
@@ -37,6 +39,7 @@ export function ExploreScreen() {
   const choose = (id: string) => { if (status === 'loading' || status === 'read-error') return; update(p => recordExploration(p, id)); setSelected(id); speak(countryName(id, language)); };
   return <SafeAreaView edges={['top']} style={styles.screen}>
     {selected ? <ScrollView contentContainerStyle={styles.content}>
+      <ProgressStatus language={language} />
       <Pressable accessibilityRole="button" onPress={() => setSelected(null)} style={styles.back}>
         <Ionicons name="chevron-back" size={20} color={theme.brand} /><Text style={styles.link}>{c.backToCollection}</Text>
       </Pressable>
@@ -45,6 +48,8 @@ export function ExploreScreen() {
     <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
       <Text style={styles.heading}>{c.countryCollection}</Text>
       <Text style={styles.subtitle}>{c.collectionHint}</Text>
+      <ProgressStatus language={language} />
+      <MapSelector />
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.regions}>
         {(mapId === 'europe' ? REGION_IDS : ['all'] as const).map(id => <Pressable key={id} accessibilityRole="button" accessibilityState={{ selected: id === region }}
           onPress={() => setRegion(id)} style={[styles.chip, id === region && styles.activeChip]}>

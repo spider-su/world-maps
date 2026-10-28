@@ -3,20 +3,10 @@ import { AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setAudioModeAsync, useAudioPlayer } from 'expo-audio';
 import { useMap } from '../geography/MapContext';
+import { DEFAULT_MUSIC, parseMusic, type MusicPreferences } from './musicPreferences';
 
 const KEY = '@world-maps/music';
 const TRACK = require('../../../assets/audio/europe-learn.wav');
-export const DEFAULT_MUSIC = { enabled: false, volume: 12 };
-export type MusicPreferences = typeof DEFAULT_MUSIC;
-export function parseMusic(raw: string | null): MusicPreferences {
-  if (!raw) return DEFAULT_MUSIC;
-  try {
-    const data: unknown = JSON.parse(raw);
-    if (!data || typeof data !== 'object') return DEFAULT_MUSIC;
-    const entry = data as Partial<MusicPreferences>;
-    return { enabled: entry.enabled === true, volume: typeof entry.volume === 'number' && Number.isFinite(entry.volume) ? Math.max(0, Math.min(30, Math.round(entry.volume))) : DEFAULT_MUSIC.volume };
-  } catch { return DEFAULT_MUSIC; }
-}
 type MusicContextValue = {
   enabled: boolean; volume: number; update: (next: Partial<MusicPreferences>) => void;
   learning: boolean; setLearning: (value: boolean) => void;

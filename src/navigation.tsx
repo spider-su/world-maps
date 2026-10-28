@@ -1,7 +1,5 @@
 import { MusicProvider } from './features/music/MusicContext';
 import { MapProvider, useMap } from './features/geography/MapContext';
-import { useState } from 'react';
-import type { FindClue, NameAnswer } from './features/geography/modes';
 import { EuropeScreen } from './screens/EuropeScreen';
 import { ExploreScreen } from './screens/ExploreScreen';
 import { ProfileScreen } from './screens/ProfileScreen';
@@ -21,9 +19,7 @@ export type TabParamList = { Home: undefined; Europe: undefined; Explore: undefi
 const Tab = createBottomTabNavigator<TabParamList>();
 
 function Tabs() {
-  const { mapId } = useMap();
-  const [findClue, setFindClue] = useState<FindClue>('mixed');
-  const [nameAnswer, setNameAnswer] = useState<NameAnswer>('country');
+  const { mapId, findClue, setFindClue, nameAnswer, setNameAnswer } = useMap();
   const { language } = useLanguage();
   const c = gameCopy[language];
   const theme = themeForScheme(useColorScheme());

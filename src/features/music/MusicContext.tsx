@@ -14,6 +14,7 @@ type MusicContextValue = {
   learning: boolean; setLearning: (value: boolean) => void;
   setSpeaking: (value: boolean) => void;
   error: boolean; retry: () => void; loaded: boolean;
+  preview: boolean; setPreview: (value: boolean) => void; trackReady: boolean; playbackError: string | null;
 };
 const Context = createContext<MusicContextValue | null>(null);
 
@@ -25,7 +26,10 @@ export function MusicProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState(false);
   const [learning, setLearning] = useState(false);
   const [speaking, setSpeaking] = useState(false);
-  const [active, setActive] = useState(AppState.currentState === 'active');
+  const [active, setActive] = useState(AppState.currentState !== 'background' && AppState.currentState !== 'inactive');
+  const [preview, setPreview] = useState(false);
+  const [trackReady, setTrackReady] = useState(false);
+  const [playbackError, setPlaybackError] = useState<string | null>(null);
   useEffect(() => {
     let mounted = true;
     void AsyncStorage.getItem(KEY).then(raw => { if(mounted) setPrefs(parseMusic(raw)); })
@@ -39,18 +43,24 @@ export function MusicProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const player = createAudioPlayer(TRACK);
     player.loop = true;
+    const subscription = player.addListener('playbackStatusUpdate', status => {
+      setTrackReady(status.isLoaded);
+      if (status.error) setPlaybackError(status.error);
+    });
+    setTrackReady(player.isLoaded);
     playerRef.current = player;
     void setAudioModeAsync({ playsInSilentMode: false, shouldPlayInBackground: false, interruptionMode: 'mixWithOthers' }).catch(() => setError(true));
-    return () => { player.pause(); player.release(); playerRef.current = null; };
+    return () => { subscription.remove(); player.pause(); player.release(); playerRef.current = null; };
   }, []);
-  const shouldPlay = loaded && prefs.enabled && active && learning && mapId === 'europe' && !speaking;
+  const shouldPlay = loaded && active && !speaking && (preview || (prefs.enabled && learning && mapId === 'europe'));
+  const effectiveVolume = preview ? Math.max(prefs.volume, 30) : prefs.volume;
   useEffect(() => {
     const player = playerRef.current;
     if (!player) return;
-    player.volume = shouldPlay ? prefs.volume / 100 : 0;
-    if (shouldPlay) player.play();
+    player.volume = shouldPlay ? effectiveVolume / 100 : 0;
+    if (shouldPlay && trackReady) player.play();
     else player.pause();
-  }, [shouldPlay, prefs.volume]);
+  }, [shouldPlay, effectiveVolume, trackReady]);
   const update = (next: Partial<MusicPreferences>) => {
     if (!loaded || error) return;
     const newPrefs = { ...prefs, ...next, volume: Math.max(0, Math.min(30, Math.round(next.volume ?? prefs.volume))) };
@@ -60,7 +70,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
   const retry = () => {
     void AsyncStorage.setItem(KEY, JSON.stringify(prefs)).then(() => setError(false)).catch(() => setError(true));
   };
-  return <Context.Provider value={{ ...prefs, update, learning, setLearning, setSpeaking, error, retry, loaded }}>
+  return <Context.Provider value={{ ...prefs, update, learning, setLearning, setSpeaking, error, retry, loaded, preview, setPreview, trackReady, playbackError }}>
     {children}
   </Context.Provider>;
 }

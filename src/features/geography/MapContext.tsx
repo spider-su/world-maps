@@ -21,6 +21,7 @@ export function MapProvider({ children }: { children: ReactNode }) {
   const [settingsError, setSettingsError] = useState(false);
   const [restoring, setRestoring] = useState(true);
   const revision = useRef(0);
+  const valuesRef = useRef<MapQuizPreferences>(DEFAULT_MAP_QUIZ);
   const writes = useRef(Promise.resolve());
   const readFailed = useRef(false);
   const read = useCallback(async () => {
@@ -28,7 +29,9 @@ export function MapProvider({ children }: { children: ReactNode }) {
     try {
       const raw = await AsyncStorage.getItem(KEY);
       if (version !== revision.current) return;
-      setValues(parseMapQuizPreferences(raw));
+      const restored = parseMapQuizPreferences(raw);
+      valuesRef.current = restored;
+      setValues(restored);
       readFailed.current = false;
       setSettingsError(false);
     } catch {
@@ -45,13 +48,12 @@ export function MapProvider({ children }: { children: ReactNode }) {
   const change = useCallback((next: Partial<MapQuizPreferences>) => {
     const version = ++revision.current;
     readFailed.current = false;
-    setValues(current => {
-      const updated = { ...current, ...next };
-      writes.current = writes.current.then(() => AsyncStorage.setItem(KEY, JSON.stringify(updated)))
-        .then(() => { if (version === revision.current) setSettingsError(false); })
-        .catch(() => { if (version === revision.current) setSettingsError(true); });
-      return updated;
-    });
+    const updated = { ...valuesRef.current, ...next };
+    valuesRef.current = updated;
+    setValues(updated);
+    writes.current = writes.current.then(() => AsyncStorage.setItem(KEY, JSON.stringify(updated)))
+      .then(() => { if (version === revision.current) setSettingsError(false); })
+      .catch(() => { if (version === revision.current) setSettingsError(true); });
   }, []);
   const setMapId = useCallback((id: MapId) => change({ mapId: id }), [change]);
   const setFindClue = useCallback((findClue: FindClue) => change({ findClue }), [change]);

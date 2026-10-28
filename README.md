@@ -18,6 +18,11 @@ npx expo-doctor
 npx expo start --web --host lan --port 8081
 ```
 
+The Orchestrator runs `bash scripts/agent-validate.sh` in a fresh issue workspace.
+It installs locked dependencies and runs the same CI checks and Expo Doctor. The
+optional `--baseline-sha COMMIT` argument verifies the supplied baseline exists.
+Android APK validation remains a separate required GitHub CI job.
+
 See [POC stages and evidence](docs/poc-roadmap.md),
 [map data and attribution](docs/europe-map-assets.md), and
 [game rules](docs/geography-game-draft.md). Unused template code (demo screens,

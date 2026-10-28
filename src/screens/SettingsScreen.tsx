@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { useIsFocused } from '@react-navigation/native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Switch, Text, View, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -25,7 +25,9 @@ export function SettingsScreen() {
   const styles = makeStyles(theme);
   const { progress, status, update } = useProgress();
   const music = useMusic();
-  const musicCopy = { en: { title: 'Background music', hint: 'Original Europe Learn theme · offline. Off by default.', volume: 'Volume', error: 'Music preferences could not be saved.', retry: 'Retry' }, pl: { title: 'Muzyka w tle', hint: 'Oryginalny motyw nauki Europy · offline. Domyślnie wyłączony.', volume: 'Głośność', error: 'Nie udało się zapisać ustawień muzyki.', retry: 'Ponów' }, ru: { title: 'Фоновая музыка', hint: 'Оригинальная тема изучения Европы · офлайн. По умолчанию выключена.', volume: 'Громкость', error: 'Не удалось сохранить настройки музыки.', retry: 'Повторить' } }[language];
+  const { setPreview } = music;
+  useEffect(() => { if (!isFocused) setPreview(false); }, [isFocused, setPreview]);
+  const musicCopy = { en: { title: 'Background music', hint: 'Original Europe Learn theme · offline. Off by default.', volume: 'Volume', error: 'Music preferences could not be saved.', retry: 'Retry', preview: 'Test music', stopPreview: 'Stop preview', loadingTrack: 'Loading music…', playbackError: 'Music cannot be played on this device.' }, pl: { title: 'Muzyka w tle', hint: 'Oryginalny motyw nauki Europy · offline. Domyślnie wyłączony.', volume: 'Głośność', error: 'Nie udało się zapisać ustawień muzyki.', retry: 'Ponów', preview: 'Testuj muzykę', stopPreview: 'Zatrzymaj podgląd', loadingTrack: 'Ładowanie muzyki…', playbackError: 'Nie można odtworzyć muzyki na tym urządzeniu.' }, ru: { title: 'Фоновая музыка', hint: 'Оригинальная тема изучения Европы · офлайн. По умолчанию выключена.', volume: 'Громкость', error: 'Не удалось сохранить настройки музыки.', retry: 'Повторить', preview: 'Проверить музыку', stopPreview: 'Остановить', loadingTrack: 'Загрузка музыки…', playbackError: 'Невозможно воспроизвести музыку на этом устройстве.' } }[language];
   const [showLicenses, setShowLicenses] = useState(false);
   const c = gameCopy[language];
   return <SafeAreaView edges={['top']} style={styles.screen}>
@@ -61,6 +63,14 @@ export function SettingsScreen() {
             <Text style={{ color: music.volume === value ? '#FFF' : theme.navy, fontWeight: '700' }}>{value}%</Text>
           </Pressable>)}
         </View>
+        <Pressable accessibilityRole="button" accessibilityLabel={music.preview ? musicCopy.stopPreview : musicCopy.preview}
+          disabled={!music.trackReady || !!music.playbackError} onPress={() => music.setPreview(!music.preview)}
+          style={styles.row}>
+          <Text style={styles.link}>{music.preview ? musicCopy.stopPreview : musicCopy.preview}</Text>
+          <Ionicons name={music.preview ? 'stop-circle-outline' : 'play-circle-outline'} size={24} color={theme.brand} />
+        </Pressable>
+        {!music.trackReady && !music.playbackError && <Text style={styles.hint}>{musicCopy.loadingTrack}</Text>}
+        {!!music.playbackError && <Text accessibilityRole="alert" style={styles.error}>{musicCopy.playbackError}: {music.playbackError}</Text>}
         {music.error && <View accessibilityRole="alert"><Text style={styles.error}>{musicCopy.error}</Text>
           <Pressable accessibilityRole="button" onPress={music.retry} style={styles.row}><Text style={styles.link}>{musicCopy.retry}</Text></Pressable></View>}
       </View>

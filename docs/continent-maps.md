@@ -4,7 +4,7 @@ The app includes Europe (47 locations, unchanged), Asia (50), Africa (54),
 South America (12) and Oceania (14). Choose a map on Home or the map tab; the
 selection is shared across tabs for the current app session. All four modes,
 country collection, details, difficulty and learning summaries follow that map.
-Europe remains the default after relaunch. Completed scores and learning persist
+Europe is the default for new installs; returning users resume their chosen map. Completed scores and learning persist
 under separate `<continent>-countries[:mode]` IDs. Existing Europe IDs, progress
 schema, storage keys and preferences are unchanged. Explored IDs and restored
 guesses are no longer truncated to the old Europe-sized limits.
@@ -23,8 +23,9 @@ de facto boundaries are cartographic conventions, not sovereignty claims.
 New maps use simplified vector outlines and enlarged, clustered small-country
 picker targets. Europe keeps its physical relief image; other continents use
 vector fills in Learn and country portraits. Country names are bundled in EN,
-PL and RU; new capital names retain the source's Latin-script proper names across
-languages (existing Europe editorial translations are preserved). Flags are SVGs,
+PL and RU; the new continent capitals have an editorial Polish and Russian overlay in
+`src/features/geography/data/localizedCapitals.ts` (all 127 country facts); English and\nexisting European editorial translations remain unchanged. This overlay is separate
+from the generated geography JSON so regeneration does not erase it. Flags are SVGs,
 not operating-system emoji. No new runtime dependency or network service.
 
 ## Reproduce the bundled data

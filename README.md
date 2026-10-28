@@ -3,7 +3,7 @@
 Offline geography learning game built with Expo / React Native from
 [mobile_template](https://github.com/spider-su/mobile_template).
 
-Five bundled maps cover Europe, Asia, Africa, South America and Oceania.
+Six bundled maps cover Europe, Asia, Africa, North America, South America and Oceania.
 See [continent coverage and generation](docs/continent-maps.md).
 
 Europe retains 47 selectable locations (41 polygons
@@ -103,11 +103,11 @@ from the accurate bundled gameplay geography.
 
 ## Continent maps
 
-Choose Europe, Asia, Africa, South America or Oceania on Home or the map tab.
+Choose Europe, Asia, Africa, North America, South America or Oceania on Home or the map tab.
 All four modes use the selected offline map. Easy selects seven large outlines;
 Normal selects large/medium outlines (at least four for answer choices); Difficult
 and Learn include every location. Scores and practice are separate for each map.
-New continent maps use vector fills; physical relief remains available for Europe.
+All continent maps use accurate, selectable Natural Earth geometry. Learn and Maps previews now render offline georeferenced relief (NASA Blue Marble for non-European maps, the existing Europe atlas for Europe); quiz modes retain clear political colors.
 Map selection lasts for the app session and defaults to Europe on relaunch.
 See [coverage, sources and generation](docs/continent-maps.md).
 
@@ -145,3 +145,11 @@ explorer gains outfits at levels 1, 3, 6, 10 and 15, alongside six achievement
 badges. Avatar choice and existing progress stay on device; all five maps share
 one player level. Existing saved learning counts toward XP. See
 [progression rules and migration](docs/explorer-progression.md).
+
+### Regional audio and readable geography
+
+All six continents have original offline Learn music tracks with an opt-in Settings
+control and preview. Optional quiz success sounds are separate from voice playback.
+Atlas country labels use dark ink with a white outline for visibility on bright
+terrain in light and dark mode. Test the exact APK on device before distributing.
+See [continent coverage and imagery](docs/continent-maps.md).

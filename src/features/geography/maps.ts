@@ -24,7 +24,7 @@ function continent(id: Exclude<MapId, 'europe' | 'north-america'>): MapDefinitio
   };
 }
 function projectionForBounds(bounds: readonly number[]) {
-  const [west, south, east, north] = bounds;
+  const west = bounds[0]!, south = bounds[1]!, east = bounds[2]!, north = bounds[3]!;
   const cosLatitude = Math.cos((north + south) * Math.PI / 360);
   const scale = Math.min(824 / ((east - west) * cosLatitude), 530 / (north - south));
   return { west, north, scale, cosLatitude, xoff: (864 - (east - west) * cosLatitude * scale) / 2, yoff: (570 - (north - south) * scale) / 2 };

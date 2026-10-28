@@ -11,6 +11,7 @@ describe('music preferences', () => {
     expect(parseMusic(JSON.stringify({ enabled: true, volume: 100 }))).toEqual({ enabled: true, volume: 30, effectsEnabled: false });
     expect(parseMusic(JSON.stringify({ enabled: false, volume: -10 }))).toEqual({ enabled: false, volume: 0, effectsEnabled: false });
     expect(parseMusic(JSON.stringify({ enabled: 'yes', volume: 'loud' }))).toEqual(DEFAULT_MUSIC);
+    expect(parseMusic(JSON.stringify({ enabled: false, volume: 12, effectsEnabled: 'yes' })).effectsEnabled).toBe(false);
     expect(parseMusic(JSON.stringify({ enabled: true, volume: 15, effectsEnabled: true })))
       .toEqual({ enabled: true, volume: 15, effectsEnabled: true });
     // Older Europe-only settings migrate without unexpectedly enabling quiz cues.

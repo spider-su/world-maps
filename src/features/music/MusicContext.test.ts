@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_MUSIC, parseMusic } from './MusicContext';
+import { DEFAULT_MUSIC, parseMusic } from './musicPreferences';
 
 describe('music preferences', () => {
   it('defaults to muted music and a quiet volume', () => {

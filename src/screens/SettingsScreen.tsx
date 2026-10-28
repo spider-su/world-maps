@@ -15,10 +15,11 @@ import { ProgressStatus } from '../features/geography/ProgressStatus';
 import { summary } from '../features/geography/progress';
 import { useMap } from '../features/geography/MapContext';
 import { modePackId } from '../features/geography/modes';
+import { mapName } from '../features/geography/maps';
 import licenses from '../features/geography/data/licenses.json';
 
 export function SettingsScreen() {
-  const { map } = useMap();
+  const { map, mapId } = useMap();
   const isFocused = useIsFocused();
   const { language, setLanguage, languageError, retryLanguage } = useLanguage();
   const theme = themeForScheme(useColorScheme());
@@ -27,7 +28,7 @@ export function SettingsScreen() {
   const music = useMusic();
   const { setPreview } = music;
   useEffect(() => { if (!isFocused) setPreview(false); }, [isFocused, setPreview]);
-  const musicCopy = { en: { title: 'Background music', hint: 'Original Europe Learn theme · offline. Off by default.', volume: 'Volume', error: 'Music preferences could not be saved.', retry: 'Retry', preview: 'Test music', stopPreview: 'Stop preview', loadingTrack: 'Loading music…', playbackError: 'Music cannot be played on this device.' }, pl: { title: 'Muzyka w tle', hint: 'Oryginalny motyw nauki Europy · offline. Domyślnie wyłączony.', volume: 'Głośność', error: 'Nie udało się zapisać ustawień muzyki.', retry: 'Ponów', preview: 'Testuj muzykę', stopPreview: 'Zatrzymaj podgląd', loadingTrack: 'Ładowanie muzyki…', playbackError: 'Nie można odtworzyć muzyki na tym urządzeniu.' }, ru: { title: 'Фоновая музыка', hint: 'Оригинальная тема изучения Европы · офлайн. По умолчанию выключена.', volume: 'Громкость', error: 'Не удалось сохранить настройки музыки.', retry: 'Повторить', preview: 'Проверить музыку', stopPreview: 'Остановить', loadingTrack: 'Загрузка музыки…', playbackError: 'Невозможно воспроизвести музыку на этом устройстве.' } }[language];
+  const musicCopy = { en: { title: 'Background music', hint: 'Original regional themes · offline. Off by default.', volume: 'Volume', error: 'Music preferences could not be saved.', retry: 'Retry', preview: 'Test music', stopPreview: 'Stop preview', loadingTrack: 'Loading music…', effects: 'Quiz sound effects', effectsHint: 'Soft sounds for correct answers and first-try completions. Off by default.', playbackError: 'Music cannot be played on this device.' }, pl: { title: 'Muzyka w tle', hint: 'Oryginalne motywy regionalne · offline. Domyślnie wyłączone.', volume: 'Głośność', error: 'Nie udało się zapisać ustawień muzyki.', retry: 'Ponów', preview: 'Testuj muzykę', stopPreview: 'Zatrzymaj podgląd', loadingTrack: 'Ładowanie muzyki…', effects: 'Dźwięki w quizach', effectsHint: 'Delikatne dźwięki za poprawne odpowiedzi i ukończenie za pierwszym razem. Domyślnie wyłączone.', playbackError: 'Nie można odtworzyć muzyki na tym urządzeniu.' }, ru: { title: 'Фоновая музыка', hint: 'Оригинальные региональные темы · офлайн. По умолчанию выключены.', volume: 'Громкость', error: 'Не удалось сохранить настройки музыки.', retry: 'Повторить', preview: 'Проверить музыку', stopPreview: 'Остановить', loadingTrack: 'Загрузка музыки…', effects: 'Звуки викторины', effectsHint: 'Тихие сигналы за правильные ответы и прохождение с первой попытки. По умолчанию выключены.', playbackError: 'Невозможно воспроизвести музыку на этом устройстве.' } }[language];
   const [showLicenses, setShowLicenses] = useState(false);
   const c = gameCopy[language];
   return <SafeAreaView edges={['top']} style={styles.screen}>
@@ -56,6 +57,7 @@ export function SettingsScreen() {
           <Switch accessibilityLabel={musicCopy.title} value={music.enabled} disabled={!music.loaded || music.error} onValueChange={value => music.update({ enabled: value })} />
         </View>
         <Text style={styles.hint}>{musicCopy.hint}</Text>
+        <Text style={styles.hint}>{mapName(mapId, language)}</Text>
         <Text style={styles.text}>{musicCopy.volume}: {music.volume}%</Text>
         <View style={styles.volumeRow}>{[0, 10, 20, 30].map(value =>
           <Pressable key={value} accessibilityRole="button" accessibilityState={{ selected: music.volume === value, disabled: !music.loaded || music.error }} disabled={!music.loaded || music.error}
@@ -73,6 +75,14 @@ export function SettingsScreen() {
         {!!music.playbackError && <Text accessibilityRole="alert" style={styles.error}>{musicCopy.playbackError}: {music.playbackError}</Text>}
         {music.error && <View accessibilityRole="alert"><Text style={styles.error}>{musicCopy.error}</Text>
           <Pressable accessibilityRole="button" onPress={music.retry} style={styles.row}><Text style={styles.link}>{musicCopy.retry}</Text></Pressable></View>}
+      </View>
+      <View style={styles.card}>
+        <View style={styles.row}>
+          <Text style={styles.cardTitle}>{musicCopy.effects}</Text>
+          <Switch accessibilityLabel={musicCopy.effects} value={music.effectsEnabled} disabled={!music.loaded || music.error}
+            onValueChange={value => music.update({ effectsEnabled: value })} />
+        </View>
+        <Text style={styles.hint}>{musicCopy.effectsHint}</Text>
       </View>
       <ProgressStatus language={language} />
       <LearningOverview language={language} />

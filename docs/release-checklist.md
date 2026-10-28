@@ -7,6 +7,11 @@
 - [ ] Run a production web export (`npx expo export --platform web`)
 
 ## Device acceptance
+- [ ] Validate continent and Find It/Name It variant preferences survive force-stop and app upgrade
+- [ ] Check all five maps, Polish/Russian capital localization, and both dark/light appearances
+- [ ] Check offline region music previews and optional quiz sounds on real hardware (media volume, focus, speech priority)
+- [ ] Use [current POC checklist](poc-current-checklist.md) for detailed feature-by-feature regression checks
+
 - [ ] Run `.codex/skills/ios-simulator-smoke/SKILL.md` on macOS/Xcode; record iOS Simulator evidence separately from real-device testing
 - [ ] Build `npm run build:android:preview` and launch the APK offline (airplane mode)
 - [ ] Confirm preview APKs are for install testing; Google Play uploads require a correctly signed release AAB

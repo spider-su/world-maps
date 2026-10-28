@@ -24,7 +24,8 @@ export function ExploreScreen() {
   const { map, mapId } = useMap();
   const { language } = useLanguage();
   const { progress, update, status } = useProgress();
-  const theme = themeForScheme(useColorScheme());
+  const scheme = useColorScheme();
+  const theme = themeForScheme(scheme);
   const styles = makeStyles(theme);
   const c = gameCopy[language];
   const [region, setRegion] = useState<RegionId>('all');
@@ -46,7 +47,7 @@ export function ExploreScreen() {
   const statistics = learningSummary(progress.learning, map.pack.id, locations.map(item => item.id));
   const choose = (id: string) => { if (status === 'loading' || status === 'read-error') return; update(p => recordExploration(p, id)); setSelected(id); speak(countryName(id, language)); };
   return <SafeAreaView edges={['top']} style={styles.screen}>
-    {focused && <StatusBar style="dark" />}
+    {focused && <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />}
     {selected ? <ScrollView contentContainerStyle={styles.content}>
       <ProgressStatus language={language} />
       <Pressable accessibilityRole="button" onPress={() => setSelected(null)} style={styles.back}>

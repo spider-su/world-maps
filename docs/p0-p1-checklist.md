@@ -1,4 +1,8 @@
-# P0–P1 implementation checklist
+# P0–P1 implementation checklist — historical 2026-10-25 scope
+
+> Preserved as original delivery evidence. The former light-only and Europe-only
+> assumptions are superseded; consult [current checklist](poc-current-checklist.md).
+
 
 Repository inspection: 2026-10-25, develop a0713a1. Preserve .idea and all stored
 progress. #5/#11/#12/#13 are merged. #14 difficulty is open, source CI passed.

@@ -2,7 +2,7 @@
 
 > **Historical record.** The original Europe-only and light-only scope below is no longer
 > the current implementation. Use [current POC acceptance checklist](poc-current-checklist.md)
-> for five continents, light/dark, Library/Profile, persisted choices, PL/RU capital names
+> for six continents, light/dark, Library/Profile, persisted choices, PL/RU capital names
 > and optional regional music/effects. Old test counts and artifact hashes remain snapshots.
 
 
@@ -24,6 +24,18 @@ rounds, no backend/accounts. No claim of physical-device readiness without proof
 
 Deferred: terrain themes, photographs/population, timed/10-question runs, streaks,
 additional regions, store publication and cloud services.
+
+## Current roadmap (pre-release, 2026-10-28)
+
+The six-region core is implemented: Europe, Asia, Africa, North America, South America and Oceania; all four modes, Library/Profile, EN/PL/RU, local v4 progress, opt-in audio and physical relief. Historical stage notes below describe earlier snapshots and are not current acceptance evidence.
+
+1. **P0 — Main-flow regression:** complete [issue #41](https://github.com/spider-su/world-maps/issues/41) with Home → all modes → completion/Next/Back → restart, storage failure and recovery.
+2. **P1 — Persisted audio settings:** verify rapid edits, late reads, failed writes, replay and background/speech behavior. Fix observed races without general platform refactoring.
+3. **P1 — Device acceptance:** verify all six maps, relief alignment, readable labels, island targets, audio, offline use, themes, accessibility and screen sizes on the current standalone Android APK. iOS requires separate evidence.
+4. **P1 — Release stabilization:** follow [current acceptance checklist](poc-current-checklist.md) and [release checklist](release-checklist.md); reconcile tested `develop` with release branch only after CI. Keep canonical progress schema v4; pre-release legacy migration is not required.
+5. **P2 — Verified cleanup only:** check all references across runtime, tests, scripts and native/web adapters before removing helper code; keep historical artifact evidence as snapshots.
+
+No new game modes, accounts or cloud features are required for the first release candidate.
 
 ## Rules
 

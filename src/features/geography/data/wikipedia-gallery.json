@@ -189,6 +189,10 @@
         }
       ]
     },
+    "ATG": {
+      "article": "https://en.wikipedia.org/wiki/Antigua_and_Barbuda",
+      "photos": []
+    },
     "AUS": {
       "article": "https://en.wikipedia.org/wiki/Australia",
       "photos": [
@@ -415,6 +419,10 @@
         }
       ]
     },
+    "BHS": {
+      "article": "https://en.wikipedia.org/wiki/The_Bahamas",
+      "photos": []
+    },
     "BIH": {
       "article": "https://en.wikipedia.org/wiki/Bosnia_and_Herzegovina",
       "photos": [
@@ -457,6 +465,10 @@
         }
       ]
     },
+    "BLZ": {
+      "article": "https://en.wikipedia.org/wiki/Belize",
+      "photos": []
+    },
     "BOL": {
       "article": "https://en.wikipedia.org/wiki/Bolivia",
       "photos": [
@@ -490,6 +502,10 @@
           "caption": "Rodovia Dutra - panoramio"
         }
       ]
+    },
+    "BRB": {
+      "article": "https://en.wikipedia.org/wiki/Barbados",
+      "photos": []
     },
     "BRN": {
       "article": "https://en.wikipedia.org/wiki/Brunei",
@@ -574,6 +590,10 @@
           "caption": "Living on the rainforest"
         }
       ]
+    },
+    "CAN": {
+      "article": "https://en.wikipedia.org/wiki/Canada",
+      "photos": []
     },
     "CHE": {
       "article": "https://en.wikipedia.org/wiki/Switzerland",
@@ -800,6 +820,14 @@
         }
       ]
     },
+    "CRI": {
+      "article": "https://en.wikipedia.org/wiki/Costa_Rica",
+      "photos": []
+    },
+    "CUB": {
+      "article": "https://en.wikipedia.org/wiki/Cuba",
+      "photos": []
+    },
     "CYP": {
       "article": "https://en.wikipedia.org/wiki/Cyprus",
       "photos": [
@@ -883,6 +911,10 @@
       "article": "https://en.wikipedia.org/wiki/Djibouti",
       "photos": []
     },
+    "DMA": {
+      "article": "https://en.wikipedia.org/wiki/Dominica",
+      "photos": []
+    },
     "DNK": {
       "article": "https://en.wikipedia.org/wiki/Denmark",
       "photos": [
@@ -903,6 +935,10 @@
           "caption": "Roskilde Cathedral aerial"
         }
       ]
+    },
+    "DOM": {
+      "article": "https://en.wikipedia.org/wiki/Dominican_Republic",
+      "photos": []
     },
     "DZA": {
       "article": "https://en.wikipedia.org/wiki/Algeria",
@@ -1324,6 +1360,14 @@
         }
       ]
     },
+    "GRD": {
+      "article": "https://en.wikipedia.org/wiki/Grenada",
+      "photos": []
+    },
+    "GTM": {
+      "article": "https://en.wikipedia.org/wiki/Guatemala",
+      "photos": []
+    },
     "GUY": {
       "article": "https://en.wikipedia.org/wiki/Guyana",
       "photos": [
@@ -1344,6 +1388,10 @@
           "caption": "Rupununi Savannah"
         }
       ]
+    },
+    "HND": {
+      "article": "https://en.wikipedia.org/wiki/Honduras",
+      "photos": []
     },
     "HRV": {
       "article": "https://en.wikipedia.org/wiki/Croatia",
@@ -1373,6 +1421,10 @@
           "caption": "Aerial view of Zlatni rat (Golden Horn) Beach in Bol, Croatia (48608813081)"
         }
       ]
+    },
+    "HTI": {
+      "article": "https://en.wikipedia.org/wiki/Haiti",
+      "photos": []
     },
     "HUN": {
       "article": "https://en.wikipedia.org/wiki/Hungary",
@@ -1595,6 +1647,10 @@
         }
       ]
     },
+    "JAM": {
+      "article": "https://en.wikipedia.org/wiki/Jamaica",
+      "photos": []
+    },
     "JOR": {
       "article": "https://en.wikipedia.org/wiki/Jordan",
       "photos": [
@@ -1798,6 +1854,10 @@
         }
       ]
     },
+    "KNA": {
+      "article": "https://en.wikipedia.org/wiki/Saint_Kitts_and_Nevis",
+      "photos": []
+    },
     "KOR": {
       "article": "https://en.wikipedia.org/wiki/South_Korea",
       "photos": [
@@ -1960,6 +2020,10 @@
           "caption": "Temple of Zeus - Cyrene"
         }
       ]
+    },
+    "LCA": {
+      "article": "https://en.wikipedia.org/wiki/Saint_Lucia",
+      "photos": []
     },
     "LIE": {
       "article": "https://en.wikipedia.org/wiki/Liechtenstein",
@@ -2231,6 +2295,10 @@
           "caption": "Maldives soft coral"
         }
       ]
+    },
+    "MEX": {
+      "article": "https://en.wikipedia.org/wiki/Mexico",
+      "photos": []
     },
     "MHL": {
       "article": "https://en.wikipedia.org/wiki/Marshall_Islands",
@@ -2571,6 +2639,10 @@
         }
       ]
     },
+    "NIC": {
+      "article": "https://en.wikipedia.org/wiki/Nicaragua",
+      "photos": []
+    },
     "NLD": {
       "article": "https://en.wikipedia.org/wiki/Netherlands",
       "photos": [
@@ -2717,6 +2789,10 @@
           "caption": "Shangrila, Lower Kachura Lake"
         }
       ]
+    },
+    "PAN": {
+      "article": "https://en.wikipedia.org/wiki/Panama",
+      "photos": []
     },
     "PER": {
       "article": "https://en.wikipedia.org/wiki/Peru",
@@ -3197,6 +3273,10 @@
         }
       ]
     },
+    "SLV": {
+      "article": "https://en.wikipedia.org/wiki/El_Salvador",
+      "photos": []
+    },
     "SMR": {
       "article": "https://en.wikipedia.org/wiki/San_Marino",
       "photos": [
@@ -3612,6 +3692,10 @@
         }
       ]
     },
+    "TTO": {
+      "article": "https://en.wikipedia.org/wiki/Trinidad_and_Tobago",
+      "photos": []
+    },
     "TUN": {
       "article": "https://en.wikipedia.org/wiki/Tunisia",
       "photos": [
@@ -3804,6 +3888,10 @@
         }
       ]
     },
+    "USA": {
+      "article": "https://en.wikipedia.org/wiki/United_States",
+      "photos": []
+    },
     "UZB": {
       "article": "https://en.wikipedia.org/wiki/Uzbekistan",
       "photos": [
@@ -3853,6 +3941,10 @@
           "caption": "Vatican City and St. Peter Square evening twilight aerial view"
         }
       ]
+    },
+    "VCT": {
+      "article": "https://en.wikipedia.org/wiki/Saint_Vincent_and_the_Grenadines",
+      "photos": []
     },
     "VEN": {
       "article": "https://en.wikipedia.org/wiki/Venezuela",

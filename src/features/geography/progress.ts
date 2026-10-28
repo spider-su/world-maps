@@ -16,7 +16,7 @@ export interface CompletedSession {
 
 export interface GameProgress {
   difficulty: Difficulty;
-  schemaVersion: 2;
+  schemaVersion: 2 | 3 | 4;
   learning: LearningProgress;
   practiceMode: PracticeMode;
   sessions: CompletedSession[];
@@ -75,19 +75,26 @@ function isSession(value: unknown): value is CompletedSession {
     (v.completedAt as number) >= (v.startedAt as number) && v.guesses.at(-1) === v.targetId;
 }
 
+function savedSchemaVersion(value: unknown): 2 | 3 | 4 {
+  return value === 3 || value === 4 ? value : 2;
+}
+
 export function parseProgress(raw: string | null): GameProgress {
   if (!raw) return initialProgress;
   try {
     const value: unknown = JSON.parse(raw);
     if (!value || typeof value !== 'object') return initialProgress;
     const candidate = value as Partial<GameProgress>;
-    if (typeof (candidate as { schemaVersion?: number }).schemaVersion === 'number' && candidate.schemaVersion! > 2) throw new Error('Unsupported progress version');
+    if (typeof (candidate as { schemaVersion?: number }).schemaVersion === 'number' && candidate.schemaVersion! > 4) throw new Error('Unsupported progress version');
     const sessions = Array.isArray(candidate.sessions) ? candidate.sessions.filter(isSession).slice(-MAX_HISTORY) : [];
     return {
+      // Retain newer progress fields (explorer, explored, etc.) across writes by older app versions.
+      // Never silently downgrade an on-device document to schema v2.
+      ...candidate,
       difficulty: isDifficulty(candidate.difficulty) ? candidate.difficulty : DEFAULT_DIFFICULTY,
-      schemaVersion: 2,
+      schemaVersion: savedSchemaVersion(candidate.schemaVersion),
       practiceMode: candidate.practiceMode === 'random' ? 'random' : 'adaptive',
-      learning: candidate.schemaVersion === 2 ? parseLearning(candidate.learning) : migrateLearning(sessions),
+      learning: candidate.schemaVersion === 2 || candidate.schemaVersion === 3 || candidate.schemaVersion === 4 ? parseLearning(candidate.learning) : migrateLearning(sessions),
       voiceEnabled: typeof candidate.voiceEnabled === 'boolean' ? candidate.voiceEnabled : true,
       sessions,
     };

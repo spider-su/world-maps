@@ -1,4 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
+import { useFocusEffect } from '@react-navigation/native';
+import { useMusic } from '../features/music/MusicContext';
 import { useCallback, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View, useColorScheme, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -25,6 +27,11 @@ import { canRevealNames, canReplayPrompt, replayCountryId, answerChoices, modePa
 
 export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnswer = 'country', map = maps.europe }: { map?: MapDefinition; mode: GameMode; onBack: () => void; findClue?: FindClue; nameAnswer?: NameAnswer }) {
   const { language } = useLanguage();
+  const { setLearning } = useMusic();
+  useFocusEffect(useCallback(() => {
+    setLearning(mode === 'learn');
+    return () => setLearning(false);
+  }, [mode, setLearning]));
   const theme = themeForScheme(useColorScheme());
   const styles = makeStyles(theme);
   const c = gameCopy[language];

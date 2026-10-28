@@ -1,10 +1,10 @@
 # Offline continent packs
 
 The app includes Europe (47 locations, unchanged), Asia (50), Africa (54),
-South America (12) and Oceania (14). Choose a map on Home or the map tab; the
-selection is shared across tabs for the current app session. All four modes,
+North America (23), South America (12) and Oceania (14). Choose a map on Home or the map tab; the
+selection is shared across tabs and saved for future app sessions. All four modes,
 country collection, details, difficulty and learning summaries follow that map.
-Europe is the default for new installs; returning users resume their chosen map. Completed scores and learning persist
+Europe is the default on first launch; returning users resume their saved map. Completed scores and learning persist
 under separate `<continent>-countries[:mode]` IDs. Existing Europe IDs, progress
 schema, storage keys and preferences are unchanged. Explored IDs and restored
 guesses are no longer truncated to the old Europe-sized limits.
@@ -20,12 +20,11 @@ separate, while exploration is a shared country-level record. Other selected
 nearby territories are noninteractive geographic context. Natural Earth's default
 de facto boundaries are cartographic conventions, not sovereignty claims.
 
-New maps use simplified vector outlines and enlarged, clustered small-country
-picker targets. Europe keeps its physical relief image; other continents use
+New maps use real Natural Earth outlines and enlarged, clustered small-country
+picker targets. In Learn and Map previews they now render a clipped offline NASA Blue Marble relief layer aligned to the same geometry; quizzes retain unambiguous political fills. North America includes sovereign countries across the mainland, Central America and Caribbean; Greenland is non-selectable geographic context. Europe keeps its physical relief image; other continents use
 vector fills in Learn and country portraits. Country names are bundled in EN,
-PL and RU; the new continent capitals have an editorial Polish and Russian overlay in
-`src/features/geography/data/localizedCapitals.ts` (all 127 country facts); English and\nexisting European editorial translations remain unchanged. This overlay is separate
-from the generated geography JSON so regeneration does not erase it. Flags are SVGs,
+PL and RU; new capital names retain the source's Latin-script proper names across
+languages (existing Europe editorial translations are preserved). Flags are SVGs,
 not operating-system emoji. No new runtime dependency or network service.
 
 ## Reproduce the bundled data
@@ -60,3 +59,32 @@ countries can have zero border separation without being the correct answer.
 ## Validation
 
 See [commands, artifact identity and emulator evidence](evidence/continent-maps/README.md).
+
+## North America and physical relief refresh
+
+North America adds 23 selectable sovereign states across Canada, the US, Mexico,
+Central America and the Caribbean. The country borders, label anchors and
+approximate distances are derived from the same Natural Earth 1:50m and
+mledoze/countries sources as the previous continent maps. SVG flags are bundled
+from flag-icons (MIT); EN/PL/RU names and capital spellings are bundled offline.
+The North America data is in `src/features/geography/data/north-america-map.json`;
+its independent pack ID is `north-america-countries`, so earlier saved scores
+and map IDs are untouched.
+
+The additional offline global atlas `assets/maps/world-blue-marble.jpg` is
+NASA Blue Marble global image data (NASA Goddard Space Flight Center; Reto Stöckli)
+reproduced from the public dataset at
+https://eoimages.gsfc.nasa.gov/images/imagerecords/57000/57730/land_ocean_ice_2048.jpg .
+It is georeferenced in the existing SVG local projection and clipped to
+country outlines. This is a geographic relief backdrop, **not a new tap map**.
+The accurate polygons remain authoritative. NASA images are generally not
+subject to US copyright; NASA endorsement is not implied.
+The original Europe atlas continues to use its existing Natural Earth relief.
+Country labels use fixed dark ink with white edging instead of switching to
+white in dark mode, improving legibility over bright terrain.
+
+**Acceptance:** test each continent map in Learn and Maps with light/dark theme;
+verify country labels across deserts, snow and islands, markers for small Caribbean
+states, and contrast on the actual Android preview. Check the new North America
+music and the five existing regional tracks separately. A code build cannot
+prove map imagery registration or audio fidelity on real devices.

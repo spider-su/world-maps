@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { useFocusEffect } from '@react-navigation/native';
 import { useMusic } from '../features/music/MusicContext';
+import { completionCue } from '../features/music/soundPolicy';
 import { useCallback, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View, useColorScheme, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -72,7 +73,8 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
     if (nextRound.completedAt !== undefined && progressLoaded) {
       const session = sessionFromRound(nextRound, difficulty);
       update(current => recordSession(current, { ...session, packId: modePackId(session.packId, mode) }));
-      if (mode !== 'learn') playEffect(nextRound.guesses.length === 1 ? 'complete' : 'correct');
+      const cue = completionCue(mode, nextRound.guesses.length);
+      if (cue) playEffect(cue);
     }
   }, [progressLoaded, update, mode, difficulty, playEffect]);
 

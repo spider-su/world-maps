@@ -21,3 +21,9 @@ This first audio milestone deliberately limits playback to **Europe → Learn**.
 6. Exercise storage failure/retry and system interruptions (phone call, external music); verify no crashes.
 
 The WAV is a small prototype, not the five-region final soundtrack. Review actual perceived volume and seamlessness on real devices before producing longer, region-specific licensed compositions. Do not auto-play without user consent.
+
+### North America
+
+An additional original offline loop is bundled for North America; the active
+regional music track follows the current map selection when Learn is focused.
+The same independent music and quiz-effects settings apply to all six regions.

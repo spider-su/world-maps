@@ -26,6 +26,26 @@ describe('local game progress', () => {
     expect(summary(recorded, 'europe')).toEqual({ played: 1, bestScore: 90, totalScore: 90, averageGuesses: 2 });
     expect(summary(recorded, 'other').played).toBe(0);
   });
+  it('opens newer v4 progress without losing fields when an older app saves settings', () => {
+    const newer = {
+      ...initialProgress,
+      schemaVersion: 4,
+      explorer: 'ocean',
+      explored: ['POL', 'JPN'],
+      learning: { POL: { opened: 1 } },
+      extraFutureField: { progress: 42 },
+    };
+    const loaded = parseProgress(JSON.stringify(newer));
+    expect(loaded.schemaVersion).toBe(4);
+    expect((loaded as unknown as typeof newer).explorer).toBe('ocean');
+    expect((loaded as unknown as typeof newer).explored).toEqual(['POL', 'JPN']);
+    const saved = JSON.parse(JSON.stringify({ ...loaded, voiceEnabled: false }));
+    expect(saved.schemaVersion).toBe(4);
+    expect(saved.explorer).toBe('ocean');
+    expect(saved.explored).toEqual(['POL', 'JPN']);
+    expect(saved.extraFutureField).toEqual({ progress: 42 });
+    expect(() => parseProgress(JSON.stringify({ ...newer, schemaVersion: 5 }))).toThrow('Unsupported progress version');
+  });
   it('bounds history and recovers from malformed saved data', () => {
     let state = initialProgress;
     for (let i = 0; i < MAX_HISTORY + 5; i++) {

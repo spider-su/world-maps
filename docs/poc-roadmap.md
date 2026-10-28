@@ -1,4 +1,10 @@
-# Usable POC implementation — 2026-10-25
+# Original POC implementation — historical snapshot (2026-10-25)
+
+> **Historical record.** The original Europe-only and light-only scope below is no longer
+> the current implementation. Use [current POC acceptance checklist](poc-current-checklist.md)
+> for five continents, light/dark, Library/Profile, persisted choices, PL/RU capital names
+> and optional regional music/effects. Old test counts and artifact hashes remain snapshots.
+
 
 Target: a standalone offline Europe app with Home, four modes, country learning,
 EN/PL, saved completed scores and voice preference. One map style, individual

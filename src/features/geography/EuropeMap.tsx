@@ -13,6 +13,7 @@ import { frame, INITIAL_VIEWPORT, normalize, pan, zoomAt, focusPoint, type Viewp
 import { CLUE_COLORS } from './mapColors';
 import { themeForScheme, type WorldMapsPalette } from '../../ui/worldMapsTheme';
 import atlasImage from '../../../assets/maps/europe-atlas.jpg';
+import worldRelief from '../../../assets/maps/world-blue-marble.jpg';
 import { countryName } from './countryFacts';
 import { gameCopy } from './copy';
 
@@ -40,7 +41,14 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
   const contextShapes = map.context;
   const markers = map.markers;
   const selectionAlternatives = [...markers, ...shapes.filter(s => s.path && s.area < 700).map(s => ({ id: s.id, x: s.labelX, y: s.labelY }))];
-  const physicalAtlas = atlas && map.id === 'europe';
+  const physicalAtlas = atlas;
+  const globe = map.projection;
+  // Equirectangular NASA Blue Marble source: longitude -180..180, latitude 90..-90.
+  // Projection metadata matches the offline country shapes (not the phone viewport).
+  const reliefX = globe ? globe.xoff + (-180 - globe.west) * globe.cosLatitude * globe.scale : 0;
+  const reliefY = globe ? globe.yoff + (globe.north - 90) * globe.scale : 0;
+  const reliefWidth = globe ? 360 * globe.cosLatitude * globe.scale : 0;
+  const reliefHeight = globe ? 180 * globe.scale : 0;
   const { width, fontScale } = useWindowDimensions();
   const atlasClipId = `atlas-land-${useId()}`;
   const theme = themeForScheme(useColorScheme());
@@ -54,7 +62,7 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
     const small = markers.find(location => location.id === targetId);
     const shape = shapes.find(location => location.id === targetId);
     return small ? focusPoint({ x: small.x, y: small.y }, 4) : shape && shape.area < 700
-      ? focusPoint({ x: shape.labelX, y: shape.labelY }, 3) : fill && width < 600 ? focusPoint(shape ? { x: shape.labelX, y: shape.labelY } : INITIAL_VIEWPORT.center, 1.8) : INITIAL_VIEWPORT;
+      ? focusPoint({ x: shape.labelX, y: shape.labelY }, 3) : fill && width < 600 && map.id === 'europe' ? focusPoint(shape ? { x: shape.labelX, y: shape.labelY } : INITIAL_VIEWPORT.center, 1.8) : INITIAL_VIEWPORT;
   });
   const targetPoint = markers.find(location => location.id === targetId)
     ?? shapes.find(location => location.id === targetId);
@@ -109,14 +117,26 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
     <View {...(!preview ? responder.panHandlers : {})} collapsable={false}>
       <Svg width={mapWidth} height={mapHeight} viewBox={`${visible.x} ${visible.y} ${visible.w} ${visible.h}`} accessibilityRole={preview ? 'image' : 'none'} accessibilityLabel={mapName(map.id, language)}>
         <Rect x="-2000" y="-2000" width="5000" height="5000" fill={theme.ocean} />
-        {physicalAtlas && <><Defs><ClipPath id={atlasClipId}>{[...shapes, ...contextShapes].map(shape => <Path key={shape.id} d={shape.path} fillRule="evenodd" clipRule="evenodd" />)}</ClipPath></Defs><SvgImage href={atlasImage} x={0} y={0} width={864} height={570} clipPath={`url(#${atlasClipId})`} preserveAspectRatio="none" pointerEvents="none" /></>}
-        {contextShapes.map(shape => <Path key={shape.id} d={shape.path} fillRule="evenodd" fill={theme.oceanDeep} stroke={atlas && !showBorders ? 'transparent' : theme.border} strokeWidth={0.6 / viewport.zoom} />)}
+        {physicalAtlas && <><Defs><ClipPath id={atlasClipId}>{[...shapes, ...contextShapes].map(shape => <Path key={shape.id} d={shape.path} fillRule="evenodd" clipRule="evenodd" />)}</ClipPath></Defs>
+          {map.id === 'europe'
+            ? <SvgImage href={atlasImage} x={0} y={0} width={864} height={570} clipPath={`url(#${atlasClipId})`} preserveAspectRatio="none" pointerEvents="none" />
+            : globe && <><SvgImage href={worldRelief} x={reliefX} y={reliefY} width={reliefWidth} height={reliefHeight} clipPath={`url(#${atlasClipId})`} preserveAspectRatio="none" pointerEvents="none" />
+              <SvgImage href={worldRelief} x={reliefX + reliefWidth} y={reliefY} width={reliefWidth} height={reliefHeight} clipPath={`url(#${atlasClipId})`} preserveAspectRatio="none" pointerEvents="none" /></>}
+        </>}
+        {contextShapes.map(shape => <Path key={shape.id} d={shape.path} fillRule="evenodd" fill={physicalAtlas ? 'transparent' : theme.oceanDeep} stroke={atlas && !showBorders ? 'transparent' : theme.border} strokeWidth={0.6 / viewport.zoom} />)}
         {shapes.filter(s => s.path).map((shape, index) => {
           const props = { d: shape.path, fill: !eligible(shape.id) ? theme.oceanDeep : shape.id === targetId ? '#F5AD18' : results.has(shape.id) ? physicalAtlas ? 'rgba(37,99,235,0.35)' : CLUE_COLORS[results.get(shape.id)!] : physicalAtlas ? 'transparent' : theme.mapLand, stroke: atlas && !showBorders ? 'transparent' : physicalAtlas ? theme.border : theme.mapBorder, strokeWidth: Math.max(0.65, 2 / viewport.zoom) };
           return preview || !enabled || !eligible(shape.id) ? <Path key={shape.id} {...props} fillRule="evenodd" /> : <CountryPath key={shape.id} {...props} accessibilityLabel={learn ? countryName(shape.id, language) : `${c.mapCountry} ${index + 1}`} onSelect={() => { if (selectionGuard.canSelect(Date.now())) onSelect(shape.id); }} />;
         })}
-        {!preview && labels.map(location => <SvgText key={location.id} x={location.labelX} y={location.labelY}
-          fontSize={11 * visible.w / mapWidth} fontFamily="sans-serif" fontWeight="700" textAnchor="middle" fill={theme.navy} pointerEvents="none">{location.name}</SvgText>)}
+        {!preview && labels.flatMap(location => [
+          <SvgText key={`${location.id}-halo`} x={location.labelX} y={location.labelY}
+            fontSize={11 * visible.w / mapWidth} fontFamily="sans-serif" fontWeight="700" textAnchor="middle"
+            fill="#FFFFFF" stroke="#FFFFFF" strokeWidth={3.2 * visible.w / mapWidth}
+            strokeLinejoin="round" pointerEvents="none">{location.name}</SvgText>,
+          <SvgText key={`${location.id}-ink`} x={location.labelX} y={location.labelY}
+            fontSize={11 * visible.w / mapWidth} fontFamily="sans-serif" fontWeight="700" textAnchor="middle"
+            fill="#17324A" pointerEvents="none">{location.name}</SvgText>,
+        ])}
         {!preview && markers.filter(state => eligible(state.id)).map(state => <Circle key={state.id} pointerEvents="none" cx={state.x} cy={state.y} r={Math.max(1, 3 / viewport.zoom)}
           fill={state.id === targetId ? '#F5AD18' : results.has(state.id) ? CLUE_COLORS[results.get(state.id)!] : theme.surface} stroke={theme.navy} strokeWidth={1 / viewport.zoom}
           />)}

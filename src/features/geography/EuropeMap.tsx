@@ -131,15 +131,6 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
           const props = { d: shape.path, fill: !eligible(shape.id) ? theme.oceanDeep : shape.id === targetId ? '#F5AD18' : results.has(shape.id) ? physicalAtlas ? 'rgba(37,99,235,0.35)' : CLUE_COLORS[results.get(shape.id)!] : physicalAtlas ? 'transparent' : theme.mapLand, stroke: atlas && !showBorders ? 'transparent' : physicalAtlas ? theme.border : theme.mapBorder, strokeWidth: Math.max(0.65, 2 / viewport.zoom) };
           return preview || !enabled || !eligible(shape.id) ? <Path key={shape.id} {...props} fillRule="evenodd" /> : <CountryPath key={shape.id} {...props} accessibilityLabel={learn ? countryName(shape.id, language) : `${c.mapCountry} ${index + 1}`} onSelect={() => { if (selectionGuard.canSelect(Date.now())) onSelect(shape.id); }} />;
         })}
-        {!preview && labels.flatMap(location => [
-          <SvgText key={`${location.id}-halo`} x={location.labelX} y={location.labelY}
-            fontSize={11 * visible.w / mapWidth} fontFamily="sans-serif" fontWeight="700" textAnchor="middle"
-            fill="#FFFFFF" stroke="#FFFFFF" strokeWidth={3.2 * visible.w / mapWidth}
-            strokeLinejoin="round" pointerEvents="none">{location.name}</SvgText>,
-          <SvgText key={`${location.id}-ink`} x={location.labelX} y={location.labelY}
-            fontSize={11 * visible.w / mapWidth} fontFamily="sans-serif" fontWeight="700" textAnchor="middle"
-            fill="#17324A" pointerEvents="none">{location.name}</SvgText>,
-        ])}
         {!preview && markers.filter(state => eligible(state.id)).map(state => <Circle key={state.id} pointerEvents="none" cx={state.x} cy={state.y} r={Math.max(1, 3 / viewport.zoom)}
           fill={state.id === targetId ? '#F5AD18' : results.has(state.id) ? CLUE_COLORS[results.get(state.id)!] : theme.surface} stroke={theme.navy} strokeWidth={1 / viewport.zoom}
           />)}
@@ -148,6 +139,19 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
           fill="none" stroke="#B66D00" strokeWidth={2 * visible.w / mapWidth} pointerEvents="none" />}
 
       </Svg>
+      {/* Native SVG text can intercept taps even with pointerEvents on each label.
+          A separate noninteractive SVG lets country paths own the entire outline. */}
+      {!preview && labels.length > 0 && <Svg testID="map-names" pointerEvents="none" aria-hidden={true} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={mapWidth} height={mapHeight} viewBox={`${visible.x} ${visible.y} ${visible.w} ${visible.h}`} style={StyleSheet.absoluteFill}>
+        {labels.flatMap(location => [
+          <SvgText key={`${location.id}-halo`} x={location.labelX} y={location.labelY}
+            fontSize={11 * visible.w / mapWidth} fontFamily="sans-serif" fontWeight="700" textAnchor="middle"
+            fill="#FFFFFF" stroke="#FFFFFF" strokeWidth={3.2 * visible.w / mapWidth}
+            strokeLinejoin="round" pointerEvents="none">{location.name}</SvgText>,
+          <SvgText key={`${location.id}-ink`} x={location.labelX} y={location.labelY}
+            fontSize={11 * visible.w / mapWidth} fontFamily="sans-serif" fontWeight="700" textAnchor="middle"
+            fill="#17324A" pointerEvents="none">{location.name}</SvgText>,
+        ])}
+      </Svg>}
       {!!picker.length && <View pointerEvents="box-none" style={StyleSheet.absoluteFill}>
         <Svg pointerEvents="none" width={mapWidth} height={mapHeight} style={StyleSheet.absoluteFill}>
           {picker.flatMap(target => target.members.map(member => <Line key={member.id} x1={member.screenX} y1={member.screenY} x2={target.x} y2={target.y} stroke={theme.brand} strokeWidth={1.5} opacity={0.65} />))}
@@ -185,7 +189,7 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
 }
 const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
   map: { width: '100%', backgroundColor: theme.ocean, borderRadius: 24, overflow: 'hidden' },
-  fill: { flex: 1, minHeight: 100, borderRadius: 0 },
+  fill: { flex: 1, minHeight: 180, borderRadius: 0 },
   pickerTarget: { position: 'absolute', width: PICKER_SIZE, height: PICKER_SIZE, alignItems: 'center', justifyContent: 'center' },
   pickerPin: { width: 34, height: 34, borderRadius: 17, backgroundColor: theme.surface, borderWidth: 2, borderColor: theme.brand, alignItems: 'center', justifyContent: 'center', shadowColor: '#123E70', shadowOpacity: 0.18, shadowRadius: 3, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
   pickerGroup: { flexDirection: 'row', gap: 3, width: 44, height: 44, borderRadius: 22, borderColor: theme.border, backgroundColor: theme.surface },

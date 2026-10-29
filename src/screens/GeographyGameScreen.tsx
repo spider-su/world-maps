@@ -7,7 +7,8 @@ import { useMusic } from '../features/music/MusicContext';
 import { completionCue } from '../features/music/soundPolicy';
 import { useCallback, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View, useColorScheme, useWindowDimensions } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { playLayout } from '../features/geography/playLayout';
 import { Ionicons } from '@expo/vector-icons';
 import { SvgXml } from 'react-native-svg';
 import { OptionsSheet } from '../ui/OptionsSheet';
@@ -147,7 +148,8 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
   const replayId = replayCountryId(mode, target.id, feedback?.id);
   const modeStyle = theme.mode[mode];
   const reward = completed ? explorerReward(rewardStart, explorerProgress(progress)) : null;
-  const dockHeight = Math.min(height * 0.43, mode === 'learn' ? 112 * Math.min(fontScale, 1.6) : (mode === 'name-it' || mode === 'capital-name' ? 244 : 220) * Math.min(fontScale, 1.3));
+  const insets = useSafeAreaInsets();
+  const { dockHeight, promptHeight } = playLayout(height - insets.top - insets.bottom, mode, fontScale);
   const prompt = gamePrompt(language, mode, target.id, completed, clue, answerType);
   return <SafeAreaView edges={['top', 'bottom']} style={styles.screen}>
     <StatusBar style="auto" />
@@ -157,7 +159,7 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
       <Pressable accessibilityRole="button" accessibilityLabel={c.playOptions} style={styles.iconButton} onPress={() => setShowOptions(true)}><Ionicons name="ellipsis-horizontal" size={23} color={theme.navy} /></Pressable>
     </View>
     <View style={styles.playArea}>
-      {mode !== 'learn' && <ScrollView style={[styles.promptSlot, { height: Math.min(height * 0.16, 76 * fontScale) }]} contentContainerStyle={styles.promptRow}>
+      {mode !== 'learn' && <ScrollView style={[styles.promptSlot, { height: promptHeight }]} contentContainerStyle={styles.promptRow}>
         {mode === 'find-it' && clue === 'flag' && !completed && <View accessible accessibilityLabel={c.flagPrompt}><SvgXml xml={countryFacts[target.id]?.flagSvg ?? ''} width={64} height={44} /></View>}
         <Text style={styles.prompt} accessibilityLiveRegion="polite">{progressLoaded ? prompt : c.loading}</Text>
         {!completed && replayId && canReplayPrompt(mode, clue, completed) && <Pressable accessibilityRole="button" accessibilityLabel={c.hear} style={styles.replay}
@@ -230,7 +232,7 @@ const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
   promptRow: { flexGrow: 1, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingVertical: 12, backgroundColor: theme.surface, borderRadius: 18, minHeight: 60 },
   prompt: { flex: 1, color: theme.navy, fontSize: 18, fontWeight: '800', lineHeight: 24 },
   replay: { width: 44, minHeight: 44, borderRadius: 20, backgroundColor: theme.ocean, alignItems: 'center', justifyContent: 'center' },
-  mapArea: { flex: 1, minHeight: 100 },
+  mapArea: { flex: 1, minHeight: 180 },
   dock: { marginHorizontal: 12, flexGrow: 0, flexShrink: 0, backgroundColor: theme.surface, borderRadius: 22 },
   dockContent: { padding: 12, gap: 8 },
   options: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },

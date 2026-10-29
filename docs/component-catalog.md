@@ -162,3 +162,9 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
   action selects undiscovered countries or the next missing quiz family. Settings owns
   language, pronunciation, optional music/effects and attribution.
 - `polishCopy` provides EN/PL/RU launch, cluster, collection and reward guidance.
+
+- `EuropeMap` names are in a separate noninteractive SVG overlay. Native taps on label
+  text pass through to country geometry; individual text pointer props alone are insufficient.
+- `playLayout` reserves prompt/dock space by mode, font scale and available safe height;
+  answer/result state never changes the map size. Short screens scroll the dock while
+  keeping at least 180dp for map targets.

@@ -33,3 +33,7 @@ The existing `@world-maps/music` key and JSON shape are unchanged. Audio edits
 merge into the latest snapshot and save in order. Settings disables edits until
 restoration succeeds; after a read failure Retry reads again, preserving recoverable
 preferences. Failed saves retain the current choices and Retry saves them again.
+
+Settings offers a 0–30% volume slider in 1% steps with a visible percentage.
+Dragging updates volume through serialized preference writes; web also supports
+arrow keys and Home/End. The native slider is Expo SDK 57-pinned at 5.2.0.

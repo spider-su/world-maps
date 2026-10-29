@@ -179,3 +179,6 @@ See [market polish verification](docs/evidence/market-polish/README.md) for vali
 Audio preference recovery uses serialized writes on the existing storage key;
 read failures retry restoration without replacing saved choices with defaults.
 See [audio behavior](docs/music-prototype.md).
+
+Background music volume uses an accessible slider with 1% steps from 0–30%,
+with the current percentage displayed in Settings.

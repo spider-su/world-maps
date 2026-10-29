@@ -175,3 +175,8 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 - `musicPreferenceStore`: serializes the existing `@world-maps/music` document.
   Restoring/read failures block edits; read Retry reloads instead of writing defaults,
   and save Retry persists the latest snapshot. `MusicProvider` subscribes to this store.
+
+- `MusicVolumeSlider`: localized 0–30% music volume with 1% steps and a 48dp
+  control. Expo-compatible native slider; web uses an HTML range for keyboard
+  access. Disabled during preference restore/read/save errors; changes use the
+  existing serialized audio store.

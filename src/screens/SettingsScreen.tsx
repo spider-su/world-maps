@@ -9,6 +9,7 @@ import { useLanguage } from '../ui/LanguageContext';
 import { themeForScheme, type WorldMapsPalette } from '../ui/worldMapsTheme';
 import { gameCopy } from '../features/geography/copy';
 import { useMusic } from '../features/music/MusicContext';
+import { MusicVolumeSlider } from '../features/music/MusicVolumeSlider';
 import { useProgress } from '../features/geography/ProgressContext';
 import { ProgressStatus } from '../features/geography/ProgressStatus';
 import { useMap } from '../features/geography/MapContext';
@@ -56,12 +57,8 @@ export function SettingsScreen() {
         <Text style={styles.hint}>{musicCopy.hint}</Text>
         <Text style={styles.hint}>{mapName(mapId, language)}</Text>
         <Text style={styles.text}>{musicCopy.volume}: {music.volume}%</Text>
-        <View style={styles.volumeRow}>{[0, 10, 20, 30].map(value =>
-          <Pressable key={value} accessibilityRole="button" accessibilityState={{ selected: music.volume === value, disabled: !music.loaded || music.error }} disabled={!music.loaded || music.error}
-            onPress={() => music.update({ volume: value })} style={[styles.volumeButton, { backgroundColor: music.volume === value ? theme.brandDark : theme.paper }]}>
-            <Text style={{ color: music.volume === value ? '#FFF' : theme.navy, fontWeight: '700' }}>{value}%</Text>
-          </Pressable>)}
-        </View>
+        <MusicVolumeSlider label={musicCopy.volume} value={music.volume} disabled={!music.loaded || music.error}
+          onValueChange={volume => { if (volume !== music.volume) music.update({ volume }); }} />
         <Pressable accessibilityRole="button" accessibilityLabel={music.preview ? musicCopy.stopPreview : musicCopy.preview}
           disabled={!music.trackReady || !!music.playbackError} onPress={() => music.setPreview(!music.preview)}
           style={styles.row}>
@@ -106,6 +103,5 @@ const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
   title: { color: theme.navy, fontSize: 28, fontWeight: '800' }, card: { backgroundColor: theme.surface, borderRadius: 18, padding: 16, gap: 8 },
   cardTitle: { fontSize: 16, fontWeight: '800', color: theme.navy, flexShrink: 1 }, text: { fontSize: 14, color: theme.navy }, hint: { fontSize: 12, color: theme.muted, lineHeight: 19 },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', minHeight: 48, gap: 10 }, link: { color: theme.brand, fontSize: 14, fontWeight: '700' }, error: { color: '#823C19', fontSize: 12 },
-  volumeRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 }, volumeButton: { minWidth: 57, minHeight: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 12 },
   historyRow: { paddingVertical: 8, gap: 4 }, modalHeader: { flexDirection: 'row', paddingHorizontal: 16, justifyContent: 'space-between', alignItems: 'center' }, close: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
 });

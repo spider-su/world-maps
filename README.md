@@ -186,6 +186,8 @@ with the current percentage displayed in Settings.
 Home keeps launch controls compact; Difficulty is displayed and adjusted in Maps.
 All modes continue to use the saved difficulty.
 
+All six region previews and Learn maps share the bundled NASA Blue Marble relief
+style. Europe retains its original country outlines and tap targets.
 Home’s “Explore the globe” card opens a separate full-screen offline globe: drag to rotate/tilt, scroll over it on web to
 rotate, or use the direction/centre controls. Arrow keys and Home work on web.
 The globe starts centred on the selected region and does not change quiz settings

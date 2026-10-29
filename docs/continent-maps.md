@@ -21,8 +21,7 @@ nearby territories are noninteractive geographic context. Natural Earth's defaul
 de facto boundaries are cartographic conventions, not sovereignty claims.
 
 New maps use real Natural Earth outlines and enlarged, clustered small-country
-picker targets. In Learn and Map previews they now render a clipped offline NASA Blue Marble relief layer aligned to the same geometry; quizzes retain unambiguous political fills. North America includes sovereign countries across the mainland, Central America and Caribbean; Greenland is non-selectable geographic context. Europe keeps its physical relief image; other continents use
-vector fills in Learn and country portraits. Country names are bundled in EN,
+picker targets. In Learn and Map previews they now render a clipped offline NASA Blue Marble relief layer aligned to the same geometry; quizzes retain unambiguous political fills. North America includes sovereign countries across the mainland, Central America and Caribbean; Greenland is non-selectable geographic context. All six regions, including Europe, share the same Blue Marble relief style. Country names are bundled in EN,
 PL and RU; new capital names retain the source's Latin-script proper names across
 languages (existing Europe editorial translations are preserved). Flags are SVGs,
 not operating-system emoji. No new runtime dependency or network service.
@@ -79,7 +78,9 @@ It is georeferenced in the existing SVG local projection and clipped to
 country outlines. This is a geographic relief backdrop, **not a new tap map**.
 The accurate polygons remain authoritative. NASA images are generally not
 subject to US copyright; NASA endorsement is not implied.
-The original Europe atlas continues to use its existing Natural Earth relief.
+Europe now uses the same Blue Marble source, registered to its original
+x=(longitude+26)*12 / y=(72-latitude)*15 geometry. The old Natural Earth
+Europe raster and its generator remain historical assets; they are not rendered.
 Country labels use fixed dark ink with white edging instead of switching to
 white in dark mode, improving legibility over bright terrain.
 

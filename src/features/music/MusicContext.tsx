@@ -1,12 +1,12 @@
-import { createContext, useContext, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { createContext, useContext, useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-audio';
 import { useMap } from '../geography/MapContext';
-import { DEFAULT_MUSIC, parseMusic, type MusicPreferences } from './musicPreferences';
+import { type MusicPreferences } from './musicPreferences';
+import { createMusicPreferenceStore } from './musicPreferenceStore';
 import { QUIZ_EFFECTS, REGION_TRACKS, type QuizEffect } from './musicAssets';
 
-const KEY = '@world-maps/music';
 type MusicContextValue = {
   enabled: boolean; volume: number; effectsEnabled: boolean;
   update: (next: Partial<MusicPreferences>) => void;
@@ -24,9 +24,10 @@ export function MusicProvider({ children }: { children: ReactNode }) {
   const playerRef = useRef<AudioPlayer | null>(null);
   const effectsRef = useRef<Partial<Record<QuizEffect, AudioPlayer>>>({});
   const effectLoaded = useRef<Partial<Record<QuizEffect, boolean>>>({});
-  const [prefs, setPrefs] = useState<MusicPreferences>(DEFAULT_MUSIC);
-  const [loaded, setLoaded] = useState(false);
-  const [error, setError] = useState(false);
+  const [store] = useState(() => createMusicPreferenceStore(AsyncStorage));
+  const { preferences: prefs, status } = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getSnapshot);
+  const loaded = status !== 'loading' && status !== 'read-error';
+  const error = status === 'read-error' || status === 'save-error';
   const [learning, setLearning] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [active, setActive] = useState(AppState.currentState !== 'background' && AppState.currentState !== 'inactive');
@@ -34,11 +35,8 @@ export function MusicProvider({ children }: { children: ReactNode }) {
   const [readyRegion, setReadyRegion] = useState<string | null>(null);
   const [playbackError, setPlaybackError] = useState<string | null>(null);
   useEffect(() => {
-    let mounted = true;
-    void AsyncStorage.getItem(KEY).then(raw => { if (mounted) setPrefs(parseMusic(raw)); })
-      .catch(() => { if (mounted) setError(true); }).finally(() => { if (mounted) setLoaded(true); });
-    return () => { mounted = false; };
-  }, []);
+    void store.load();
+  }, [store]);
   useEffect(() => {
     const listener = AppState.addEventListener('change', state => setActive(state === 'active'));
     return () => listener.remove();
@@ -112,15 +110,8 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     }).catch(() => setPlaybackError('Sound effect playback failed'));
   }, [loaded, prefs.effectsEnabled, active, speaking]);
 
-  const update = (next: Partial<MusicPreferences>) => {
-    if (!loaded || error) return;
-    const newPrefs = { ...prefs, ...next, volume: Math.max(0, Math.min(30, Math.round(next.volume ?? prefs.volume))) };
-    setPrefs(newPrefs);
-    void AsyncStorage.setItem(KEY, JSON.stringify(newPrefs)).catch(() => setError(true));
-  };
-  const retry = () => {
-    void AsyncStorage.setItem(KEY, JSON.stringify(prefs)).then(() => setError(false)).catch(() => setError(true));
-  };
+  const update = store.update;
+  const retry = () => { void store.retry(); };
   return <Context.Provider value={{ ...prefs, update, learning, setLearning, setSpeaking, playEffect, error, retry, loaded, preview, setPreview, trackReady, playbackError }}>
     {children}
   </Context.Provider>;

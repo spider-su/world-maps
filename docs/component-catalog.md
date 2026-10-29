@@ -171,3 +171,7 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 
 - The bounded game dock resets its scroll on completion/new round, so scrolling through
   large-text answers cannot hide newly earned rewards or the next set of choices.
+
+- `musicPreferenceStore`: serializes the existing `@world-maps/music` document.
+  Restoring/read failures block edits; read Retry reloads instead of writing defaults,
+  and save Retry persists the latest snapshot. `MusicProvider` subscribes to this store.

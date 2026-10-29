@@ -26,3 +26,10 @@ for wrong answers and Learn selection. Speech/background state takes priority.
 
 Audio fidelity, perceived volume and seamlessness require actual hardware evidence.
 Browser, mocked playback or a headless emulator does not establish audibility.
+
+## Preference recovery
+
+The existing `@world-maps/music` key and JSON shape are unchanged. Audio edits
+merge into the latest snapshot and save in order. Settings disables edits until
+restoration succeeds; after a read failure Retry reads again, preserving recoverable
+preferences. Failed saves retain the current choices and Retry saves them again.

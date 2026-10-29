@@ -24,7 +24,7 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 - `features/geography/ModeSelector`: four icon-led mode cards in `GAME_MODES`
   order, localized through `gameCopy`, no round state.
 - `screens/GeographyGameScreen`: one game mode/round, compact prompt and answers.
-- `features/geography/DifficultySelector`: saved Home level selection.
+- `features/geography/DifficultySelector`: saved level selection in Settings/Maps quiz setup.
   `difficultyPack` supplies eligible quiz locations; `EuropeMap.selectableIds`
   restricts interactions while retaining geographic context.
 - `features/geography/learning`: per-country/mode canonical v4 attempt records,

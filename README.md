@@ -58,8 +58,8 @@ licenses are available in Settings and [data attribution](docs/country-data.md).
 
 ### Difficulty
 
-Choose a level from the compact Difficulty row on Home before starting a quiz. **Normal** is the default
-(large/medium outlines, with at least four choices); **Easy** uses the seven largest
+Choose a level in Quiz setup from Settings or Maps before starting a quiz. **Normal** is the default
+(large/medium outlines, with at least two thirds of each map and all Easy targets); **Easy** uses the seven largest
 outlines on the selected map; **Difficult** uses every location on that map. Size is
 projected map area, not a ranking by national land area. Excluded countries remain
 visible in muted gray and cannot be guessed. Name It draws all four options from
@@ -70,8 +70,10 @@ by mode and level. Rounds without difficulty metadata are interpreted as Difficu
 
 ### Country learning
 
-Home offers Adaptive or Random practice. Adaptive revisits recent misses and older
-practice while reducing repeats of mastered countries. Home/Settings show local
+Quiz setup offers Adaptive or Random practice. Adaptive revisits recent misses and older
+practice while reducing repeats of mastered countries. Both modes space out up to four
+recent targets (at most half the pool), using existing saved learning records. North America
+Normal includes 16 of 23 countries rather than four; Difficult includes all 23. Profile shows
 selected-map learning statistics and per-country accuracy. Learning records and misses from unfinished rounds persist in canonical v4; older experimental schemas are not migrated. See
 [learning model](docs/country-learning.md).
 

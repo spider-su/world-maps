@@ -22,6 +22,7 @@ import { polishCopy } from '../features/geography/polishCopy';
 import { profileCopy } from '../features/geography/profileCopy';
 import { EXPLORERS, EXPLORER_STAGES } from '../features/geography/explorer';
 import { ExplorerAvatar } from '../features/geography/ExplorerAvatar';
+import { ExplorerAppearanceEditor } from '../features/geography/ExplorerAppearanceEditor';
 import { explorerProgress, DISCOVERY_XP, CORRECT_XP, FIRST_TRY_XP, XP_PER_LEVEL, type AchievementId } from '../features/geography/explorerProgress';
 
 const badgeIcons = { 'first-discovery': 'footsteps-outline', curious: 'compass-outline', collector: 'albums-outline', 'sharp-eye': 'flash-outline', 'all-rounder': 'ribbon-outline', globetrotter: 'earth-outline' } as const;
@@ -61,7 +62,7 @@ export function ProfileScreen() {
         <View style={styles.hero}>
           <View style={styles.heroIdentity}>
             <Pressable accessibilityRole="button" accessibilityLabel={p.chooseExplorer} onPress={() => setSheet('explorer')} style={styles.avatar}>
-              <ExplorerAvatar explorer={progress.explorer} stage={journey.stage} size={80} label={p.ranks[journey.stage]!} />
+              <ExplorerAvatar explorer={progress.explorer} appearance={progress.explorerAppearance} stage={journey.stage} size={80} label={p.ranks[journey.stage]!} />
               <View style={styles.edit}><Ionicons name="pencil" size={14} color={theme.brand} /></View>
             </Pressable>
             <View style={styles.grow}><Text style={styles.eyebrow}>{p.journey}</Text><Text style={styles.level}>{p.level} {journey.level} · {p.ranks[journey.stage]}</Text><Text style={styles.xp}>{journey.xp} {p.xp}</Text></View>
@@ -106,10 +107,12 @@ export function ProfileScreen() {
       })}
     </OptionsSheet>
     <OptionsSheet visible={sheet === 'explorer' && available} title={p.chooseExplorer} closeLabel={c.close} onClose={() => setSheet(null)}>
-      <View accessibilityRole="radiogroup" accessibilityLabel={p.chooseExplorer} style={styles.explorers}>{EXPLORERS.map(id => <Pressable key={id} accessibilityRole="radio" aria-checked={progress.explorer === id} accessibilityState={{ checked:progress.explorer === id }} accessibilityLabel={p.explorers[id]} onPress={() => update(current => current.explorer === id ? current : ({...current,explorer:id}))} style={[styles.explorerChoice,progress.explorer === id && styles.chosen]}><ExplorerAvatar explorer={id} stage={journey.stage} size={76} label={p.explorers[id]} /><Text style={styles.choiceText}>{p.explorers[id]}</Text></Pressable>)}</View>
+      <View accessibilityRole="radiogroup" accessibilityLabel={p.chooseExplorer} style={styles.explorers}>{EXPLORERS.map(id => <Pressable key={id} accessibilityRole="radio" aria-checked={progress.explorer === id} accessibilityState={{ checked:progress.explorer === id }} accessibilityLabel={p.explorers[id]} onPress={() => update(current => current.explorer === id ? current : ({...current,explorer:id}))} style={[styles.explorerChoice,progress.explorer === id && styles.chosen]}><ExplorerAvatar explorer={id} appearance={progress.explorerAppearance} stage={journey.stage} size={76} label={p.explorers[id]} /><Text style={styles.choiceText}>{p.explorers[id]}</Text></Pressable>)}</View>
+      <ExplorerAppearanceEditor explorer={progress.explorer} appearance={progress.explorerAppearance} stage={journey.stage}
+        onChange={next => update(current => ({ ...current, explorerAppearance: { ...current.explorerAppearance, ...next } }))} />
       <ProgressStatus language={language} />
       <Text accessibilityRole="header" style={styles.section}>{p.outfitsTitle}</Text>
-      {EXPLORER_STAGES.map((level,index) => <View key={level} style={[styles.outfitRow,journey.level < level && styles.locked]}><ExplorerAvatar explorer={progress.explorer} stage={index} size={64} label={p.ranks[index]!} /><View style={styles.grow}><Text style={styles.goalTitle}>{p.ranks[index]} · {p.level} {level}</Text><Text style={styles.detail}>{p.outfits[index]}</Text></View><Ionicons accessibilityLabel={journey.level >= level ? p.unlocked : p.locked} name={journey.level >= level ? 'checkmark-circle' : 'lock-closed-outline'} size={20} color={journey.level >= level ? theme.success : theme.muted} /></View>)}
+      {EXPLORER_STAGES.map((level,index) => <View key={level} style={[styles.outfitRow,journey.level < level && styles.locked]}><ExplorerAvatar explorer={progress.explorer} appearance={progress.explorerAppearance} stage={index} size={64} label={p.ranks[index]!} /><View style={styles.grow}><Text style={styles.goalTitle}>{p.ranks[index]} · {p.level} {level}</Text><Text style={styles.detail}>{p.outfits[index]}</Text></View><Ionicons accessibilityLabel={journey.level >= level ? p.unlocked : p.locked} name={journey.level >= level ? 'checkmark-circle' : 'lock-closed-outline'} size={20} color={journey.level >= level ? theme.success : theme.muted} /></View>)}
     </OptionsSheet>
     <OptionsSheet visible={sheet === 'badges' && available} title={p.achievements} closeLabel={c.close} onClose={() => setSheet(null)}>
       {journey.achievements.map(b => <View key={b.id} style={styles.goal}>{badge(b.id,b.earned)}<View style={styles.grow}><Text style={styles.goalTitle}>{p.badges[b.id].title}</Text><Text style={styles.detail}>{p.badges[b.id].detail}</Text></View>{b.earned ? <Ionicons accessibilityLabel={p.earned} name="checkmark-circle" size={22} color={theme.success} /> : <Text style={styles.count}>{b.current}/{b.target}</Text>}</View>)}

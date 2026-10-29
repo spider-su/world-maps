@@ -195,15 +195,22 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
             <View style={styles.metric}><Text style={styles.metricValue}>{round.guesses.length}</Text><Text style={styles.metricLabel}>{c.attempts}</Text></View>
             <View style={styles.divider} />
             <View style={styles.metric}><Text style={styles.metricValue}>{completed ? `+${scoreRound(round.guesses.length)}` : stats.bestScore}</Text><Text style={styles.metricLabel}>{completed ? c.score : c.best}</Text></View>
-            {completed && <Pressable accessibilityRole="button" disabled={!progressLoaded} style={[styles.nextButton, styles.nextComplete, (width < 480 || fontScale > 1.3) && styles.nextWide]} accessibilityLabel={c.next} onPress={restart}>
-              <Ionicons name="arrow-forward" size={23} color="#FFF" />
-              <Text style={styles.nextText}>{c.next}</Text>
-            </Pressable>}
+
           </View>
         </>}
         {speechFailed && <Text accessibilityRole="alert" style={styles.warning}>{c.speechError}</Text>}
         <ProgressStatus language={language} />
       </ScrollView>
+      {completed && <View style={styles.completionActions}>
+        <Pressable accessibilityRole="button" accessibilityLabel={c.back} style={styles.completionHome} onPress={onBack}>
+          <Ionicons name="home-outline" size={20} color={theme.navy} />
+          <Text style={styles.completionHomeText}>{c.home}</Text>
+        </Pressable>
+        <Pressable accessibilityRole="button" disabled={!progressLoaded} accessibilityLabel={c.next} style={styles.completionNext} onPress={restart}>
+          <Text style={styles.nextText}>{c.next}</Text>
+          <Ionicons name="arrow-forward" size={20} color="#FFF" />
+        </Pressable>
+      </View>}
     </View>
     <OptionsSheet visible={showOptions} title={c.playOptions} closeLabel={c.close} onClose={() => setShowOptions(false)}>
       <Pressable accessibilityRole="button" accessibilityLabel={c.mapTools} accessibilityState={{ expanded: showMapTools }} style={styles.sheetAction} onPress={() => { setShowMapTools(value => !value); setShowOptions(false); }}><Ionicons name="expand-outline" size={22} color={theme.brand} /><Text style={styles.actionText}>{c.mapTools}</Text></Pressable>
@@ -246,9 +253,11 @@ const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
   legend: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 7 }, legendText: { color: theme.muted, fontSize: 10 }, swatch: { width: 10, height: 10, borderRadius: 5 },
   scoreRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 12 }, metric: { flex: 1, minWidth: 64, alignItems: 'center', gap: 2 }, metricValue: { color: theme.navy, fontSize: 18, fontWeight: '800' }, metricLabel: { color: theme.muted, fontSize: 10 },
   divider: { height: 26, width: 1, backgroundColor: theme.border, opacity: 0.4 },
-  nextButton: { minWidth: 48, minHeight: 48, borderRadius: 16, backgroundColor: theme.ocean, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingHorizontal: 12 },
-  nextWide: { flexBasis: '100%' },
-  nextComplete: { backgroundColor: theme.brandDark, flexShrink: 1 }, nextText: { flexShrink: 1, color: '#FFF', fontSize: 13, fontWeight: '800' },
+  completionActions: { flexDirection: 'row', gap: 10, paddingHorizontal: 12, paddingTop: 8, paddingBottom: 4 },
+  completionHome: { flex: 1, minHeight: 52, borderRadius: 16, backgroundColor: theme.surface, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
+  completionHomeText: { color: theme.navy, fontSize: 14, fontWeight: '700' },
+  completionNext: { flex: 2, minHeight: 52, borderRadius: 16, backgroundColor: theme.brandDark, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingHorizontal: 12 },
+  nextText: { flexShrink: 1, color: '#FFF', fontSize: 14, fontWeight: '800', textAlign: 'center' },
   sheetAction: { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 48 }, actionText: { color: theme.navy, fontWeight: '700' }, sheetHint: { color: theme.muted, fontSize: 12, lineHeight: 20 },
   warning: { color: theme.error, fontSize: 12, lineHeight: 18 },
 });

@@ -1,5 +1,5 @@
 import { View } from 'react-native';
-import Svg, { Circle, Ellipse, Line, Path, Rect } from 'react-native-svg';
+import Svg, { Circle, ClipPath, Defs, Ellipse, G, Line, Path, Rect } from 'react-native-svg';
 import type { ExplorerId } from './explorer';
 
 const palettes = {
@@ -15,10 +15,13 @@ export function ExplorerAvatar({ explorer, stage, size = 160, label }: {
   const p = palettes[explorer];
   return <View accessible accessibilityRole="image" accessibilityLabel={label} style={{ width: size, height: size }}>
     <Svg width={size} height={size} viewBox="0 0 200 200" aria-hidden={true}>
+      <Defs><ClipPath id="avatar-scenery-clip"><Circle cx={100} cy={100} r={97} /></ClipPath></Defs>
       <Circle cx={100} cy={100} r={97} fill={p.sky} />
+      <G clipPath="url(#avatar-scenery-clip)">
       <Path d="M10 147Q40 108 68 142T129 140T193 147V173H10Z" fill="#FFFFFF" opacity={0.55} />
       <Circle cx={151} cy={40} r={13} fill="#FFF" opacity={0.7} />
       <Path d="M22 75Q38 50 49 70" fill="none" stroke="#97B9BC" strokeWidth={2} strokeDasharray="3 5" />
+      </G>
       {explorer === 'ocean' && <Path d="M61 90Q48 130 71 143H132Q151 122 139 85Z" fill={p.hair} />}
       {stage >= 2 && <><Rect x={40} y={133} width={35} height={54} rx={13} fill={p.accent} /><Rect x={126} y={133} width={35} height={54} rx={13} fill={p.accent} /></>}
       <Path d="M34 190L43 161Q50 137 84 134H116Q150 137 157 161L166 190Q100 211 34 190Z" fill={p.shirt} />

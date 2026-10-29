@@ -9,6 +9,14 @@ export function findClueForRound(clue: FindClue, index: number): Exclude<FindClu
   return clue === 'mixed' ? (['name', 'capital', 'flag'] as const)[index % 3]! : clue;
 }
 
+
+/** A flag-only clue must not be spoken as the answer before the round is solved.
+ * This also covers the flag turn of Mixed Find It.
+ */
+export function canReplayPrompt(mode: GameMode, clue: Exclude<FindClue, 'mixed'>, completed: boolean): boolean {
+  return !(mode === 'find-it' && clue === 'flag' && !completed);
+}
+
 /** Legacy capital mode IDs remain valid for existing saved progress. */
 export function publicMode(mode: GameMode): GameMode {
   return mode === 'capital-find' ? 'find-it' : mode === 'capital-name' ? 'name-it' : mode;

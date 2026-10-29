@@ -1,6 +1,6 @@
 # World Maps agent instructions
 
-World Maps is an offline Europe geography learning game (Expo SDK 57 / React Native 0.86) with four modes — Hot & Cold, Find It, Name It and Learn — on one bundled vector map. It was bootstrapped from `spider-su/mobile_template`; the template's demo screens, adapters and initialization script have been removed. Template-era documents that remain are labelled as historical references.
+World Maps is an offline geography learning game (Expo SDK 57 / React Native 0.86) with four modes — Hot & Cold, Find It, Name It and Learn — on bundled Europe, Asia, Africa, North America, South America and Oceania vector maps. It was bootstrapped from `spider-su/mobile_template`; the template's demo screens, adapters and initialization script have been removed. Template-era documents that remain are labelled as historical references.
 
 ## Agent reading order
 

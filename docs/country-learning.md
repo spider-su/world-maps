@@ -1,6 +1,6 @@
 # Local country learning and practice
 
-Progress schema 2 retains the existing storage key and completed-session history.
+Learning counters were introduced in schema 2; current progress schema 4 retains the existing storage key and completed-session history.
 Missing-version data migrates valid retained sessions once into per-target,
 per-mode counters; scores and voice preference are unchanged. Version 2 reads its
 own counters, including misses in unfinished rounds, instead of rebuilding from
@@ -25,4 +25,4 @@ Home shows the saved practice selector. Home and Settings show Europe coverage,
 mastery, needing-practice and attempt accuracy, with an expandable country list.
 A country counts as mastered when at least one quiz mode meets the displayed rule;
 it is not a claim of retention across every mode or a validated learning measure.
-No backend, account, XP, or new runtime dependency is involved.
+No backend, account, or new runtime dependency is involved. Explorer XP is derived separately from cumulative learning and discoveries.

@@ -1,10 +1,13 @@
 # World Maps
 
-Offline Europe geography learning game built with Expo / React Native from
+Offline geography learning game built with Expo / React Native from
 [mobile_template](https://github.com/spider-su/mobile_template).
 
-Four modes share one bundled vector map with 47 selectable locations (41 polygons
-and six small-country markers): Hot & Cold, Find It, Name It and Learn. Completed
+Six bundled maps cover Europe, Asia, Africa, North America, South America and Oceania.
+See [continent coverage and generation](docs/continent-maps.md).
+
+Europe retains 47 selectable locations (41 polygons
+and six small-country markers). Every map supports Hot & Cold, Find It, Name It and Learn. Completed
 quiz scores and voice preference are stored locally. No API or account required.
 
 Quiz map names stay hidden until guessed/completed. Learn supports freely shown
@@ -23,7 +26,8 @@ It installs locked dependencies and runs the same CI checks and Expo Doctor. The
 optional `--baseline-sha COMMIT` argument verifies the supplied baseline exists.
 Android APK validation remains a separate required GitHub CI job.
 
-See [POC stages and evidence](docs/poc-roadmap.md),
+See the [current acceptance checklist](docs/poc-current-checklist.md),
+[historical POC stages](docs/poc-roadmap.md),
 [map data and attribution](docs/europe-map-assets.md), and
 [game rules](docs/geography-game-draft.md). Unused template code (demo screens,
 generic adapters and the init script) has been removed; remaining template-era
@@ -49,29 +53,27 @@ See [exact build/device evidence and limitations](docs/poc-testing.md).
 
 Completed scores and voice/language preferences survive relaunch; unfinished rounds
 are intentionally not restored. Statistics describe the most recent 100 completed
-rounds. One light theme is supported in this POC. Learning data is bundled and its
+rounds. Light and dark themes are supported. Learning data is bundled and its
 licenses are available in Settings and [data attribution](docs/country-data.md).
 
 ### Difficulty
 
-Choose a level on Home before starting a quiz. **Normal** is the default (34
-large/medium countries); **Easy** uses the seven largest outlines on the displayed
-map; **Difficult** uses all 47 countries, including small-country markers. Size is
+Choose a level from the compact Difficulty row on Home before starting a quiz. **Normal** is the default
+(large/medium outlines, with at least four choices); **Easy** uses the seven largest
+outlines on the selected map; **Difficult** uses every location on that map. Size is
 projected map area, not a ranking by national land area. Excluded countries remain
 visible in muted gray and cannot be guessed. Name It draws all four options from
 the selected pool. Learn always includes every country.
 
 The level is saved with preferences and completed rounds; quiz history is filtered
-by mode and level. Older rounds remain intact and count as Difficult because they
-used the full pool. See [difficulty validation](docs/difficulty-testing.md).
+by mode and level. Rounds without difficulty metadata are interpreted as Difficult; canonical v4 progress is the supported pre-release format. See [difficulty validation](docs/difficulty-testing.md).
 
 ### Country learning
 
 Home offers Adaptive or Random practice. Adaptive revisits recent misses and older
 practice while reducing repeats of mastered countries. Home/Settings show local
-Europe learning statistics and per-country accuracy. Existing scores migrate once
-without being reset; misses from unfinished rounds are retained. See
-[learning model and migration](docs/country-learning.md).
+selected-map learning statistics and per-country accuracy. Learning records and misses from unfinished rounds persist in canonical v4; older experimental schemas are not migrated. See
+[learning model](docs/country-learning.md).
 
 ### Atlas and quiz appearance
 
@@ -94,4 +96,82 @@ and iOS validation remain separate pending gates.
 
 The shell and game prompts share `gameCopy` / `gamePrompt` for EN/PL/RU. Find It
 clues support country, capital and flag; Name It supports country or capital answers.
-Legacy capital mode storage IDs remain compatible with saved progress.
+Mode-specific pack IDs remain stable inside the canonical v4 progress document.
+
+Home and gameplay now use a map-first layout inspired by the UI sketch. The middle Europe tab
+contains the offline region summary, difficulty, practice and quiz options. During play, the header
+opens voice/label controls; map tools are available on demand. Small countries have direct on-map targets;
+crowded targets zoom apart when tapped. Learn keeps a compact country card with expandable offline details.
+The [Home artwork and generation prompt](docs/licenses/home-artwork.md) are separate
+from the accurate bundled gameplay geography.
+
+## Continent maps
+
+Choose Europe, Asia, Africa, North America, South America or Oceania on Home or the map tab.
+All four modes use the selected offline map. Easy selects seven large outlines;
+Normal selects large/medium outlines (at least four for answer choices); Difficult
+and Learn include every location. Scores and practice are separate for each map.
+All continent maps use accurate, selectable Natural Earth geometry. Learn and Maps previews now render offline georeferenced relief (NASA Blue Marble for non-European maps, the existing Europe atlas for Europe); quiz modes retain clear political colors.
+Map and quiz variant selections persist across relaunches; first installs default to Europe.
+See [coverage, sources and generation](docs/continent-maps.md).
+
+### Wikipedia discovery
+
+Country details include a Wikipedia article link and optional credited photographs
+of places and landscapes. Tap **Show photos** to load images online; country facts,
+flags, maps and progress continue working offline. Source/author and license links
+are shown for each image. See [Wikipedia gallery](docs/wikipedia-gallery.md).
+
+### Compact Home and play UI
+
+Home offers one map chooser, four direct-launch mode tiles and a saved difficulty
+selector. The five tabs use short labels: Home, Maps, Library, Profile and Settings.
+During play, tabs hide and the map fills the available width on a continuous ocean
+surface. Fit map stays visible; Play options contains restart and secondary map
+controls. Name It replaces its answers with concise feedback and Next country
+when solved. Learn opens full facts and optional photos from its compact country
+card. See [UI screenshots and verification](docs/evidence/compact-ui/README.md).
+
+### Learn atlas
+
+Learn shows country names and a small initial hint, then a selected-country preview
+with flag, capital and pronunciation. Tap its identity area to open essentials and
+optional photos/Wikipedia; the heading and close control stay visible while
+scrolling. Small-country controls use names in Learn and remain anonymous in
+quizzes. Country details are shared with Library. Coordinates, codes and the
+repeated mini-map were removed from the presentation; offline maps/facts and
+photo attribution are preserved. See [Learn UI evidence](docs/evidence/learn-atlas/README.md).
+
+### Explorer profile
+
+Profile rewards first country discoveries and successful quizzes with XP. A human
+explorer gains outfits at levels 1, 3, 6, 10 and 15, alongside six achievement
+badges. Avatar choice and existing progress stay on device; all six maps share
+one player level. Current saved learning counts toward XP. See
+[progression rules and migration](docs/explorer-progression.md).
+
+### Regional audio and readable geography
+
+All six continents have original offline Learn music tracks with an opt-in Settings
+control and preview. Optional quiz success sounds are separate from voice playback.
+Atlas country labels use dark ink with a white outline for visibility on bright
+terrain in light and dark mode. Test the exact APK on device before distributing.
+See [continent coverage and imagery](docs/continent-maps.md).
+
+### Launch and learning flow
+
+Home shows the saved map, difficulty, practice and quiz variants beside **Customize quiz**.
+The same setup sheet is available from Maps, which also launches Learn or Find It directly.
+Continue practicing starts a new round in the selected map's most recently completed quiz
+family; unfinished rounds are not restored. The Home artwork is a bundled world view.
+
+Quiz prompts and feedback use reserved, scrollable areas so the map does not resize after
+an answer. Non-European maps begin at full extent; Europe uses a gentler phone overview and small highlighted targets are focused; zoom and
+Whole map controls stay visible. Cluster buttons show a plus and count, with gesture guidance.
+Completion distinguishes game points from earned XP and announces new levels, outfits and badges.
+
+Profile has a compact explorer header, actionable milestones and selected-map learning/history
+in a secondary sheet. Settings contains language, audio and attribution. Library offers an
+Undiscovered filter and the same country sheet as Learn; its search, region and scroll remain
+mounted behind details. These flows keep the existing canonical v4 progress and preference keys.
+See [market polish verification](docs/evidence/market-polish/README.md) for validation and limits.

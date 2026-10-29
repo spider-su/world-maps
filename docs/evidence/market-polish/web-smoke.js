@@ -1,0 +1,148 @@
+// Run with the Playwright tool against a production web export on port 8099.
+// Uses a NEW context and canonical v4 fixture; existing browser/app data is untouched.
+async (page) => {
+  const { europe, facts } = await (await page.request.get('http://127.0.0.1:8099/smoke-data.json')).json();
+  const context = await page.context().browser().newContext({ viewport: { width: 412, height: 915 } });
+  const test = await context.newPage();
+  const errors = [];
+  test.on('pageerror', e => errors.push(e.message));
+  const key = 'world-maps:hot-cold:progress:v1';
+  const fixture = { schemaVersion: 4, explorer: 'ocean', difficulty: 'normal', practiceMode: 'random', voiceEnabled: false, sessions: [], learning: {}, explored: europe.countries.slice(0, 18).map(c => c.id) };
+  await test.addInitScript(({ key, fixture }) => {
+    if (!localStorage.getItem(key)) localStorage.setItem(key, JSON.stringify(fixture));
+  }, { key, fixture });
+  const check = (v, m) => { if (!v) throw new Error(m); };
+  const shot = async name => { await test.waitForTimeout(350); await test.screenshot({ path: `docs/evidence/market-polish/web-${name}.png`, animations: 'disabled' }); };
+  const home = () => test.getByRole('button', { name: 'Back to Home', exact: true }).click();
+  const startName = () => test.getByRole('button', { name: /^Name It\. Identify/ }).click();
+  const target = async () => {
+    const d = await test.locator('path[fill="#F5AD18"]').first().getAttribute('d');
+    const c = europe.countries.find(c => c.path === d);
+    check(c, 'Highlighted target was not found in the bundled geometry');
+    return facts[c.id].name.en;
+  };
+  const frame = async () => {
+    await test.waitForTimeout(150); // allow initial SVG onLayout measurement to settle
+    return { box: await test.locator('svg[aria-label="Europe"]').boundingBox(), view: await test.locator('svg[aria-label="Europe"]').getAttribute('viewBox') };
+  };
+  try {
+    await test.goto('http://127.0.0.1:8099');
+    await test.getByRole('button', { name: 'Start practicing', exact: false }).waitFor();
+    await shot('home');
+    await test.getByRole('button', { name: 'Customize quiz', exact: true }).click();
+    await test.getByRole('button', { name: 'Flag', exact: true }).click();
+    await shot('setup');
+    await test.getByRole('button', { name: 'Close', exact: true }).click();
+    check((await test.locator('body').innerText()).includes('Find It: Flag'), 'Home hides the active variant');
+    await test.getByRole('button', { name: /^Find It\. Read/ }).click();
+    check(await test.getByRole('button', { name: 'Hear name', exact: true }).count() === 0, 'Flag replay leaked the target');
+    await home();
+    await startName();
+    const correct = await target();
+    const before = await frame();
+    await shot('name');
+    await test.getByRole('button', { name: correct, exact: true }).click();
+    await test.getByText('+20 XP · Explorer rewards', { exact: true }).waitFor();
+    await test.getByText('New outfit unlocked', { exact: true }).waitFor();
+    check(JSON.stringify(before) === JSON.stringify(await frame()), 'Map moved on first-try completion');
+    await shot('reward');
+    await test.getByRole('button', { name: 'Next country', exact: true }).click();
+    const next = await target();
+    const names = Object.values(facts).map(c => c.name.en);
+    const choices = (await test.getByRole('button').allTextContents()).map(s => s.trim()).filter(s => names.includes(s));
+    const wrong = choices.find(n => n !== next);
+    check(wrong, 'No distractor available');
+    const secondFrame = await frame();
+    await test.getByRole('button', { name: wrong, exact: true }).click();
+    check(await test.getByRole('button', { name: wrong, exact: true }).isDisabled(), 'Wrong answer remains enabled');
+    check(JSON.stringify(secondFrame) === JSON.stringify(await frame()), 'Map moved after a wrong answer');
+    await test.getByRole('button', { name: next, exact: true }).click();
+    await test.getByText('+15 XP · Explorer rewards', { exact: true }).waitFor();
+    check(JSON.stringify(secondFrame) === JSON.stringify(await frame()), 'Map moved after completion following an error');
+    await home();
+    await test.getByRole('tab', { name: /Library/ }).click();
+    const portugal = test.getByRole('button', { name: /^Portugal\b/ });
+    await portugal.scrollIntoViewIfNeeded();
+    const scroll = () => test.evaluate(() => Array.from(document.querySelectorAll('div')).filter(e => e.scrollTop > 0).map(e => e.scrollTop));
+    const listScroll = await scroll();
+    await portugal.click();
+    await test.getByRole('dialog').waitFor();
+    await shot('library-details');
+    await test.getByRole('button', { name: 'Close', exact: true }).click();
+    check(JSON.stringify(listScroll) === JSON.stringify(await scroll()), 'Library lost list scroll behind country details');
+    await test.getByRole('textbox', { name: 'Search country or capital', exact: true }).fill('Germany');
+    await test.getByRole('button', { name: /^Germany\b/ }).click();
+    await test.getByRole('button', { name: 'Close', exact: true }).click();
+    check(await test.getByRole('textbox').inputValue() === 'Germany', 'Library lost search after details');
+    await test.getByRole('tab', { name: /Profile/ }).click();
+    await shot('profile');
+    await test.getByRole('button', { name: /Learning progress/ }).click();
+    await test.getByText('Recent history · up to 100 completed rounds', { exact: true }).last().waitFor();
+    await shot('learning');
+    await test.getByRole('button', { name: 'Close', exact: true }).click();
+    await test.getByRole('button', { name: 'Explore new countries', exact: true }).click();
+    await test.getByRole('radio', { name: 'Undiscovered', exact: true }).waitFor();
+    check(await test.getByRole('textbox').inputValue() === '', 'Milestone retained an unrelated search');
+    check(await test.getByRole('radio', { name: 'Undiscovered', exact: true }).getAttribute('aria-checked') === 'true', 'Milestone did not select undiscovered countries');
+    await test.getByRole('tab', { name: /Settings/ }).click();
+    await test.getByText('Background music', { exact: true }).waitFor();
+    await shot('settings');
+    await test.getByRole('radio', { name: 'Polski', exact: true }).click();
+    await test.setViewportSize({ width: 320, height: 568 });
+    await test.getByRole('tab').nth(0).click();
+    await shot('home-pl-small');
+    await test.getByRole('button', { name: 'Dostosuj quiz', exact: true }).click();
+    await shot('setup-pl-small');
+    await test.getByRole('button', { name: 'Zamknij', exact: true }).click();
+    await test.getByRole('tab').nth(4).click();
+    await test.getByRole('radio', { name: 'Русский', exact: true }).click();
+    await test.emulateMedia({ colorScheme: 'dark', reducedMotion: 'reduce' });
+    await test.reload();
+    await test.getByRole('button', { name: 'Настроить викторину', exact: true }).waitFor();
+    check(await test.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches), 'Dark media query was not active');
+    await shot('home-ru-small-dark');
+    check(await test.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'Horizontal overflow');
+    check(errors.length === 0, `Browser errors: ${errors.join('; ')}`);
+    const saved = await test.evaluate(key => JSON.parse(localStorage.getItem(key)), key);
+    check(saved.schemaVersion === 4 && saved.explorer === 'ocean' && saved.sessions.length === 2, 'Saved facts/preferences changed unexpectedly');
+    await test.reload();
+    await test.getByRole('button', { name: /Продолжить практику/ }).waitFor();
+    // Exercise real browser storage failure UI only in this isolated context.
+    await test.evaluate(() => localStorage.setItem('world-maps:language:v1', 'en'));
+    await test.reload();
+    await test.getByRole('button', { name: /Continue practicing/ }).waitFor();
+    await test.evaluate(key => {
+      window._wmSet = Storage.prototype.setItem;
+      Storage.prototype.setItem = function(k, value) { if (k === key) throw new Error('Injected save failure'); return window._wmSet.call(this, k, value); };
+    }, key);
+    await test.getByRole('tab', { name: /Library/ }).click();
+    const fresh = europe.countries.find(c => !saved.explored.includes(c.id));
+    const freshName = facts[fresh.id].name.en;
+    await test.getByRole('textbox').fill(freshName);
+    await test.getByRole('button', { name: new RegExp('^' + freshName) }).click();
+    const saveMessage = 'Your latest changes are not saved on this device.';
+    await test.getByText(saveMessage, { exact: true }).last().waitFor();
+    await shot('save-error');
+    await test.evaluate(() => { Storage.prototype.setItem = window._wmSet; });
+    await test.getByRole('button', { name: 'Retry', exact: true }).last().click();
+    await test.getByText(saveMessage, { exact: true }).last().waitFor({ state: 'hidden' });
+    await test.getByRole('button', { name: 'Close', exact: true }).click();
+    const confirmed = await test.evaluate(key => localStorage.getItem(key), key);
+    check(JSON.parse(confirmed).explored.includes(fresh.id), 'Retry did not save the discovery');
+    await test.addInitScript(key => {
+      window._wmGet = Storage.prototype.getItem;
+      Storage.prototype.getItem = function(k) { if (k === key) throw new Error('Injected read failure'); return window._wmGet.call(this, k); };
+    }, key);
+    await test.reload();
+    await test.getByRole('tab', { name: /Library/ }).click();
+    const readMessage = 'Saved progress could not be read. Retry before playing.';
+    await test.getByText(readMessage, { exact: true }).last().waitFor();
+    await shot('read-error');
+    check(await test.getByRole('button', { name: /^Albania/ }).isDisabled(), 'Read failure allowed a new discovery');
+    check(await test.evaluate(key => window._wmGet.call(localStorage, key), key) === confirmed, 'Read failure overwrote saved data');
+    await test.evaluate(() => { Storage.prototype.getItem = window._wmGet; });
+    await test.getByRole('button', { name: 'Retry', exact: true }).last().click();
+    await test.getByText(readMessage, { exact: true }).last().waitFor({ state: 'hidden' });
+    return { pass: true, pageErrors: errors, savedRounds: saved.sessions.length, screenshots: 'docs/evidence/market-polish', checks: ['launch setup', 'flag secrecy', '20/15 XP and outfit', 'map frame invariant across wrong/correct answers', 'Library scroll/search preservation', 'Profile learning/history and milestone', 'PL/RU compact screens', 'dark/reduced-motion', 'restart continue', 'Library save/read failure and retry without data loss'] };
+  } finally { await context.close(); }
+}

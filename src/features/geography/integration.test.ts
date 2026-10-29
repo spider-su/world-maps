@@ -8,12 +8,12 @@ import { countryName } from './countryFacts';
 import { europePack } from './europe';
 import { modePackId } from './modes';
 
-it('preserves legacy scores while migrating and retaining difficulty, voice and learning', () => {
+it('preserves canonical scores, difficulty, voice and learning', () => {
   const pack = difficultyPack('easy');
   const round = startRound(pack, () => 0, 1);
   const completed = guess(pack, round, round.targetId, europeBorderDistanceKm, 2).round;
   const legacy = sessionFromRound(completed);
-  const migrated = parseProgress(JSON.stringify({ sessions: [legacy], difficulty: 'easy', voiceEnabled: false }));
+  const migrated = parseProgress(JSON.stringify({ ...initialProgress, sessions: [legacy], difficulty: 'easy', voiceEnabled: false }));
   expect(migrated.difficulty).toBe('easy');
   expect(migrated.voiceEnabled).toBe(false);
   expect(summary(migrated, pack.id, 'difficult').played).toBe(1);
@@ -66,38 +66,32 @@ describe('saved progress restoration', () => {
     for (const level of ['easy', 'normal', 'difficult'] as const) expect(difficultyPack(level).id).toBe(europePack.id);
   });
 
-  it('restores legacy schema-1 scores under unchanged mode IDs and migrates learning', () => {
-    const legacy = JSON.stringify({ voiceEnabled: false, sessions: [
+  it('restores canonical v4 scores under stable mode IDs', () => {
+    const stored = JSON.stringify({ ...initialProgress, voiceEnabled: false, sessions: [
       session('europe-countries', 'POL', 10, ['DEU', 'POL']),
       session('europe-countries:find-it', 'FRA', 20, ['FRA']),
       session('europe-countries:name-it', 'ITA', 30, ['ESP', 'ITA']),
     ] });
-    const restored = parseProgress(legacy);
-    expect(restored.schemaVersion).toBe(2);
+    const restored = parseProgress(stored);
+    expect(restored.schemaVersion).toBe(4);
     expect(restored.voiceEnabled).toBe(false);
-    expect(restored.difficulty).toBe('normal');
-    expect(restored.practiceMode).toBe('adaptive');
-    for (const mode of ['hot-cold', 'find-it', 'name-it'] as const) {
-      // Legacy rounds without a difficulty count as Difficult.
+    for (const mode of ['hot-cold', 'find-it', 'name-it'] as const)
       expect(summary(restored, modePackId(europePack.id, mode), 'difficult').played).toBe(1);
-    }
-    expect(restored.learning['europe-countries']?.POL).toMatchObject({ correct: 1, incorrect: 1, firstTry: 0 });
-    expect(restored.learning['europe-countries:find-it']?.FRA).toMatchObject({ correct: 1, firstTry: 1 });
-    expect(restored.learning['europe-countries:name-it']?.ITA).toMatchObject({ correct: 1, incorrect: 1 });
+    expect(restored.learning).toEqual(initialProgress.learning);
   });
 
-  it('round-trips current schema-2 progress without re-migrating learning', () => {
+  it('round-trips canonical schema-4 learning without recomputing history', () => {
     const current = parseProgress(JSON.stringify({
-      schemaVersion: 2, difficulty: 'easy', practiceMode: 'random', voiceEnabled: true,
+      ...initialProgress, schemaVersion: 4, difficulty: 'easy', practiceMode: 'random', voiceEnabled: true,
       sessions: [{ ...session('europe-countries:find-it', 'DEU', 40, ['DEU']), difficulty: 'easy' }],
       learning: { 'europe-countries': { POL: { correct: 2, incorrect: 0, firstTry: 2, lastPracticed: 9, recent: [true, true], lastRound: 8, lastGuesses: ['POL'] } } },
     }));
     expect(current.difficulty).toBe('easy');
     expect(current.practiceMode).toBe('random');
     expect(summary(current, modePackId(europePack.id, 'find-it'), 'easy').played).toBe(1);
-    // Schema-2 learning is kept as stored rather than rebuilt from sessions.
+    // Canonical learning is kept as stored rather than rebuilt from sessions.
     expect(Object.keys(current.learning)).toEqual(['europe-countries']);
     expect(parseProgress(JSON.stringify(current))).toEqual(current);
-    expect(() => parseProgress(JSON.stringify({ ...current, schemaVersion: 3 }))).toThrow();
+    expect(() => parseProgress(JSON.stringify({ ...current, schemaVersion: 5 }))).toThrow();
   });
 });

@@ -1,15 +1,22 @@
-import { useCallback, useEffect, useState } from 'react';
-import { BackHandler, Pressable, ScrollView, StyleSheet, Text, View, useColorScheme } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useMap } from '../features/geography/MapContext';
+import { MapSelector } from '../features/geography/MapSelector';
+import { mapName } from '../features/geography/maps';
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { PlaySetup, QuizSetupSummary } from '../features/geography/PlaySetup';
+import { explorerProgress } from '../features/geography/explorerProgress';
+import { profileCopy } from '../features/geography/profileCopy';
+import { polishCopy } from '../features/geography/polishCopy';
+import { recentQuizMode } from '../features/geography/launch';
+import { useRoute, type RouteProp } from '@react-navigation/native';
+import { StatusBar } from 'expo-status-bar';
+import { useCallback, useEffect, useState } from 'react';
+import { BackHandler, ImageBackground, Pressable, ScrollView, StyleSheet, Text, View, useColorScheme } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useFocusEffect, useNavigation, useIsFocused } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import type { TabParamList } from '../navigation';
 import { ModeSelector } from '../features/geography/ModeSelector';
-import { EuropeMap } from '../features/geography/EuropeMap';
-import { DifficultySelector } from '../features/geography/DifficultySelector';
-import { PracticeSelector } from '../features/geography/PracticeSelector';
-import { LearningOverview } from '../features/geography/LearningOverview';
+import homeArtwork from '../../assets/maps/world-blue-marble.jpg';
 import { useProgress } from '../features/geography/ProgressContext';
 import { ProgressStatus } from '../features/geography/ProgressStatus';
 import { gameCopy } from '../features/geography/copy';
@@ -19,18 +26,30 @@ import { themeForScheme, type WorldMapsPalette } from '../ui/worldMapsTheme';
 import { getTabBarMetrics } from '../platform/safeArea';
 import { GeographyGameScreen } from './GeographyGameScreen';
 
-const noResults = new Map();
-export function HomeScreen() {
+export function HomeScreen({ findClue, nameAnswer }: { findClue: FindClue; nameAnswer: NameAnswer }) {
+  const { map, mapId, restoring } = useMap();
   const { progress, status } = useProgress();
   const theme = themeForScheme(useColorScheme());
   const styles = makeStyles(theme);
+  const [showSetup, setShowSetup] = useState(false);
   const [mode, setMode] = useState<GameMode | null>(null);
-  const [findClue, setFindClue] = useState<FindClue>('mixed');
-  const [nameAnswer, setNameAnswer] = useState<NameAnswer>('country');
   const { language } = useLanguage();
   const c = gameCopy[language];
+  const p = polishCopy[language];
+  const pc = profileCopy[language];
+  const journey = explorerProgress(progress);
+  const available = !restoring && status !== 'loading' && status !== 'read-error';
+  const lastMode = recentQuizMode(progress.sessions, map.pack.id);
+  const route = useRoute<RouteProp<TabParamList, 'Home'>>();
+  const isFocused = useIsFocused();
   const navigation = useNavigation<BottomTabNavigationProp<TabParamList, 'Home'>>();
   const insets = useSafeAreaInsets();
+  useFocusEffect(useCallback(() => {
+    if (route.params?.mode && available) {
+      setMode(route.params.mode);
+      navigation.setParams({ mode: undefined });
+    }
+  }, [route.params, available, navigation]));
   useEffect(() => {
     navigation.setOptions({ tabBarStyle: mode ? { display: 'none' } : { ...getTabBarMetrics(insets.bottom), backgroundColor: theme.surface, borderTopColor: theme.border } });
   }, [mode, navigation, insets.bottom, theme.surface, theme.border]);
@@ -39,31 +58,48 @@ export function HomeScreen() {
     const listener = BackHandler.addEventListener('hardwareBackPress', () => { setMode(null); return true; });
     return () => listener.remove();
   }, [mode]));
-  if (mode) return <GeographyGameScreen key={`${mode}:${progress.difficulty}:${status === 'loading' || status === 'read-error' ? 'loading' : 'loaded'}`} mode={mode} findClue={findClue} nameAnswer={nameAnswer} onBack={() => setMode(null)} />;
+  if (mode) return <GeographyGameScreen map={map} key={`${mapId}:${mode}:${progress.difficulty}:${status === 'loading' || status === 'read-error' ? 'loading' : 'loaded'}`} mode={mode} findClue={findClue} nameAnswer={nameAnswer} onBack={() => setMode(null)} />;
   return <SafeAreaView edges={['top']} style={styles.screen}>
+    {isFocused && <StatusBar style="light" />}
     <ScrollView contentContainerStyle={styles.body}>
-      <View style={styles.top}>
-        <View><Text style={styles.brand}>World Maps</Text><Text style={styles.tagline}>{c.tagline}</Text></View>
-        <Pressable accessibilityRole="button" accessibilityLabel={c.settings} onPress={() => navigation.navigate('Settings')} style={styles.settings}>
-          <Ionicons name="settings-outline" size={24} color={theme.brandDark} />
-        </Pressable>
+      <ImageBackground source={homeArtwork} resizeMode="cover" style={styles.hero} imageStyle={styles.heroImage}>
+        <View style={styles.heroShade} />
+        <View style={styles.heroCopy}><Text style={styles.eyebrow}>{mapName(mapId, language).toUpperCase()}</Text>
+          <Text style={styles.brand}>World Maps</Text><Text style={styles.tagline}>{c.tagline}</Text>
+        </View>
+      </ImageBackground>
+      <View style={styles.menu}>
+        <MapSelector />
+        <View style={styles.setupCard}>
+          <QuizSetupSummary />
+          <Pressable accessibilityRole="button" accessibilityLabel={p.customize} accessibilityState={{ expanded: showSetup }} onPress={() => setShowSetup(true)} style={styles.customize}>
+            <Ionicons name="options-outline" size={20} color={theme.brand} /><Text style={styles.actionText}>{p.customize}</Text>
+          </Pressable>
+        </View>
+        {available && <Pressable accessibilityRole="button" onPress={() => setMode(lastMode ?? 'find-it')} style={styles.continue}>
+          <View style={{ flex: 1, gap: 4 }}><Text style={styles.continueTitle}>{lastMode ? p.continue : p.start}</Text><Text style={styles.continueDetail}>{journey.discovered} {pc.discovered.toLowerCase()} · {pc.level} {journey.level} · {c.modes[lastMode ?? 'find-it'].title}</Text></View>
+          <Ionicons name="arrow-forward" size={22} color="#FFF" />
+        </Pressable>}
+        <ModeSelector onChange={setMode} language={language} findClue={findClue} nameAnswer={nameAnswer} disabled={!available} />
+        <ProgressStatus language={language} />
       </View>
-      <View style={styles.hero}>
-        <EuropeMap results={noResults} revealedIds={[]} showNames={false} onSelect={() => undefined} language={language} preview atlas />
-        <View style={styles.heroCopy}><Ionicons name="earth-outline" size={21} color={theme.brand} /><Text style={styles.region}>{c.europe}</Text><Text style={styles.offline}>{c.offline}</Text></View>
-      </View>
-      <ProgressStatus language={language} />
-      <DifficultySelector language={language} />
-      <PracticeSelector language={language} />
-      <ModeSelector onChange={setMode} language={language} findClue={findClue} onFindClue={setFindClue} nameAnswer={nameAnswer} onNameAnswer={setNameAnswer} />
-      <LearningOverview language={language} />
-      <Text style={styles.source}>{c.mapSource}</Text>
     </ScrollView>
+    <PlaySetup visible={showSetup} onClose={() => setShowSetup(false)} />
+
   </SafeAreaView>;
 }
 const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
-  screen: { flex: 1, backgroundColor: theme.paper }, body: { padding: 16, gap: 18, maxWidth: 720, width: '100%', alignSelf: 'center', paddingBottom: 24 },
-  top: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }, brand: { fontSize: 30, fontWeight: '800', color: theme.navy }, tagline: { color: theme.muted, fontSize: 13, marginTop: 5 },
-  settings: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
-  hero: { borderRadius: 20, overflow: 'hidden', backgroundColor: theme.surface, borderWidth: 1, borderColor: theme.border }, heroCopy: { flexDirection: 'row', alignItems: 'center', padding: 12, gap: 8, flexWrap: 'wrap' }, region: { color: theme.navy, fontWeight: '800', fontSize: 15 }, offline: { color: theme.muted, fontSize: 11 }, source: { color: theme.muted, fontSize: 10, textAlign: 'center' },
+  screen: { flex: 1, backgroundColor: '#123E70' }, body: { flexGrow: 1, backgroundColor: theme.paper, paddingBottom: 18 },
+  hero: { width: '100%', height: 150, backgroundColor: '#123E70', overflow: 'hidden' },
+  heroImage: { width: '100%', height: '100%', opacity: 1 }, heroShade: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(5,35,67,0.58)' },
+  heroCopy: { alignItems: 'center', marginTop: 20, gap: 6 }, eyebrow: { fontSize: 10, letterSpacing: 3, fontWeight: '800', color: '#D7EAFE' },
+  brand: { fontSize: 30, letterSpacing: -1.2, fontWeight: '800', color: '#FFFFFF', textShadowColor: 'rgba(6,26,48,0.3)', textShadowRadius: 12 },
+  tagline: { color: '#ECF6FF', fontSize: 14, letterSpacing: 0.5 },
+  setupCard: { backgroundColor: theme.surface, padding: 14, borderRadius: 18, gap: 6 },
+  customize: { minHeight: 44, flexDirection: 'row', gap: 8, alignItems: 'center' },
+  actionText: { color: theme.brand, fontSize: 13, fontWeight: '700' },
+  continue: { padding: 14, minHeight: 64, borderRadius: 18, backgroundColor: theme.brandDark, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  continueTitle: { color: '#FFF', fontSize: 16, fontWeight: '800' },
+  continueDetail: { color: '#ECF6FF', fontSize: 11, lineHeight: 17 },
+  menu: { marginTop: -26, paddingHorizontal: 18, width: '100%', maxWidth: 560, alignSelf: 'center', gap: 10 },
 });

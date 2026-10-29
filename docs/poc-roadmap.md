@@ -1,4 +1,10 @@
-# Usable POC implementation — 2026-10-25
+# Original POC implementation — historical snapshot (2026-10-25)
+
+> **Historical record.** The original Europe-only and light-only scope below is no longer
+> the current implementation. Use [current POC acceptance checklist](poc-current-checklist.md)
+> for six continents, light/dark, Library/Profile, persisted choices, PL/RU capital names
+> and optional regional music/effects. Old test counts and artifact hashes remain snapshots.
+
 
 Target: a standalone offline Europe app with Home, four modes, country learning,
 EN/PL, saved completed scores and voice preference. One map style, individual
@@ -18,6 +24,18 @@ rounds, no backend/accounts. No claim of physical-device readiness without proof
 
 Deferred: terrain themes, photographs/population, timed/10-question runs, streaks,
 additional regions, store publication and cloud services.
+
+## Current roadmap (pre-release, 2026-10-28)
+
+The six-region core is implemented: Europe, Asia, Africa, North America, South America and Oceania; all four modes, Library/Profile, EN/PL/RU, local v4 progress, opt-in audio and physical relief. Historical stage notes below describe earlier snapshots and are not current acceptance evidence.
+
+1. **P0 — Main-flow regression:** complete [issue #41](https://github.com/spider-su/world-maps/issues/41) with Home → all modes → completion/Next/Back → restart, storage failure and recovery.
+2. **P1 — Persisted audio settings:** verify rapid edits, late reads, failed writes, replay and background/speech behavior. Fix observed races without general platform refactoring.
+3. **P1 — Device acceptance:** verify all six maps, relief alignment, readable labels, island targets, audio, offline use, themes, accessibility and screen sizes on the current standalone Android APK. iOS requires separate evidence.
+4. **P1 — Release stabilization:** follow [current acceptance checklist](poc-current-checklist.md) and [release checklist](release-checklist.md); reconcile tested `develop` with release branch only after CI. Keep canonical progress schema v4; pre-release legacy migration is not required.
+5. **P2 — Verified cleanup only:** check all references across runtime, tests, scripts and native/web adapters before removing helper code; keep historical artifact evidence as snapshots.
+
+No new game modes, accounts or cloud features are required for the first release candidate.
 
 ## Rules
 
@@ -93,3 +111,19 @@ Stage results and any remaining gates are appended as implementation proceeds.
 - All implementation stages are committed. POC source/local preview are ready for
   a personal trial with the explicit remaining physical-device, audio, pinch and
   iOS gates above. No store publication, production signing or merge performed.
+
+### Map-first visual refresh — 2026-10-25
+
+Home now uses decorative offline orbit artwork and four mode cards. Secondary
+setup lives in a sheet; the game prioritizes the map, compact feedback and scores.
+Full Learn facts and non-gesture map controls remain available on demand.
+See [UI implementation and evidence](map-first-ui.md). This is presentation work,
+not a new ruleset or completion of physical-device/iOS acceptance gates.
+
+## Continent expansion — 2026-10-26
+
+The additional-regions deferral above describes the original Europe POC. Four
+offline maps now extend all modes: Asia, Africa, South America and Oceania.
+See [coverage and generation](continent-maps.md) and
+[validation evidence](evidence/continent-maps/README.md). Physical-phone, iOS,
+screen-reader and audible-speech validation remain separate pending gates.

@@ -10,9 +10,10 @@ interface LabelLocation {
 export function mapLabels<T extends LabelLocation>(
   locations: T[], showNames: boolean, guessedIds: readonly string[],
   frame: { x: number; y: number; w: number; h: number }, screenWidth: number,
+  reserved: readonly { left: number; top: number; right: number; bottom: number }[] = [],
 ): T[] {
   const scale = screenWidth / frame.w;
-  const boxes: { left: number; top: number; right: number; bottom: number }[] = [];
+  const boxes = [...reserved];
   const guessed = new Set(guessedIds);
   return locations.filter(location => showNames || guessed.has(location.id))
     .sort((a, b) => Number(guessed.has(b.id)) - Number(guessed.has(a.id)) || (b.area ?? 0) - (a.area ?? 0))

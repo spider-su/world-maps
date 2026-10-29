@@ -33,8 +33,21 @@ describe('local game progress', () => {
     }
     expect(state.sessions).toHaveLength(MAX_HISTORY);
     expect(parseProgress('{bad')).toEqual(initialProgress);
-    expect(parseProgress(JSON.stringify({ voiceEnabled: false, sessions: [sessionFromRound(completed), { bad: true }] }))).toEqual({
-      ...initialProgress, voiceEnabled: false, sessions: [sessionFromRound(completed)], learning: parseProgress(JSON.stringify({ sessions: [sessionFromRound(completed)] })).learning,
+    expect(parseProgress(JSON.stringify({ ...initialProgress, voiceEnabled: false, sessions: [sessionFromRound(completed), { bad: true }] }))).toEqual({
+      ...initialProgress, voiceEnabled: false, sessions: [sessionFromRound(completed)], learning: parseProgress(JSON.stringify({ ...initialProgress, sessions: [sessionFromRound(completed)] })).learning,
     });
+  });
+});
+
+describe('canonical progress schema', () => {
+  it('requires v4 rather than migrating older data', () => {
+    expect(() => parseProgress(JSON.stringify({ ...initialProgress, schemaVersion: 3 }))).toThrow('Unsupported progress version');
+    expect(() => parseProgress(JSON.stringify({ ...initialProgress, schemaVersion: 5 }))).toThrow('Unsupported progress version');
+    expect(parseProgress(JSON.stringify(initialProgress))).toEqual(initialProgress);
+  });
+  it('retains valid avatars and defaults an unknown avatar', () => {
+    for (const explorer of ['amber', 'ocean', 'forest'] as const)
+      expect(parseProgress(JSON.stringify({ ...initialProgress, explorer })).explorer).toBe(explorer);
+    expect(parseProgress(JSON.stringify({ ...initialProgress, explorer: 'unknown' })).explorer).toBe('amber');
   });
 });

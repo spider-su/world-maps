@@ -1,4 +1,4 @@
-import { europePack, europeShapes } from './europe';
+import { maps, type MapDefinition } from './maps';
 import type { GeographyPack } from './engine';
 
 export const DIFFICULTIES = ['easy', 'normal', 'difficult'] as const;
@@ -8,11 +8,11 @@ export function isDifficulty(value: unknown): value is Difficulty {
   return DIFFICULTIES.some(level => level === value);
 }
 
-// Projected outline area reflects tap-target size on this map, not total land area.
-const largest = [...europeShapes].sort((a, b) => b.area - a.area).slice(0, 7).map(shape => shape.id);
-const mediumOrLarger = europeShapes.filter(shape => shape.area >= 700).map(shape => shape.id);
-export function difficultyPack(difficulty: Difficulty): GeographyPack {
-  if (difficulty === 'difficult') return europePack;
-  const ids = difficulty === 'easy' ? largest : mediumOrLarger;
-  return { ...europePack, locations: europePack.locations.filter(location => ids.includes(location.id)) };
+// Outline area measures visible tap size in the shared 864x570 viewBox.
+export function difficultyPack(difficulty: Difficulty, map: MapDefinition = maps.europe): GeographyPack {
+  if (difficulty === 'difficult') return map.pack;
+  const sorted = [...map.shapes].sort((a, b) => b.area - a.area);
+  const ids = difficulty === 'easy' ? sorted.slice(0, 7).map(s => s.id) :
+    sorted.slice(0, Math.max(4, sorted.filter(s => s.area >= 700).length)).map(s => s.id);
+  return { ...map.pack, locations: map.pack.locations.filter(location => ids.includes(location.id)) };
 }

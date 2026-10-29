@@ -1,5 +1,4 @@
 import type { GeographyPack, Round } from './engine';
-import type { CompletedSession } from './progress';
 
 export type PracticeMode = 'adaptive' | 'random';
 export interface CountryLearning {
@@ -36,22 +35,6 @@ export function recordPractice(learning: LearningProgress, packId: string, round
   return { ...learning, [packId]: { ...learning[packId], [round.targetId]: next } };
 }
 
-/** Version-1 sessions contain enough data to reconstruct completed-round practice.
- * Call once at migration, never on already-versioned records (which include misses
- * from incomplete rounds). The original score/history array is left untouched.
- */
-export function migrateLearning(sessions: readonly CompletedSession[]): LearningProgress {
-  let result: LearningProgress = {};
-  for (const session of sessions) {
-    const round: Round = { ...session, guesses: [], completedAt: undefined };
-    for (const id of session.guesses) {
-      result = recordPractice(result, session.packId, round, id, session.completedAt);
-      round.guesses.push(id);
-    }
-  }
-  return result;
-}
-
 export function parseLearning(value: unknown): LearningProgress {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
   const result: LearningProgress = {};
@@ -61,11 +44,12 @@ export function parseLearning(value: unknown): LearningProgress {
     for (const [id, raw] of Object.entries(countries)) {
       if (!raw || typeof raw !== 'object') continue;
       const r = raw as Partial<CountryLearning>;
-      if (![r.correct, r.incorrect, r.firstTry, r.lastPracticed, r.lastRound].every(n => typeof n === 'number' && Number.isFinite(n) && n >= 0) ||
+      if (![r.correct, r.incorrect, r.firstTry, r.lastPracticed].every(n => typeof n === 'number' && Number.isFinite(n) && n >= 0) ||
+        typeof r.lastRound !== 'number' || !Number.isFinite(r.lastRound) || r.lastRound < -1 ||
         r.firstTry! > r.correct! || !Array.isArray(r.recent) || !r.recent.every(v => typeof v === 'boolean') ||
         !Array.isArray(r.lastGuesses) || !r.lastGuesses.every(v => typeof v === 'string') ||
         ![r.correct, r.incorrect, r.firstTry].every(Number.isInteger)) continue;
-      valid[id] = { ...r, recent: r.recent.slice(-10), lastGuesses: [...new Set(r.lastGuesses)].slice(-47) } as CountryLearning;
+      valid[id] = { ...r, recent: r.recent.slice(-10), lastGuesses: [...new Set(r.lastGuesses)] } as CountryLearning;
     }
     // Object.fromEntries creates data properties, including unusual imported keys.
     if (Object.keys(valid).length) Object.defineProperty(result, packId, { value: valid, enumerable: true, writable: true, configurable: true });

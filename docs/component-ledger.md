@@ -1,90 +1,27 @@
-# Component ledger
+# World Maps component ledger — current ownership
 
-This ledger distinguishes source-tested behavior from coverage provided by this starter. Update it when the template changes.
+This is the current application inventory. Previous starter-template and early POC claims are historical; they are not evidence of current device acceptance.
 
-| Component | Source / contract | Test evidence | Compatibility / adoption |
-|---|---|---|---|
-| App shell owns top safe area; visible tabs own bottom; hidden-tabs screen may own both edges | Ryczałt Android system-bar regression; reusable safe-area contract | Template tests cover both navigation modes and inset sizing | Expo 57 / RN 0.86 baseline; do not double-consume bottom inset |
-| Tab bar adds the reported bottom inset once and enforces minimum padding when inset is zero | Shared behavior; height and spacing remain app-configurable | Focused source tests in both apps; starter tests cover positive, zero, and negative inset inputs | Compare tab sizing with product design before adoption |
-| Modal/fallback screens account for system edges | Both apps' modal/safe-area conventions | Edge contract source tests; starter tests cover edge constants and modal padding | Modal windows need their own safe area; avoid consuming the same inset twice |
-| Theme, auth, API, persistence, notifications, telemetry, release identity | Intentionally omitted from starter | Not applicable | Add and verify per app; do not copy app credentials or product semantics |
+| Component | Current owner | Contract / remaining gate |
+|---|---|---|
+| Navigation / safe areas | `src/navigation.tsx`, `src/platform/safeArea.ts` | Five tabs: Home, Maps, Library, Profile, Settings; game hides tabs and owns both insets; verify native gestures |
+| Four game modes and variants | `HomeScreen`, `GeographyGameScreen`, `engine.ts`, `modes.ts` | Hot & Cold, Find It, Name It, Learn; maintain answer secrecy and verify completion flow |
+| Six continent registry | `maps.ts`, `EuropeMap.tsx`, bundled `data/` | Europe, Asia, Africa, North America, South America, Oceania; terrain background does not own hit-testing |
+| Country selection | `CountryPath.tsx`, `CountryPath.web.tsx`, `mapPicker.ts`, `selection.ts` | Keep native/web SVG adapters, zoom/pan guard and small-country pickers |
+| Local progress | `ProgressContext.tsx`, `progressStore.ts`, `progressStorage.ts`, `progress.ts` | Pre-release canonical v4; serialized saves, read-error protection, retry |
+| Learning and XP | `learning.ts`, `explorerProgress.ts`, `explorer.ts` | Adaptive/random practice, discoveries, avatars, achievements; validate restart restoration |
+| Map and quiz preferences | `MapContext.tsx`, `mapQuizPreferences.ts` | Persist selected continent, Find It clue and Name It answer variant |
+| Language / pronunciation | `LanguageContext.tsx`, `countryFacts.ts`, `speechController.ts` | EN/PL/RU UI and capitals, native voice availability; device test required |
+| Audio | `MusicContext.tsx`, `musicAssets.ts`, `soundPolicy.ts` | Six optional region themes, optional quiz cues, speech priority, no background playback |
+| Country details | `CountryInfoCard`, `CountryGallery`, `ExploreScreen` | Offline facts/flags; attributed online photos are opt-in |
+| Launch setup / continue | `PlaySetup`, `QuizSetupSummary`, `launch.ts` | Existing saved contexts; transient route launch; latest completed selected-map family |
+| Learning presentation | `ProfileScreen`, `LearningOverview`, `explorerReward` | Profile owns history/statistics; result rewards are derived; Library keeps list mounted behind shared details |
+| Native release verification | `.github/workflows/mobile-ci.yml`, `docs/release-checklist.md` | CI and APK build are not physical-device or iOS acceptance |
 
-## Validation status
+## Cleanup policy
 
-- Source-level safe-area contract and unit tests: present in both source apps; starter has equivalent focused tests.
-- Automated validation: this starter's CI result is recorded in the initial commit/release notes and GitHub Actions.
-- Android three-button navigation: not claimed as verified by the source port audit; validate on a device/emulator using that mode.
-- iOS simulator safe areas: not claimed as verified by the source port audit; validate in simulator.
-- Physical-device, store-build, and live-service behavior: not established by unit tests or CI.
-- Hidden-tab safe-area mode: unit-tested ownership only; device validation still required.
-- Local-first consistency, navigation/scroll, and release-upgrade recipes: documented patterns, not prepackaged financial models or tested store deployment.
+Remove a helper only after reference checks cover `src/`, `scripts/`, tests, native/web platform variants and code generation. Preserve `outlineDistanceKm` used by the geography generator. Suspected unused `regionPack`, `SEA`, `LAND` and safe-area helpers require verification; do not remove them based on the historical issue description alone. The old `HotColdScreen` component name is not a current route.
 
-For each future component, replace generic status with dated evidence and the device/OS/configuration used. A test passing in one app does not prove the receiving app adopted it correctly.
+## Remaining evidence
 
-| App error boundary and loading/error/empty UI | Generic template primitives | Storage contract unit tests; UI device evidence pending | Error boundary handles render failures only; async failures require screen-level handling |
-| Opt-in typed persistence and native/web adapters | Generic template contract | Unit tests cover round-trip, missing/corrupt data, invalid keys and backend errors | AsyncStorage install required only for adopting native apps; web localStorage is browser-only |
-| Codex instructions and skill templates | Adapted from Ryczałt workflow structure, without project-specific paths or credentials | Documentation only; emulator execution not yet verified | Downstream apps must supply app identity, test fixtures and device evidence |
-
-## World Maps game components
-
-- `src/features/geography/CountryPath`: app-owned SVG path adapter. Web uses a DOM `onClick`; native uses `react-native-svg` `onPress`. No new dependencies. Regression test covers web event routing; browser smoke verified selection, repeat guesses, completion, restart, zoom/pan and tab navigation on 2026-10-24. Native runtime remains unverified.
-- `HotColdScreen` owns the top safe-area edge; visible tabs own the bottom edge.
-
-- Europe map views: bundled 1:50m country/context geometry and collision-filtered labels share the existing 864×570 coordinates. `mapLabels` exposes names only when explicitly enabled or already guessed. (Historical: an interactive `CountryMarker` adapter existed here; markers are now non-interactive and small countries are selected via `selectionAlternatives`, so it was removed.) No dependencies added. Web evidence and current native limitations are recorded in `docs/europe-map-assets.md`.
-
-- POC shell: `HomeScreen` owns mode entry; `GeographyGameScreen` owns one mounted
-  round. Game hides tabs and owns top/bottom insets; Home/Settings own only top.
-  `EuropeMap` shares offline geometry, gestures and controls with Home preview.
-  `ModeSelector` accepts EN/PL copy and optional selected mode. Existing branding
-  branch was integrated, including its app-specific icon and theme tokens.
-
-- `CountryInfoCard`: app-owned offline flag/name/capital/pronunciation card, EN/PL.
-  All 47 map IDs covered by a pinned derived country dataset and SVG flag artwork;
-  attribution and full licenses in `docs/country-data.md` and `docs/licenses/`.
-
-- `ProgressProvider` uses one feature-owned serialized store for Home/game/Settings.
-  Failed reads block mutations; failed saves retain the latest in-memory snapshot
-  and expose retry. Tests cover interleaved updates, read failure and save retry.
-- Product Settings replaces biometric/demo flows with language, voice, recent-history
-  summaries and bundled data license notices. EN/PL covers controls and country names;
-  speech uses the matching language, cancels queued pronunciation on blur/unmount.
-
-- `DifficultySelector`: app-owned EN/PL Home radio buttons using the shared progress
-  store; blocks changes while loading or after failed reads. `difficultyPack`
-  filters quiz targets, guesses and Name It distractors by projected outline area.
-- `EuropeMap.selectableIds`: optional eligible country IDs; omitted for unrestricted
-  Learn/preview. Excluded outlines are muted and noninteractive; excluded markers
-  are hidden. Quiz score summaries accept a difficulty filter; legacy rounds count
-  as Difficult. See `docs/difficulty-testing.md` for current evidence.
-
-- P0 map stabilization: even-odd multipart paths; `selectionAlternatives` covers
-  marker-only countries and outlines below 700 map-area units. `createSelectionGuard`
-  suppresses guesses during/just after movement. Distances are an offline table
-  generated from shared geometry; see `docs/p0-geography-gameplay.md`.
-
-- `learning.ts`: schema-2 country/mode counters, one-time score migration,
-  deterministic adaptive/random target sampling, and learning summaries.
-- `LearningOverview` / `PracticeSelector`: app-owned saved practice controls and
-  expandable country progress; reused on Home/Settings. See country-learning.md.
-
-- `EuropeMap.atlas` / `showBorders`: optional offline relief appearance, sharing
-  the existing SVG viewBox and hit geometry; selected terrain is translucent blue.
-  Raster registration/asset checksums are tested. See docs/atlas-data.md.
-
-- `LANGUAGE_OPTIONS`, `SPEECH_LOCALES`: shared EN/PL/RU language/voice locale contract.
-- `speechController`: serialized stop/speak queue, installed-voice matching, stale
-  callback guards and recoverable unavailable state. Hook stops on blur, mute,
-  language change and unmount. Physical audible speech remains a separate gate.
-
-- Gameplay internals: `startRoundFor` starts a round for an explicit adaptive/random
-  target and rejects IDs outside the active pack; `classifyGuess` is the pure
-  proximity result shared by `guess()` and map colors (zero-distance neighbours stay
-  non-correct). `modePackId` owns the stored IDs (`europe-countries` for Hot & Cold,
-  `europe-countries:<mode>` otherwise). Tabs are typed by `TabParamList`. Shell and gameplay
-  text, including tab labels, lives in `gameCopy`; `src/ui/i18n.ts` keeps only
-  language and speech-locale definitions.
-
-- Cleanup integration review: `gamePrompt` accepts resolved Find It clues and
-  Name It answer types, including legacy capital modes. ModeSelector retains the
-  current system-aware icon tints while using the four public `GAME_MODES` IDs.
-  Theme and richer Learn components from develop remain intact.
+Full Home → mode → answer → completion → Next/Back → persisted restore interaction tests are tracked in [issue #41](https://github.com/spider-su/world-maps/issues/41). Real Android, voice/music fidelity, screen-reader and iOS acceptance remain separate from automated checks.

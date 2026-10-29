@@ -1,3 +1,9 @@
+import type { GameMode } from './features/geography/modes';
+import { MusicProvider } from './features/music/MusicContext';
+import { MapProvider, useMap } from './features/geography/MapContext';
+import { EuropeScreen } from './screens/EuropeScreen';
+import { ExploreScreen } from './screens/ExploreScreen';
+import { ProfileScreen } from './screens/ProfileScreen';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { useColorScheme } from 'react-native';
@@ -10,10 +16,11 @@ import { getTabBarMetrics } from './platform/safeArea';
 import { useLanguage } from './ui/LanguageContext';
 import { gameCopy } from './features/geography/copy';
 
-export type TabParamList = { Home: undefined; Settings: undefined };
+export type TabParamList = { Home: { mode?: GameMode } | undefined; Europe: undefined; Explore: { filter?: 'all' | 'undiscovered'; reset?: boolean } | undefined; Profile: undefined; Settings: undefined };
 const Tab = createBottomTabNavigator<TabParamList>();
 
 function Tabs() {
+  const { mapId, findClue, nameAnswer } = useMap();
   const { language } = useLanguage();
   const c = gameCopy[language];
   const theme = themeForScheme(useColorScheme());
@@ -22,11 +29,19 @@ function Tabs() {
   return (
     <Tab.Navigator screenOptions={{
       headerShown: false,
+      tabBarLabelStyle: { fontSize: 11, marginHorizontal: 0 },
       tabBarActiveTintColor: theme.brand,
       tabBarInactiveTintColor: theme.muted,
       tabBarStyle: { ...tabBar, backgroundColor: theme.surface, borderTopColor: theme.border, height: tabBar.height, paddingTop: tabBar.paddingTop, paddingBottom: tabBar.paddingBottom },
     }}>
-      <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: c.home, tabBarIcon: ({ color, size }) => <Ionicons name="earth-outline" color={color} size={size} /> }} />
+      <Tab.Screen name="Home" options={{ tabBarLabel: c.home, tabBarIcon: ({ color, size }) => <Ionicons name="home-outline" color={color} size={size} /> }}>
+        {() => <HomeScreen findClue={findClue} nameAnswer={nameAnswer} />}
+      </Tab.Screen>
+      <Tab.Screen name="Europe" options={{ tabBarLabel: c.mapsTab, tabBarIcon: ({ color, size }) => <Ionicons name="earth-outline" color={color} size={size} /> }}>
+        {() => <EuropeScreen />}
+      </Tab.Screen>
+      <Tab.Screen name="Explore" children={() => <ExploreScreen key={mapId} />} options={{ tabBarLabel: c.libraryTab, tabBarIcon: ({ color, size }) => <Ionicons name="book-outline" color={color} size={size} /> }} />
+      <Tab.Screen name="Profile" component={ProfileScreen} options={{ tabBarLabel: c.profile, tabBarIcon: ({ color, size }) => <Ionicons name="person-outline" color={color} size={size} /> }} />
       <Tab.Screen name="Settings" component={SettingsScreen} options={{ tabBarLabel: c.settings, tabBarIcon: ({ color, size }) => <Ionicons name="settings-outline" color={color} size={size} /> }} />
     </Tab.Navigator>
   );
@@ -35,5 +50,5 @@ function Tabs() {
 export function AppNavigation() {
   const theme = themeForScheme(useColorScheme());
   const base = useColorScheme() === 'dark' ? DarkTheme : DefaultTheme;
-  return <NavigationContainer theme={{ ...base, colors: { ...base.colors, background: theme.paper, card: theme.surface, text: theme.navy, border: theme.border, primary: theme.brand } }}><Tabs /></NavigationContainer>;
+  return <NavigationContainer theme={{ ...base, colors: { ...base.colors, background: theme.paper, card: theme.surface, text: theme.navy, border: theme.border, primary: theme.brand } }}><MapProvider><MusicProvider><Tabs /></MusicProvider></MapProvider></NavigationContainer>;
 }

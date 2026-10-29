@@ -1,0 +1,33 @@
+{
+  "sourceCommit": "bb6e042df6826c0a4a96e40fa65668457fd6a188",
+  "trackedChanges": false,
+  "sha256": "cae1a03349ad7b9e88c47d1c01680d03634993459f58c76bcf186963f1744371",
+  "architectures": "arm64-v8a",
+  "embeddedJavaScript": true,
+  "signing": "Development signing from generated Android project; not store credentials",
+  "installedApkSha256": "cae1a03349ad7b9e88c47d1c01680d03634993459f58c76bcf186963f1744371",
+  "date": "2026-10-29",
+  "unitTests": 143,
+  "unitFiles": 39,
+  "expoDoctor": "21/21 PASS",
+  "productionWeb": "PASS",
+  "browserSmoke": "PASS (isolated canonical v4 fixture, EN/PL/RU, read/save failure recovery)",
+  "broadAndroidSource": "969c6610399fb2732d456e5b20617a06829ab110",
+  "broadAndroid": "PASS (six maps offline, four modes, map label selection, Library Back/scroll, actual update and restart, dark/150%/three-button)",
+  "finalCompactAndroid": "PASS (320x568dp, 150% text, dark/three-button, single-column answers, scrolled result/Next, fixed map bounds)",
+  "unverified": [
+    "physical Android",
+    "iOS",
+    "screen reader operation",
+    "audible speech/music",
+    "native storage fault injection",
+    "full native two-finger pinch regression"
+  ],
+  "restoredEmulator": {
+    "size": "1080x2400",
+    "fontScale": 1.0,
+    "night": false,
+    "navigation": "gesture",
+    "airplaneMode": true
+  }
+}

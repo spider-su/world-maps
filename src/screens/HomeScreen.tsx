@@ -25,6 +25,8 @@ import { useLanguage } from '../ui/LanguageContext';
 import { themeForScheme, type WorldMapsPalette } from '../ui/worldMapsTheme';
 import { getTabBarMetrics } from '../platform/safeArea';
 import { GeographyGameScreen } from './GeographyGameScreen';
+import { GlobeScreen } from './GlobeScreen';
+import { globeCopy } from '../features/geography/RotatingGlobe';
 
 export function HomeScreen({ findClue, nameAnswer }: { findClue: FindClue; nameAnswer: NameAnswer }) {
   const { map, mapId, restoring } = useMap();
@@ -32,6 +34,7 @@ export function HomeScreen({ findClue, nameAnswer }: { findClue: FindClue; nameA
   const theme = themeForScheme(useColorScheme());
   const styles = makeStyles(theme);
   const [showSetup, setShowSetup] = useState(false);
+  const [showGlobe, setShowGlobe] = useState(false);
   const [mode, setMode] = useState<GameMode | null>(null);
   const { language } = useLanguage();
   const c = gameCopy[language];
@@ -51,13 +54,14 @@ export function HomeScreen({ findClue, nameAnswer }: { findClue: FindClue; nameA
     }
   }, [route.params, available, navigation]));
   useEffect(() => {
-    navigation.setOptions({ tabBarStyle: mode ? { display: 'none' } : { ...getTabBarMetrics(insets.bottom), backgroundColor: theme.surface, borderTopColor: theme.border } });
-  }, [mode, navigation, insets.bottom, theme.surface, theme.border]);
+    navigation.setOptions({ tabBarStyle: mode || showGlobe ? { display: 'none' } : { ...getTabBarMetrics(insets.bottom), backgroundColor: theme.surface, borderTopColor: theme.border } });
+  }, [mode, showGlobe, navigation, insets.bottom, theme.surface, theme.border]);
   useFocusEffect(useCallback(() => {
-    if (!mode) return;
-    const listener = BackHandler.addEventListener('hardwareBackPress', () => { setMode(null); return true; });
+    if (!mode && !showGlobe) return;
+    const listener = BackHandler.addEventListener('hardwareBackPress', () => { setMode(null); setShowGlobe(false); return true; });
     return () => listener.remove();
-  }, [mode]));
+  }, [mode, showGlobe]));
+  if (showGlobe) return <GlobeScreen onBack={() => setShowGlobe(false)} />;
   if (mode) return <GeographyGameScreen map={map} key={`${mapId}:${mode}:${progress.difficulty}:${status === 'loading' || status === 'read-error' ? 'loading' : 'loaded'}`} mode={mode} findClue={findClue} nameAnswer={nameAnswer} onBack={() => setMode(null)} />;
   return <SafeAreaView edges={['top']} style={styles.screen}>
     {isFocused && <StatusBar style="light" />}
@@ -81,6 +85,12 @@ export function HomeScreen({ findClue, nameAnswer }: { findClue: FindClue; nameA
           <Ionicons name="arrow-forward" size={22} color="#FFF" />
         </Pressable>}
         <ModeSelector onChange={setMode} language={language} findClue={findClue} nameAnswer={nameAnswer} disabled={!available} />
+        <Pressable accessibilityRole="button" accessibilityLabel={globeCopy[language].open} disabled={restoring}
+          onPress={() => setShowGlobe(true)} style={styles.globeEntry}>
+          <Ionicons name="earth-outline" size={30} color={theme.brand} />
+          <View style={{ flex: 1, gap: 3 }}><Text style={styles.globeTitle}>{globeCopy[language].open}</Text><Text style={styles.globeHint}>{globeCopy[language].hint}</Text></View>
+          <Ionicons name="arrow-forward" size={20} color={theme.brand} />
+        </Pressable>
         <ProgressStatus language={language} />
       </View>
     </ScrollView>
@@ -101,5 +111,7 @@ const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
   continue: { padding: 14, minHeight: 64, borderRadius: 18, backgroundColor: theme.brandDark, flexDirection: 'row', alignItems: 'center', gap: 12 },
   continueTitle: { color: '#FFF', fontSize: 16, fontWeight: '800' },
   continueDetail: { color: '#ECF6FF', fontSize: 11, lineHeight: 17 },
+  globeEntry: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12, minHeight: 64, backgroundColor: theme.surface, borderRadius: 18 },
+  globeTitle: { color: theme.navy, fontSize: 14, fontWeight: '700' }, globeHint: { color: theme.muted, fontSize: 11, lineHeight: 16 },
   menu: { marginTop: -26, paddingHorizontal: 18, width: '100%', maxWidth: 560, alignSelf: 'center', gap: 10 },
 });

@@ -14,6 +14,8 @@ This is the current application inventory. Previous starter-template and early P
 | Language / pronunciation | `LanguageContext.tsx`, `countryFacts.ts`, `speechController.ts` | EN/PL/RU UI and capitals, native voice availability; device test required |
 | Audio | `MusicContext.tsx`, `musicAssets.ts`, `soundPolicy.ts` | Six optional region themes, optional quiz cues, speech priority, no background playback |
 | Country details | `CountryInfoCard`, `CountryGallery`, `ExploreScreen` | Offline facts/flags; attributed online photos are opt-in |
+| Launch setup / continue | `PlaySetup`, `QuizSetupSummary`, `launch.ts` | Existing saved contexts; transient route launch; latest completed selected-map family |
+| Learning presentation | `ProfileScreen`, `LearningOverview`, `explorerReward` | Profile owns history/statistics; result rewards are derived; Library keeps list mounted behind shared details |
 | Native release verification | `.github/workflows/mobile-ci.yml`, `docs/release-checklist.md` | CI and APK build are not physical-device or iOS acceptance |
 
 ## Cleanup policy

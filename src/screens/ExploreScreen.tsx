@@ -1,15 +1,18 @@
-import { useCallback, useMemo, useState } from 'react';
-import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+import { useCallback, useMemo, useRef, useState } from 'react';
+import { useFocusEffect, useIsFocused, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
+import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import type { TabParamList } from '../navigation';
+import { OptionsSheet } from '../ui/OptionsSheet';
+import { polishCopy } from '../features/geography/polishCopy';
 import { StatusBar } from 'expo-status-bar';
-import { BackHandler, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useColorScheme } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SvgXml } from 'react-native-svg';
-import { Ionicons } from '@expo/vector-icons';
 import { useLanguage } from '../ui/LanguageContext';
 import { themeForScheme, type WorldMapsPalette } from '../ui/worldMapsTheme';
 import { regionCountries, regionLabel, REGION_IDS, type RegionId } from '../features/geography/regions';
 import { countryFacts, countryName } from '../features/geography/countryFacts';
-import { CountryInfoCard } from '../features/geography/CountryInfoCard';
+import { CountryInfoCard, CountryInfoHeading } from '../features/geography/CountryInfoCard';
 import { useCountrySpeech } from '../features/geography/useCountrySpeech';
 import { useProgress } from '../features/geography/ProgressContext';
 import { learningSummary } from '../features/geography/learning';
@@ -32,32 +35,33 @@ export function ExploreScreen() {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<string | null>(null);
   const focused = useIsFocused();
+  const p = polishCopy[language];
+  const route = useRoute<RouteProp<TabParamList, 'Explore'>>();
+  const navigation = useNavigation<BottomTabNavigationProp<TabParamList, 'Explore'>>();
+  const filter = route.params?.filter ?? 'all';
+  const list = useRef<ScrollView>(null);
   useFocusEffect(useCallback(() => {
-    if (!selected) return;
-    const handler = BackHandler.addEventListener('hardwareBackPress', () => { setSelected(null); return true; });
-    return () => handler.remove();
-  }, [selected]));
+    if (route.params?.reset) {
+      setSearch('');
+      setRegion('all');
+      list.current?.scrollTo({ y: 0, animated: false });
+      navigation.setParams({ reset: undefined });
+    }
+  }, [route.params, navigation]));
   const { speak } = useCountrySpeech(progress.voiceEnabled, language);
   const locations = mapId === 'europe' ? regionCountries(region) : map.pack.locations;
-  const countries = useMemo(() => locations.filter(item =>
+  const countries = useMemo(() => locations.filter(item => (filter !== 'undiscovered' || !progress.explored.includes(item.id)) && (
     countryName(item.id, language).toLocaleLowerCase().includes(search.trim().toLocaleLowerCase()) ||
     countryFacts[item.id]?.capital[language].toLocaleLowerCase().includes(search.trim().toLocaleLowerCase())
-  ).sort((a,b) => countryName(a.id, language).localeCompare(countryName(b.id, language))),
-  [locations, language, search]);
+  )).sort((a,b) => countryName(a.id, language).localeCompare(countryName(b.id, language))),
+  [locations, language, search, filter, progress.explored]);
   const statistics = learningSummary(progress.learning, map.pack.id, locations.map(item => item.id));
   const choose = (id: string) => { if (status === 'loading' || status === 'read-error') return; update(p => recordExploration(p, id)); setSelected(id); speak(countryName(id, language)); };
   return <SafeAreaView edges={['top']} style={styles.screen}>
     {focused && <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />}
-    {selected ? <ScrollView contentContainerStyle={styles.content}>
-      <ProgressStatus language={language} />
-      <Pressable accessibilityRole="button" onPress={() => setSelected(null)} style={styles.back}>
-        <Ionicons name="chevron-back" size={20} color={theme.brand} /><Text style={styles.link}>{c.backToCollection}</Text>
-      </Pressable>
-      <CountryInfoCard id={selected} language={language} onSpeak={() => speak(countryName(selected, language))} />
-    </ScrollView> :
-    <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+    <ScrollView ref={list} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
       <Text style={styles.heading}>{c.countryCollection}</Text>
-      <Text style={styles.subtitle}>{c.collectionHint}</Text>
+      <Text style={styles.subtitle}>{p.learningHint}</Text>
       <ProgressStatus language={language} />
       <MapSelector />
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.regions}>
@@ -66,6 +70,7 @@ export function ExploreScreen() {
           <Text style={[styles.chipText, id === region && styles.activeText]}>{mapId === 'europe' ? regionLabel(id, language) : mapName(mapId, language)}</Text>
         </Pressable>)}
       </ScrollView>
+      <View accessibilityRole="radiogroup" accessibilityLabel={c.countryCollection} style={styles.filters}>{(['all', 'undiscovered'] as const).map(value => <Pressable key={value} accessibilityRole="radio" aria-checked={value === filter} accessibilityState={{ checked: value === filter }} onPress={() => navigation.setParams({ filter: value })} style={[styles.chip, filter === value && styles.activeChip]}><Text style={[styles.chipText, filter === value && styles.activeText]}>{value === 'all' ? p.all : p.newCountries}</Text></Pressable>)}</View>
       <View style={styles.progress}><Text style={styles.subtitle}>{statistics.practiced}/{locations.length} {c.practiced.toLowerCase()} · {statistics.mastered} {c.mastered.toLowerCase()}</Text></View>
       <TextInput value={search} onChangeText={setSearch} placeholder={c.searchCountry} placeholderTextColor={theme.muted}
         accessibilityLabel={c.searchCountry} style={styles.search} />
@@ -82,8 +87,12 @@ export function ExploreScreen() {
           </Pressable>;
         })}
       </View>
-      {!countries.length && <Text style={styles.subtitle}>{c.noCountriesFound}</Text>}
-    </ScrollView>}
+      {!countries.length && <Text style={styles.subtitle}>{filter === 'undiscovered' && !search.trim() ? p.noNew : c.noCountriesFound}</Text>}
+    </ScrollView>
+    <OptionsSheet visible={!!selected} title={c.moreDetails} closeLabel={c.close} onClose={() => setSelected(null)} heading={selected ? <CountryInfoHeading id={selected} language={language} onSpeak={() => speak(countryName(selected, language))} /> : undefined}>
+      <ProgressStatus language={language} />
+      {selected && <CountryInfoCard key={selected} showHeader={false} id={selected} language={language} onSpeak={() => speak(countryName(selected, language))} />}
+    </OptionsSheet>
   </SafeAreaView>;
 }
 const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
@@ -98,8 +107,9 @@ const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
   activeText: { color: '#FFF' },
   progress: { paddingVertical: 4 },
   search: { borderWidth: 1, borderColor: theme.border, backgroundColor: theme.surface, color: theme.navy, borderRadius: 12, minHeight: 46, paddingHorizontal: 14 },
+  filters: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-  card: { width: '47%', flexGrow: 1, maxWidth: '49%', borderWidth: 1, borderColor: theme.border, borderRadius: 16, padding: 12, gap: 5, backgroundColor: theme.surface, minHeight: 160 },
+  card: { width: '47%', flexGrow: 1, maxWidth: '49%', borderRadius: 18, padding: 12, gap: 5, backgroundColor: theme.surface, minHeight: 160 },
   flag: { height: 57, justifyContent: 'center' },
   name: { fontSize: 15, fontWeight: '800', color: theme.navy },
   caption: { fontSize: 12, color: theme.muted },

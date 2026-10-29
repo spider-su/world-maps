@@ -27,9 +27,9 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 - `features/geography/DifficultySelector`: saved Home level selection.
   `difficultyPack` supplies eligible quiz locations; `EuropeMap.selectableIds`
   restricts interactions while retaining geographic context.
-- `features/geography/learning`: per-country/mode attempt records, schema migration,
-  adaptive/random sampling and pure summaries. `LearningOverview` is reused by
-  Home/Settings; `PracticeSelector` saves the sampling preference.
+- `features/geography/learning`: per-country/mode canonical v4 attempt records,
+  adaptive/random sampling and pure summaries. `LearningOverview` is displayed in
+  Profile’s learning sheet; `PracticeSelector` saves the sampling preference.
 - `EuropeMap.atlas` / `showBorders`: bundled relief registered to the shared viewBox.
 - `speechController`: serialized pronunciation with installed-voice matching,
   cancellation and bounded voice discovery. EN/PL/RU share `LANGUAGE_OPTIONS`.
@@ -42,13 +42,14 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 ## Map-first presentation
 
 - `EuropeMap.fill`: fills a flex-height play surface without distorting outlines.
-  A phone starts at a closer view; Show all Europe restores the complete extent.
+  Non-European maps start at full extent; Europe uses a balanced phone overview.
+  Small highlighted quiz targets are focused, and Whole map always restores full extent.
   Map tools disclose zoom and directional controls without removing keyboard or
   non-gesture access. `viewport` helpers accept optional height/width aspect ratio.
 - `OptionsSheet`: shared dismissible, scrollable modal for secondary play controls;
   owns its modal safe areas and handles Android Back. It does not persist settings.
 - `ModeSelector` / `QuizOptions`: mode cards stay on Home; existing clue and answer
-  variants are composed separately in the middle Europe tab. Difficulty
+  variants are composed in the shared launch setup sheet. Difficulty
   and practice selectors use the same saved progress contract as before.
 - `CountryInfoCard.compact` / `onDetails`: selected country's flag, capital and
   pronunciation remain below the map; full offline facts open in a separate sheet.
@@ -56,10 +57,8 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
   secondary options and full Learn details are disclosed in sheets. Score/learning
   rules and hidden-target behavior are unchanged.
 
-- `EuropeScreen`: middle bottom tab with Europe/47-country/offline summary, a
-  read-only map preview and existing play setup. Owns the top safe area; tabs own
-  the bottom. The tab navigator shares transient quiz variants with Home; saved
-  difficulty and practice preferences continue using the existing progress store.
+- `EuropeScreen`: Maps tab with saved map choice, atlas preview, direct Learn/Find It
+  launch and the shared setup sheet. Owns the top safe area; tabs own the bottom.
 
 - `mapPicker.ts`: pure screen-space target grouping and cluster expansion for the
   stable `selectionAlternatives` anchors. Groups avoid overlap and map tools; at
@@ -69,15 +68,14 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 
 ## Continent maps
 
-- `maps.ts`: typed offline registry for Europe/Asia/Africa/South America/Oceania;
+- `maps.ts`: typed offline registry for Europe/Asia/Africa/North America/South America/Oceania;
   stable pack IDs, shared shapes/markers/context and precomputed distance tables.
-- `MapProvider` / `useMap`: shares transient map choice across tabs, defaults to
-  Europe; it does not change the saved-progress schema or keys.
+- `MapProvider` / `useMap`: persists map and quiz choices across tabs/relaunches through a separate serialized preference key; progress keys are unchanged.
 - `MapSelector`: selected-map summary and localized chooser sheet reused by Home
-  and map setup; all five maps appear in a vertical list.
+  and map setup; all six maps appear in a vertical list.
 - `EuropeMap.map`: optional map definition, defaults to Europe for compatibility.
   Shapes, marker anchors, labels and picker clusters use that definition. Relief
-  is restricted to Europe; other packs use bundled vector fills.
+  uses the registered Europe atlas or projected bundled world relief on other packs.
 - `difficultyPack(level, map?)`: derives eligible countries from each map's outline
   areas; normal retains at least four targets for multiple-choice modes.
 
@@ -98,14 +96,15 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 
 - `ModeSelector`: four direct-launch tiles in a wrapping two-column grid; short
   localized captions retain full descriptions as accessible button names.
-- `HomeScreen`: compact orbit hero, shared map chooser and a Difficulty row opening
-  the existing persisted selector in `OptionsSheet`.
+- `HomeScreen`: neutral world hero, shared map chooser, saved setup summary, Customize
+  sheet and repeat-practice action derived from the selected map’s recent history.
 - `EuropeMap.toolsVisible`: optional controlled disclosure of directional/zoom
-  buttons from play options; Fit is always available. `fill` removes rounded
+  buttons from play options; zoom and Whole map are always available. `fill` removes rounded
   map edges to join the game's ocean surface. Hit testing/selection are unchanged.
 - `GeographyGameScreen`: compact status dock; restart moves to play options.
   Completion hides the prompt and Name It choices, retaining result, score,
-  pronunciation and Next. Learn has no empty dock before country selection.
+  pronunciation, earned XP and Next. Prompt/dock slots retain their height through
+  feedback; Learn’s initial dock explains selection and cluster controls.
 - Navigation labels are Home / Maps / Library / Profile / Settings; route IDs and
   selected-map sharing are unchanged.
 
@@ -143,7 +142,23 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 - `explorer.ts`: stable cosmetic IDs and outfit milestones. `profileCopy` owns
   localized ranks, outfit names, achievements and reward explanation.
 - `ProfileScreen`: shared progress, avatar selection through serialized writes,
-  secondary outfit/achievement/XP sheets and map-to-Library navigation. Loading/
+  secondary outfit/achievement/XP/learning sheets, actionable milestones and map-to-Library navigation. Loading/
   read errors hide unconfirmed progression; save failures retain retry controls.
-- Progress schema 4 adds the cosmetic ID with tested v2/v3 migration; keys, score
-  history, learning and preferences are retained. See `docs/explorer-progression.md`.
+- Pre-release progress requires canonical schema 4; keys, score history, learning
+  and preferences are retained. Experimental older schemas are not migrated. See `docs/explorer-progression.md`.
+
+## Market polish contracts
+
+- `PlaySetup` composes existing map/difficulty/practice/quiz selectors; `QuizSetupSummary`
+  exposes the same saved state on Home/Maps. It adds no preference copy or storage key.
+- `launch.recentQuizMode` maps the latest retained completed round on the selected pack
+  to a public quiz family, including legacy capital aliases. Continue starts a new round.
+- `explorerReward` derives XP and newly earned milestones between two journey snapshots;
+  it is transient presentation only, and never awards or persists XP itself.
+- `ExploreScreen` keeps its list mounted behind `OptionsSheet`/`CountryInfoHeading` so
+  closing country details retains search/region/scroll. Route `filter` supports All or
+  Undiscovered; discoveries still go through the existing progress writer.
+- `ProfileScreen` owns selected-map `LearningOverview` and completed history. Its milestone
+  action selects undiscovered countries or the next missing quiz family. Settings owns
+  language, pronunciation, optional music/effects and attribution.
+- `polishCopy` provides EN/PL/RU launch, cluster, collection and reward guidance.

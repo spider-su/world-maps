@@ -4,7 +4,7 @@ Read this before adding a feature. World Maps is an offline Expo SDK 57 / React 
 
 ## Startup and runtime
 
-`App.tsx` composes the safe-area provider, error boundary, `LanguageProvider`, `ProgressProvider` and navigation. `src/navigation.tsx` owns the NavigationContainer and the Home/Maps/Library/Profile/Settings bottom tabs. `src/screens/` contains route-level UI: `HomeScreen` (four mode cards), `EuropeScreen` (Maps tab, region summary and setup), `ExploreScreen` (Library), `ProfileScreen` (achievements and explorer), `GeographyGameScreen` (one mounted round, large responsive map and compact dock, tabs hidden) and `SettingsScreen` (language, voice, learning summary and data licenses). `src/features/geography/` contains the game engine, modes, map rendering, bundled data, progress persistence and speech. `src/ui/` contains language definitions, the language context and the app theme. `src/platform/` contains safe-area contracts. `app.config.ts` reads non-secret app identity from environment variables.
+`App.tsx` composes the safe-area provider, error boundary, `LanguageProvider`, `ProgressProvider` and navigation. `src/navigation.tsx` owns the NavigationContainer and the Home/Maps/Library/Profile/Settings bottom tabs. `src/screens/` contains route-level UI: `HomeScreen` (four mode cards), `EuropeScreen` (Maps tab, region summary and setup), `ExploreScreen` (Library), `ProfileScreen` (achievements and explorer), `GeographyGameScreen` (one mounted round, large responsive map and compact dock, tabs hidden) and `SettingsScreen` (language, audio and data licenses). `src/features/geography/` contains the game engine, modes, map rendering, bundled data, progress persistence and speech. `src/ui/` contains language definitions, the language context and the app theme. `src/platform/` contains safe-area contracts. `app.config.ts` reads non-secret app identity from environment variables.
 
 ## Ownership rules
 
@@ -46,3 +46,12 @@ Profile progression is derived by `explorerProgress.ts` from cumulative learning
 and unique discoveries, independent of bounded score history. `explorer.ts` owns
 cosmetic IDs/stages; `ExplorerAvatar` renders bundled human portraits. Schema 4
 persists only the selected cosmetic ID through the existing serialized store.
+
+
+Launch configuration is composed by `PlaySetup` and `QuizSetupSummary` from existing
+saved contexts. Home accepts a transient mode request from Maps/Profile; Library accepts
+a transient discovery filter. These route parameters are not a second settings store.
+`launch.ts` derives the most recent supported quiz family from retained completed history.
+`explorerReward` compares round-start and current derived progression for result copy;
+no reward balances or achievement copies are persisted. Profile owns learning/history UI.
+Library keeps its list mounted while the shared country sheet is open.

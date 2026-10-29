@@ -10,7 +10,7 @@ function overlaps(a: Point, b: Point, spacing = PICKER_SIZE + GAP, verticalSpaci
   return Math.abs(a.x - b.x) < spacing && Math.abs(a.y - b.y) < verticalSpacing;
 }
 function toolArea(p: Point, width: number, height: number) {
-  return p.x > width - 120 && p.y > height - 76;
+  return p.x > width - Math.min(width, 280) && p.y > height - 84;
 }
 function center(members: PickerAnchor[], width: number, height: number, size: number): PickerTarget {
   const x = clamp(members.reduce((sum, p) => sum + p.screenX, 0) / members.length, size / 2, width - size / 2);

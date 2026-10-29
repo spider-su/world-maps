@@ -151,3 +151,21 @@ control and preview. Optional quiz success sounds are separate from voice playba
 Atlas country labels use dark ink with a white outline for visibility on bright
 terrain in light and dark mode. Test the exact APK on device before distributing.
 See [continent coverage and imagery](docs/continent-maps.md).
+
+### Launch and learning flow
+
+Home shows the saved map, difficulty, practice and quiz variants beside **Customize quiz**.
+The same setup sheet is available from Maps, which also launches Learn or Find It directly.
+Continue practicing starts a new round in the selected map's most recently completed quiz
+family; unfinished rounds are not restored. The Home artwork is a bundled world view.
+
+Quiz prompts and feedback use reserved, scrollable areas so the map does not resize after
+an answer. Non-European maps begin at full extent; Europe uses a gentler phone overview and small highlighted targets are focused; zoom and
+Whole map controls stay visible. Cluster buttons show a plus and count, with gesture guidance.
+Completion distinguishes game points from earned XP and announces new levels, outfits and badges.
+
+Profile has a compact explorer header, actionable milestones and selected-map learning/history
+in a secondary sheet. Settings contains language, audio and attribution. Library offers an
+Undiscovered filter and the same country sheet as Learn; its search, region and scroll remain
+mounted behind details. These flows keep the existing canonical v4 progress and preference keys.
+See [market polish verification](docs/evidence/market-polish/README.md) for validation and limits.

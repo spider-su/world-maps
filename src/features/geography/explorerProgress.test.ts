@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { initialProgress, parseProgress, recordExploration, recordSession, sessionFromRound, type GameProgress } from './progress';
 import { recordPractice } from './learning';
 import { maps } from './maps';
-import { explorerProgress } from './explorerProgress';
+import { explorerProgress, explorerReward } from './explorerProgress';
 
 const ids = [...new Set(Object.values(maps).flatMap(map => map.pack.locations.map(c => c.id)))];
 function solve(progress: GameProgress, startedAt: number, packId = 'europe-countries', targetId = 'POL') {
@@ -70,5 +70,30 @@ describe('explorer rewards from durable learning', () => {
     expect(stats.achievements.find(b => b.id==='all-rounder')?.earned).toBe(true);
     const extra=progress.learning['europe-countries']!;
     expect(explorerProgress({...progress,learning:{...progress.learning,'unknown-pack':extra,'europe-countries:learn':extra}})).toEqual(stats);
+  });
+});
+
+
+describe('round result presentation', () => {
+  it('shows the actual earned XP and only newly earned milestones', () => {
+    const progress = { ...initialProgress, explored: ids.slice(0, 18) };
+    const before = explorerProgress(progress);
+    const after = explorerProgress(solve(progress, 10));
+    expect(explorerReward(before, after)).toEqual({ xp: 20, level: 3, outfit: true, badges: [] });
+    expect(explorerReward(after, after)).toEqual({ xp: 0, level: undefined, outfit: false, badges: [] });
+  });
+  it('does not turn a wrong answer into XP or a new achievement', () => {
+    const before = explorerProgress(initialProgress);
+    const round = { packId: 'europe-countries', targetId: 'POL', guesses: [], startedAt: 1 };
+    const wrong = { ...initialProgress, learning: recordPractice({}, round.packId, round, 'DEU', 2) };
+    expect(explorerReward(before, explorerProgress(wrong)).xp).toBe(0);
+    const solved = { ...wrong, learning: recordPractice(wrong.learning, round.packId, { ...round, guesses: ['DEU'] }, 'POL', 3) };
+    expect(explorerReward(before, explorerProgress(solved)).xp).toBe(15);
+  });
+  it('announces a badge once at its boundary, independent of history retention', () => {
+    const before = explorerProgress(solve(solve(initialProgress, 1), 2, 'europe-countries:find-it'));
+    const after = explorerProgress(solve(solve(solve(initialProgress, 1), 2, 'europe-countries:find-it'), 3, 'europe-countries:name-it'));
+    expect(explorerReward(before, after).badges).toEqual(['all-rounder']);
+    expect(explorerReward(after, after).badges).toEqual([]);
   });
 });

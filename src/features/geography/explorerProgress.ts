@@ -48,11 +48,22 @@ export function explorerProgress(progress: GameProgress) {
   return {
     xp, level, stage, levelXP: xp % XP_PER_LEVEL, nextLevelXP: XP_PER_LEVEL - xp % XP_PER_LEVEL,
     nextOutfitLevel: EXPLORER_STAGES[stage + 1],
+    nextQuizMode: (['hot-cold', 'find-it', 'name-it'] as const).find(mode => !successfulModes.has(mode)) ?? 'name-it',
     discovered: discovered.size, totalCountries: countries.size, correct, firstTry, mastered: masteredIds.size,
     achievements,
     maps: definitions.map(map => ({ id: map.id, total: map.pack.locations.length,
       discovered: map.pack.locations.filter(c => discovered.has(c.id)).length,
       mastered: map.pack.locations.filter(c => masteredIds.has(c.id)).length,
     })),
+  };
+}
+
+/** Transient result copy derived from saved learning before/after a round. */
+export function explorerReward(before: ReturnType<typeof explorerProgress>, after: ReturnType<typeof explorerProgress>) {
+  return {
+    xp: Math.max(0, after.xp - before.xp),
+    level: after.level > before.level ? after.level : undefined,
+    outfit: after.stage > before.stage,
+    badges: after.achievements.filter(b => b.earned && !before.achievements.some(old => old.id === b.id && old.earned)).map(b => b.id),
   };
 }

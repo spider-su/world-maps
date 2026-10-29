@@ -10,16 +10,13 @@ import { themeForScheme, type WorldMapsPalette } from '../ui/worldMapsTheme';
 import { gameCopy } from '../features/geography/copy';
 import { useMusic } from '../features/music/MusicContext';
 import { useProgress } from '../features/geography/ProgressContext';
-import { LearningOverview } from '../features/geography/LearningOverview';
 import { ProgressStatus } from '../features/geography/ProgressStatus';
-import { summary } from '../features/geography/progress';
 import { useMap } from '../features/geography/MapContext';
-import { modePackId } from '../features/geography/modes';
 import { mapName } from '../features/geography/maps';
 import licenses from '../features/geography/data/licenses.json';
 
 export function SettingsScreen() {
-  const { map, mapId } = useMap();
+  const { mapId } = useMap();
   const isFocused = useIsFocused();
   const { language, setLanguage, languageError, retryLanguage } = useLanguage();
   const theme = themeForScheme(useColorScheme());
@@ -85,16 +82,6 @@ export function SettingsScreen() {
         <Text style={styles.hint}>{musicCopy.effectsHint}</Text>
       </View>
       <ProgressStatus language={language} />
-      <LearningOverview language={language} />
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>{c.history}</Text>
-        {status === 'loading' ? <Text style={styles.hint}>{c.loading}</Text> : (['hot-cold','find-it','name-it'] as const).map(mode => {
-          const stats = summary(progress, modePackId(map.pack.id, mode));
-          return <View key={mode} style={styles.historyRow}><Text style={styles.text}>{c.modes[mode].title}</Text>
-            <Text style={styles.hint}>{c.solved}: {stats.played} · {c.best}: {stats.bestScore}</Text>
-          </View>;
-        })}
-      </View>
       <View style={styles.card}>
         <Text style={styles.cardTitle}>{c.about}</Text><Text style={styles.hint}>{c.privacy}</Text><Text style={styles.hint}>{c.mapSource}</Text>
         <Pressable accessibilityRole="button" accessibilityLabel={c.licenses} style={styles.row} onPress={() => setShowLicenses(true)}><Text style={styles.link}>{c.licenses}</Text><Ionicons name="chevron-forward" size={18} color={theme.brand} /></Pressable>
@@ -116,7 +103,7 @@ export function SettingsScreen() {
 }
 const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: theme.paper }, body: { padding: 16, gap: 16, width: '100%', maxWidth: 720, alignSelf: 'center', paddingBottom: 30 },
-  title: { color: theme.navy, fontSize: 28, fontWeight: '800' }, card: { backgroundColor: theme.surface, borderRadius: 18, padding: 16, gap: 8, borderWidth: 1, borderColor: theme.border },
+  title: { color: theme.navy, fontSize: 28, fontWeight: '800' }, card: { backgroundColor: theme.surface, borderRadius: 18, padding: 16, gap: 8 },
   cardTitle: { fontSize: 16, fontWeight: '800', color: theme.navy, flexShrink: 1 }, text: { fontSize: 14, color: theme.navy }, hint: { fontSize: 12, color: theme.muted, lineHeight: 19 },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', minHeight: 48, gap: 10 }, link: { color: theme.brand, fontSize: 14, fontWeight: '700' }, error: { color: '#823C19', fontSize: 12 },
   volumeRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 }, volumeButton: { minWidth: 57, minHeight: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 12 },

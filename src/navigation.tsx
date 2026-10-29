@@ -1,3 +1,4 @@
+import type { GameMode } from './features/geography/modes';
 import { MusicProvider } from './features/music/MusicContext';
 import { MapProvider, useMap } from './features/geography/MapContext';
 import { EuropeScreen } from './screens/EuropeScreen';
@@ -15,11 +16,11 @@ import { getTabBarMetrics } from './platform/safeArea';
 import { useLanguage } from './ui/LanguageContext';
 import { gameCopy } from './features/geography/copy';
 
-export type TabParamList = { Home: undefined; Europe: undefined; Explore: undefined; Profile: undefined; Settings: undefined };
+export type TabParamList = { Home: { mode?: GameMode } | undefined; Europe: undefined; Explore: { filter?: 'all' | 'undiscovered'; reset?: boolean } | undefined; Profile: undefined; Settings: undefined };
 const Tab = createBottomTabNavigator<TabParamList>();
 
 function Tabs() {
-  const { mapId, findClue, setFindClue, nameAnswer, setNameAnswer } = useMap();
+  const { mapId, findClue, nameAnswer } = useMap();
   const { language } = useLanguage();
   const c = gameCopy[language];
   const theme = themeForScheme(useColorScheme());
@@ -28,6 +29,7 @@ function Tabs() {
   return (
     <Tab.Navigator screenOptions={{
       headerShown: false,
+      tabBarLabelStyle: { fontSize: 11, marginHorizontal: 0 },
       tabBarActiveTintColor: theme.brand,
       tabBarInactiveTintColor: theme.muted,
       tabBarStyle: { ...tabBar, backgroundColor: theme.surface, borderTopColor: theme.border, height: tabBar.height, paddingTop: tabBar.paddingTop, paddingBottom: tabBar.paddingBottom },
@@ -36,7 +38,7 @@ function Tabs() {
         {() => <HomeScreen findClue={findClue} nameAnswer={nameAnswer} />}
       </Tab.Screen>
       <Tab.Screen name="Europe" options={{ tabBarLabel: c.mapsTab, tabBarIcon: ({ color, size }) => <Ionicons name="earth-outline" color={color} size={size} /> }}>
-        {() => <EuropeScreen findClue={findClue} onFindClue={setFindClue} nameAnswer={nameAnswer} onNameAnswer={setNameAnswer} />}
+        {() => <EuropeScreen />}
       </Tab.Screen>
       <Tab.Screen name="Explore" children={() => <ExploreScreen key={mapId} />} options={{ tabBarLabel: c.libraryTab, tabBarIcon: ({ color, size }) => <Ionicons name="book-outline" color={color} size={size} /> }} />
       <Tab.Screen name="Profile" component={ProfileScreen} options={{ tabBarLabel: c.profile, tabBarIcon: ({ color, size }) => <Ionicons name="person-outline" color={color} size={size} /> }} />

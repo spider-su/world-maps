@@ -16,7 +16,7 @@ function verify(width: number, height: number, zoom: number, x = 432, y = 285) {
     expect(target.x).toBeLessThanOrEqual(width - PICKER_SIZE / 2);
     expect(target.y).toBeGreaterThanOrEqual(PICKER_SIZE / 2);
     expect(target.y).toBeLessThanOrEqual(height - PICKER_SIZE / 2);
-    expect(target.x <= width - 120 || target.y <= height - 76).toBe(true);
+    expect(target.x <= width - Math.min(width, 280) || target.y <= height - 84).toBe(true);
     for (const other of targets.slice(index + 1)) {
       expect(Math.abs(target.x - other.x) >= PICKER_SIZE || Math.abs(target.y - other.y) >= PICKER_SIZE).toBe(true);
     }

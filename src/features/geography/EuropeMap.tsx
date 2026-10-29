@@ -16,6 +16,7 @@ import atlasImage from '../../../assets/maps/europe-atlas.jpg';
 import worldRelief from '../../../assets/maps/world-blue-marble.jpg';
 import { countryName } from './countryFacts';
 import { gameCopy } from './copy';
+import { polishCopy } from './polishCopy';
 
 interface Props {
   map?: MapDefinition;
@@ -62,7 +63,8 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
     const small = markers.find(location => location.id === targetId);
     const shape = shapes.find(location => location.id === targetId);
     return small ? focusPoint({ x: small.x, y: small.y }, 4) : shape && shape.area < 700
-      ? focusPoint({ x: shape.labelX, y: shape.labelY }, 3) : fill && width < 600 && map.id === 'europe' ? focusPoint(shape ? { x: shape.labelX, y: shape.labelY } : INITIAL_VIEWPORT.center, 1.8) : INITIAL_VIEWPORT;
+      ? focusPoint({ x: shape.labelX, y: shape.labelY }, 3) : fill && width < 600 && map.id === 'europe'
+        ? focusPoint(shape ? { x: shape.labelX, y: shape.labelY } : INITIAL_VIEWPORT.center, 1.35) : INITIAL_VIEWPORT;
   });
   const targetPoint = markers.find(location => location.id === targetId)
     ?? shapes.find(location => location.id === targetId);
@@ -73,6 +75,7 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
   const visible = frame(viewport, aspect);
   const eligible = (id: string) => !selectableIds || selectableIds.includes(id);
   const c = gameCopy[language];
+  const p = polishCopy[language];
   const pickerSize = learn ? Math.max(80, Math.min(112, 80 * fontScale)) : PICKER_SIZE;
   const picker = !preview && enabled ? pickerTargets(selectionAlternatives.map((location, index) => ({ ...location, number: index + 1 })).filter(location => eligible(location.id)), viewport, mapWidth, mapHeight, pickerSize) : [];
   const labels = mapLabels(shapes.map(shape => ({ ...shape, name: countryName(shape.id, language) })), showNames, revealedIds, visible, mapWidth, learn ? picker.map(target => ({
@@ -128,15 +131,6 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
           const props = { d: shape.path, fill: !eligible(shape.id) ? theme.oceanDeep : shape.id === targetId ? '#F5AD18' : results.has(shape.id) ? physicalAtlas ? 'rgba(37,99,235,0.35)' : CLUE_COLORS[results.get(shape.id)!] : physicalAtlas ? 'transparent' : theme.mapLand, stroke: atlas && !showBorders ? 'transparent' : physicalAtlas ? theme.border : theme.mapBorder, strokeWidth: Math.max(0.65, 2 / viewport.zoom) };
           return preview || !enabled || !eligible(shape.id) ? <Path key={shape.id} {...props} fillRule="evenodd" /> : <CountryPath key={shape.id} {...props} accessibilityLabel={learn ? countryName(shape.id, language) : `${c.mapCountry} ${index + 1}`} onSelect={() => { if (selectionGuard.canSelect(Date.now())) onSelect(shape.id); }} />;
         })}
-        {!preview && labels.flatMap(location => [
-          <SvgText key={`${location.id}-halo`} x={location.labelX} y={location.labelY}
-            fontSize={11 * visible.w / mapWidth} fontFamily="sans-serif" fontWeight="700" textAnchor="middle"
-            fill="#FFFFFF" stroke="#FFFFFF" strokeWidth={3.2 * visible.w / mapWidth}
-            strokeLinejoin="round" pointerEvents="none">{location.name}</SvgText>,
-          <SvgText key={`${location.id}-ink`} x={location.labelX} y={location.labelY}
-            fontSize={11 * visible.w / mapWidth} fontFamily="sans-serif" fontWeight="700" textAnchor="middle"
-            fill="#17324A" pointerEvents="none">{location.name}</SvgText>,
-        ])}
         {!preview && markers.filter(state => eligible(state.id)).map(state => <Circle key={state.id} pointerEvents="none" cx={state.x} cy={state.y} r={Math.max(1, 3 / viewport.zoom)}
           fill={state.id === targetId ? '#F5AD18' : results.has(state.id) ? CLUE_COLORS[results.get(state.id)!] : theme.surface} stroke={theme.navy} strokeWidth={1 / viewport.zoom}
           />)}
@@ -145,6 +139,19 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
           fill="none" stroke="#B66D00" strokeWidth={2 * visible.w / mapWidth} pointerEvents="none" />}
 
       </Svg>
+      {/* Native SVG text can intercept taps even with pointerEvents on each label.
+          A separate noninteractive SVG lets country paths own the entire outline. */}
+      {!preview && labels.length > 0 && <Svg testID="map-names" pointerEvents="none" aria-hidden={true} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={mapWidth} height={mapHeight} viewBox={`${visible.x} ${visible.y} ${visible.w} ${visible.h}`} style={StyleSheet.absoluteFill}>
+        {labels.flatMap(location => [
+          <SvgText key={`${location.id}-halo`} x={location.labelX} y={location.labelY}
+            fontSize={11 * visible.w / mapWidth} fontFamily="sans-serif" fontWeight="700" textAnchor="middle"
+            fill="#FFFFFF" stroke="#FFFFFF" strokeWidth={3.2 * visible.w / mapWidth}
+            strokeLinejoin="round" pointerEvents="none">{location.name}</SvgText>,
+          <SvgText key={`${location.id}-ink`} x={location.labelX} y={location.labelY}
+            fontSize={11 * visible.w / mapWidth} fontFamily="sans-serif" fontWeight="700" textAnchor="middle"
+            fill="#17324A" pointerEvents="none">{location.name}</SvgText>,
+        ])}
+      </Svg>}
       {!!picker.length && <View pointerEvents="box-none" style={StyleSheet.absoluteFill}>
         <Svg pointerEvents="none" width={mapWidth} height={mapHeight} style={StyleSheet.absoluteFill}>
           {picker.flatMap(target => target.members.map(member => <Line key={member.id} x1={member.screenX} y1={member.screenY} x2={target.x} y2={target.y} stroke={theme.brand} strokeWidth={1.5} opacity={0.65} />))}
@@ -158,9 +165,9 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
           return <Pressable key={target.members.map(p => p.id).join(':')} accessibilityRole="button" accessibilityLabel={label}
             style={[styles.pickerTarget, { width: targetWidth, left: target.x - targetWidth / 2, top: target.y - PICKER_SIZE / 2 }]}
             onPress={() => { if (!selectionGuard.canSelect(Date.now())) return; if (single) onSelect(member.id); else setViewport(expandPicker(target, viewport, mapWidth, mapHeight, pickerSize)); }}>
-            <View style={[styles.pickerPin, !single && styles.pickerGroup, learn && [styles.learnPin, { width: targetWidth - 4 }], result && { borderColor: CLUE_COLORS[result] }]}>
-              {!single && !learn && <Ionicons name="layers-outline" size={14} color={theme.brand} />}
-              <Text style={[styles.pickerNumber, learn && styles.learnPinText]}>{learn ? single ? countryName(member.id, language) : `${c.countryGroup} · ${target.members.length}` : single ? member.number : target.members.length}</Text>
+            <View style={[styles.pickerPin, !single && styles.pickerGroup, learn && [styles.learnPin, { width: single ? targetWidth - 4 : Math.min(targetWidth - 4, 64) }], result && { borderColor: CLUE_COLORS[result] }]}>
+              {!single && <Ionicons name="add-circle-outline" size={16} color={theme.brand} />}
+              <Text style={[styles.pickerNumber, learn && styles.learnPinText]}>{learn ? single ? countryName(member.id, language) : `${target.members.length}` : single ? member.number : target.members.length}</Text>
             </View>
           </Pressable>;
         })}
@@ -172,7 +179,9 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
           style={styles.control} onPress={control.action}><Ionicons name={control.icon} size={18} color={theme.navy} /></Pressable>)}
       </View>}
       <View style={styles.quickTools}>
-      <Pressable accessibilityRole="button" accessibilityLabel={c.resetMap} style={styles.toolToggle} onPress={() => setViewport(INITIAL_VIEWPORT)}><Ionicons name="scan-outline" size={20} color={theme.navy} /></Pressable>
+      <Pressable accessibilityRole="button" accessibilityLabel={c.zoomOut} style={styles.toolToggle} onPress={() => adjustZoom(1 / 1.5)}><Ionicons name="remove" size={20} color={theme.navy} /></Pressable>
+      <Pressable accessibilityRole="button" accessibilityLabel={c.zoomIn} style={styles.toolToggle} onPress={() => adjustZoom(1.5)}><Ionicons name="add" size={20} color={theme.navy} /></Pressable>
+      <Pressable accessibilityRole="button" accessibilityLabel={c.resetMap} style={[styles.toolToggle, styles.fitButton]} onPress={() => setViewport(INITIAL_VIEWPORT)}><Ionicons name="scan-outline" size={18} color={theme.navy} /><Text style={styles.fitText}>{p.wholeMap}</Text></Pressable>
       </View>
     </View>}
 
@@ -183,10 +192,12 @@ const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
   fill: { flex: 1, minHeight: 180, borderRadius: 0 },
   pickerTarget: { position: 'absolute', width: PICKER_SIZE, height: PICKER_SIZE, alignItems: 'center', justifyContent: 'center' },
   pickerPin: { width: 34, height: 34, borderRadius: 17, backgroundColor: theme.surface, borderWidth: 2, borderColor: theme.brand, alignItems: 'center', justifyContent: 'center', shadowColor: '#123E70', shadowOpacity: 0.18, shadowRadius: 3, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
-  pickerGroup: { width: 44, height: 44, borderRadius: 22, borderColor: theme.border, backgroundColor: theme.surface },
+  pickerGroup: { flexDirection: 'row', gap: 3, width: 44, height: 44, borderRadius: 22, borderColor: theme.border, backgroundColor: theme.surface },
   learnPin: { minHeight: 36, height: 'auto', borderRadius: 10, borderWidth: 1, paddingHorizontal: 4, paddingVertical: 4 },
   learnPinText: { fontSize: 10, lineHeight: 13, textAlign: 'center' },
   pickerNumber: { color: theme.navy, fontSize: 12, fontWeight: '800' },
+  fitButton: { width: 'auto', minWidth: 44, paddingHorizontal: 10, flexDirection: 'row', gap: 5 },
+  fitText: { color: theme.navy, fontSize: 11, fontWeight: '700' },
   tools: { position: 'absolute', bottom: 12, right: 12, alignItems: 'flex-end', gap: 8, maxWidth: '85%' },
   quickTools: { flexDirection: 'row', gap: 6 },
   controls: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-end', padding: 4, gap: 2, backgroundColor: theme.surface, borderRadius: 16 },

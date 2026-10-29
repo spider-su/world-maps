@@ -55,3 +55,10 @@ a transient discovery filter. These route parameters are not a second settings s
 `explorerReward` compares round-start and current derived progression for result copy;
 no reward balances or achievement copies are persisted. Profile owns learning/history UI.
 Library keeps its list mounted while the shared country sheet is open.
+
+Home’s globe card opens a separate full-screen overview (`GlobeScreen`,
+`RotatingGlobe`, `globe.ts`) over coarse bundled
+land geometry. D3 Geo supplies pure-JavaScript spherical clipping and projection;
+existing SVG rendering supplies the drawing. Platform gesture adapters isolate
+web wheel/pointer events from native PanResponder. The globe view hides tabs, owns both safe edges and supports system Back. Rotation is transient and does not affect
+map/quiz preferences, progress or country-selection geometry.

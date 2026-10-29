@@ -4,6 +4,9 @@ World Maps is an offline geography learning game (Expo SDK 57 / React Native 0.8
 
 ## Agent reading order
 
+Read [Orchestrator project context](ORCHESTRATOR.md) for the application type,
+local persistence boundaries, validation entry point, and routine decision policy.
+
 1. [Architecture and ownership](docs/architecture.md): find the right layer and avoid cross-layer coupling.
 2. [Component catalog](docs/component-catalog.md): reuse existing components and contracts.
 3. [Agent workflow](docs/agent-workflow.md): plan, implement, test and open a reviewable PR.

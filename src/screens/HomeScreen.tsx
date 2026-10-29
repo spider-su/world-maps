@@ -2,7 +2,6 @@ import { useMap } from '../features/geography/MapContext';
 import { MapSelector } from '../features/geography/MapSelector';
 import { mapName } from '../features/geography/maps';
 import { Ionicons } from '@expo/vector-icons';
-import { PlaySetup, QuizSetupSummary } from '../features/geography/PlaySetup';
 import { explorerProgress } from '../features/geography/explorerProgress';
 import { profileCopy } from '../features/geography/profileCopy';
 import { polishCopy } from '../features/geography/polishCopy';
@@ -31,7 +30,6 @@ export function HomeScreen({ findClue, nameAnswer }: { findClue: FindClue; nameA
   const { progress, status } = useProgress();
   const theme = themeForScheme(useColorScheme());
   const styles = makeStyles(theme);
-  const [showSetup, setShowSetup] = useState(false);
   const [mode, setMode] = useState<GameMode | null>(null);
   const { language } = useLanguage();
   const c = gameCopy[language];
@@ -70,12 +68,6 @@ export function HomeScreen({ findClue, nameAnswer }: { findClue: FindClue; nameA
       </ImageBackground>
       <View style={styles.menu}>
         <MapSelector />
-        <View style={styles.setupCard}>
-          <QuizSetupSummary showDifficulty={false} />
-          <Pressable accessibilityRole="button" accessibilityLabel={p.customize} accessibilityState={{ expanded: showSetup }} onPress={() => setShowSetup(true)} style={styles.customize}>
-            <Ionicons name="options-outline" size={20} color={theme.brand} /><Text style={styles.actionText}>{p.customize}</Text>
-          </Pressable>
-        </View>
         {available && <Pressable accessibilityRole="button" onPress={() => setMode(lastMode ?? 'find-it')} style={styles.continue}>
           <View style={{ flex: 1, gap: 4 }}><Text style={styles.continueTitle}>{lastMode ? p.continue : p.start}</Text><Text style={styles.continueDetail}>{journey.discovered} {pc.discovered.toLowerCase()} · {pc.level} {journey.level} · {c.modes[lastMode ?? 'find-it'].title}</Text></View>
           <Ionicons name="arrow-forward" size={22} color="#FFF" />
@@ -84,7 +76,6 @@ export function HomeScreen({ findClue, nameAnswer }: { findClue: FindClue; nameA
         <ProgressStatus language={language} />
       </View>
     </ScrollView>
-    <PlaySetup visible={showSetup} onClose={() => setShowSetup(false)} showDifficulty={false} />
 
   </SafeAreaView>;
 }
@@ -95,9 +86,6 @@ const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
   heroCopy: { alignItems: 'center', marginTop: 20, gap: 6 }, eyebrow: { fontSize: 10, letterSpacing: 3, fontWeight: '800', color: '#D7EAFE' },
   brand: { fontSize: 30, letterSpacing: -1.2, fontWeight: '800', color: '#FFFFFF', textShadowColor: 'rgba(6,26,48,0.3)', textShadowRadius: 12 },
   tagline: { color: '#ECF6FF', fontSize: 14, letterSpacing: 0.5 },
-  setupCard: { backgroundColor: theme.surface, padding: 14, borderRadius: 18, gap: 6 },
-  customize: { minHeight: 44, flexDirection: 'row', gap: 8, alignItems: 'center' },
-  actionText: { color: theme.brand, fontSize: 13, fontWeight: '700' },
   continue: { padding: 14, minHeight: 64, borderRadius: 18, backgroundColor: theme.brandDark, flexDirection: 'row', alignItems: 'center', gap: 12 },
   continueTitle: { color: '#FFF', fontSize: 16, fontWeight: '800' },
   continueDetail: { color: '#ECF6FF', fontSize: 11, lineHeight: 17 },

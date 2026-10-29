@@ -1,6 +1,7 @@
 /** Launch, map and collection guidance shared by the six offline maps. */
 export const polishCopy = {
   en: {
+    selectCountry: 'Select a country', findCountry: 'Find',
     customize: 'Customize quiz', continue: 'Continue practicing', start: 'Start practicing',
     setup: 'Quiz setup', find: 'Find It', name: 'Name It', wholeMap: 'Whole map', zoom: 'Zoom',
     clusterHint: 'Drag to move · pinch to zoom · tap + groups to see nearby countries',
@@ -10,6 +11,7 @@ export const polishCopy = {
     outfit: 'New outfit unlocked', practice: 'Practice a quiz', mapActions: 'Explore this map',
   },
   pl: {
+    selectCountry: 'Wybierz państwo', findCountry: 'Znajdź',
     customize: 'Dostosuj quiz', continue: 'Ćwicz dalej', start: 'Zacznij ćwiczyć',
     setup: 'Ustawienia quizu', find: 'Znajdź', name: 'Nazwij', wholeMap: 'Cała mapa', zoom: 'Powiększ',
     clusterHint: 'Przeciągnij mapę · powiększ gestem · dotknij grup z +, aby zobaczyć pobliskie państwa',
@@ -19,6 +21,7 @@ export const polishCopy = {
     outfit: 'Odblokowano nowy strój', practice: 'Rozwiąż quiz', mapActions: 'Odkrywaj tę mapę',
   },
   ru: {
+    selectCountry: 'Выберите страну', findCountry: 'Найдите',
     customize: 'Настроить викторину', continue: 'Продолжить практику', start: 'Начать практику',
     setup: 'Настройки викторины', find: 'Найди', name: 'Назови', wholeMap: 'Вся карта', zoom: 'Масштаб',
     clusterHint: 'Перетаскивай карту · увеличивай жестом · нажимай группы с +, чтобы увидеть соседние страны',

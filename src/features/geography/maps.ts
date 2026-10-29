@@ -30,7 +30,10 @@ function projectionForBounds(bounds: readonly number[]) {
   return { west, north, scale, cosLatitude, xoff: (864 - (east - west) * cosLatitude * scale) / 2, yoff: (570 - (north - south) * scale) / 2 };
 }
 export const maps: Record<MapId, MapDefinition> = {
-  europe: { id: 'europe', pack: europePack, shapes: europeShapes, context: europeContextShapes, markers: microstates },
+  europe: { id: 'europe', pack: europePack, shapes: europeShapes, context: europeContextShapes, markers: microstates,
+    // Preserve the original SVG transform: x=(longitude+26)*12, y=(72-latitude)*15.
+    projection: { west: -26, north: 72, scale: 15, cosLatitude: 12 / 15, xoff: 0, yoff: 0 },
+  },
   asia: continent('asia'), africa: continent('africa'), 'north-america': {
     id: 'north-america',
     pack: { id: 'north-america-countries', title: northAmerica.title, kind: 'country', locations: northAmerica.countries.map(({ id, name, latitude, longitude }) => ({ id, name, latitude, longitude, geometryId: id })) },

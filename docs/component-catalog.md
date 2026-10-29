@@ -75,7 +75,8 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
   and map setup; all six maps appear in a vertical list.
 - `EuropeMap.map`: optional map definition, defaults to Europe for compatibility.
   Shapes, marker anchors, labels and picker clusters use that definition. Relief
-  uses the registered Europe atlas or projected bundled world relief on other packs.
+  uses the same projected bundled Blue Marble relief on all six packs, including
+  Europe’s original independent x/y projection scales.
 - `difficultyPack(level, map?)`: derives eligible countries from each map's outline
   areas; normal retains at least four targets for multiple-choice modes.
 

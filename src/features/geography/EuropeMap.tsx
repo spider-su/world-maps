@@ -12,7 +12,6 @@ import { mapLabels } from './mapLabels';
 import { frame, INITIAL_VIEWPORT, normalize, pan, zoomAt, focusPoint, type Viewport } from './viewport';
 import { CLUE_COLORS } from './mapColors';
 import { themeForScheme, type WorldMapsPalette } from '../../ui/worldMapsTheme';
-import atlasImage from '../../../assets/maps/europe-atlas.jpg';
 import worldRelief from '../../../assets/maps/world-blue-marble.jpg';
 import { countryName } from './countryFacts';
 import { gameCopy } from './copy';
@@ -121,9 +120,7 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
       <Svg width={mapWidth} height={mapHeight} viewBox={`${visible.x} ${visible.y} ${visible.w} ${visible.h}`} accessibilityRole={preview ? 'image' : 'none'} accessibilityLabel={mapName(map.id, language)}>
         <Rect x="-2000" y="-2000" width="5000" height="5000" fill={theme.ocean} />
         {physicalAtlas && <><Defs><ClipPath id={atlasClipId}>{[...shapes, ...contextShapes].map(shape => <Path key={shape.id} d={shape.path} fillRule="evenodd" clipRule="evenodd" />)}</ClipPath></Defs>
-          {map.id === 'europe'
-            ? <SvgImage href={atlasImage} x={0} y={0} width={864} height={570} clipPath={`url(#${atlasClipId})`} preserveAspectRatio="none" pointerEvents="none" />
-            : globe && <><SvgImage href={worldRelief} x={reliefX} y={reliefY} width={reliefWidth} height={reliefHeight} clipPath={`url(#${atlasClipId})`} preserveAspectRatio="none" pointerEvents="none" />
+          {globe && <><SvgImage href={worldRelief} x={reliefX} y={reliefY} width={reliefWidth} height={reliefHeight} clipPath={`url(#${atlasClipId})`} preserveAspectRatio="none" pointerEvents="none" />
               <SvgImage href={worldRelief} x={reliefX + reliefWidth} y={reliefY} width={reliefWidth} height={reliefHeight} clipPath={`url(#${atlasClipId})`} preserveAspectRatio="none" pointerEvents="none" /></>}
         </>}
         {contextShapes.map(shape => <Path key={shape.id} d={shape.path} fillRule="evenodd" fill={physicalAtlas ? 'transparent' : theme.oceanDeep} stroke={atlas && !showBorders ? 'transparent' : theme.border} strokeWidth={0.6 / viewport.zoom} />)}

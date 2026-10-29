@@ -182,3 +182,6 @@ See [audio behavior](docs/music-prototype.md).
 
 Background music volume uses an accessible slider with 1% steps from 0–30%,
 with the current percentage displayed in Settings.
+
+Home keeps launch controls compact; Difficulty is displayed and adjusted in Maps.
+All modes continue to use the saved difficulty.

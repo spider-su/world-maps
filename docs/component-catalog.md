@@ -180,3 +180,7 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
   control. Expo-compatible native slider; web uses an HTML range for keyboard
   access. Disabled during preference restore/read/save errors; changes use the
   existing serialized audio store.
+
+- `PlaySetup.showDifficulty` / `QuizSetupSummary.showDifficulty` default true.
+  Home passes false so Difficulty appears only in Maps setup and its summary.
+  This is presentation only; gameplay still uses the saved difficulty.

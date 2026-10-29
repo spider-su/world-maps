@@ -12,8 +12,8 @@ describe('responsive play surface', () => {
   });
   it('uses a bounded dock rather than letting answers push the map off a short screen', () => {
     const compact = playLayout(488, 'name-it', 2);
-    expect(compact.promptHeight).toBeCloseTo(78.08);
-    expect(compact.dockHeight).toBeCloseTo(161.92);
-    expect(playLayout(832, 'name-it', 1)).toEqual({ promptHeight: 76, dockHeight: 244 });
+    expect(compact.promptHeight).toBeCloseTo(53.68);
+    expect(compact.dockHeight).toBeCloseTo(186.32);
+    expect(playLayout(832, 'name-it', 1)).toEqual({ promptHeight: 56, dockHeight: 216 });
   });
 });

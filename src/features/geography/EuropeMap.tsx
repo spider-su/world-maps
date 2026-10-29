@@ -64,8 +64,8 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
     const small = markers.find(location => location.id === targetId);
     const shape = shapes.find(location => location.id === targetId);
     return small ? focusPoint({ x: small.x, y: small.y }, 4) : shape && shape.area < 700
-      ? focusPoint({ x: shape.labelX, y: shape.labelY }, 3) : fill && width < 600 && map.id === 'europe'
-        ? focusPoint(shape ? { x: shape.labelX, y: shape.labelY } : INITIAL_VIEWPORT.center, 1.35) : INITIAL_VIEWPORT;
+      ? focusPoint({ x: shape.labelX, y: shape.labelY }, 3) : fill && width < 600
+        ? focusPoint(shape ? { x: shape.labelX, y: shape.labelY } : INITIAL_VIEWPORT.center, map.id === 'europe' ? 1.35 : 1.25) : INITIAL_VIEWPORT;
   });
   const targetPoint = markers.find(location => location.id === targetId)
     ?? shapes.find(location => location.id === targetId);

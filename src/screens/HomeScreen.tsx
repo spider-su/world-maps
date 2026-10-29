@@ -71,7 +71,7 @@ export function HomeScreen({ findClue, nameAnswer }: { findClue: FindClue; nameA
       <View style={styles.menu}>
         <MapSelector />
         <View style={styles.setupCard}>
-          <QuizSetupSummary />
+          <QuizSetupSummary showDifficulty={false} />
           <Pressable accessibilityRole="button" accessibilityLabel={p.customize} accessibilityState={{ expanded: showSetup }} onPress={() => setShowSetup(true)} style={styles.customize}>
             <Ionicons name="options-outline" size={20} color={theme.brand} /><Text style={styles.actionText}>{p.customize}</Text>
           </Pressable>
@@ -84,7 +84,7 @@ export function HomeScreen({ findClue, nameAnswer }: { findClue: FindClue; nameA
         <ProgressStatus language={language} />
       </View>
     </ScrollView>
-    <PlaySetup visible={showSetup} onClose={() => setShowSetup(false)} />
+    <PlaySetup visible={showSetup} onClose={() => setShowSetup(false)} showDifficulty={false} />
 
   </SafeAreaView>;
 }

@@ -9,6 +9,7 @@ import { useLanguage } from '../ui/LanguageContext';
 import { themeForScheme, type WorldMapsPalette } from '../ui/worldMapsTheme';
 import { gameCopy } from '../features/geography/copy';
 import { useMusic } from '../features/music/MusicContext';
+import { MusicVolumeSlider } from '../features/music/MusicVolumeSlider';
 import { useProgress } from '../features/geography/ProgressContext';
 import { ProgressStatus } from '../features/geography/ProgressStatus';
 import { useMap } from '../features/geography/MapContext';
@@ -25,7 +26,7 @@ export function SettingsScreen() {
   const music = useMusic();
   const { setPreview } = music;
   useEffect(() => { if (!isFocused) setPreview(false); }, [isFocused, setPreview]);
-  const musicCopy = { en: { title: 'Background music', hint: 'Original regional themes · offline. Off by default.', volume: 'Volume', error: 'Music preferences could not be saved.', retry: 'Retry', preview: 'Test music', stopPreview: 'Stop preview', loadingTrack: 'Loading music…', effects: 'Quiz sound effects', effectsHint: 'Soft sounds for correct answers and first-try completions. Off by default.', playbackError: 'Music cannot be played on this device.' }, pl: { title: 'Muzyka w tle', hint: 'Oryginalne motywy regionalne · offline. Domyślnie wyłączone.', volume: 'Głośność', error: 'Nie udało się zapisać ustawień muzyki.', retry: 'Ponów', preview: 'Testuj muzykę', stopPreview: 'Zatrzymaj podgląd', loadingTrack: 'Ładowanie muzyki…', effects: 'Dźwięki w quizach', effectsHint: 'Delikatne dźwięki za poprawne odpowiedzi i ukończenie za pierwszym razem. Domyślnie wyłączone.', playbackError: 'Nie można odtworzyć muzyki na tym urządzeniu.' }, ru: { title: 'Фоновая музыка', hint: 'Оригинальные региональные темы · офлайн. По умолчанию выключены.', volume: 'Громкость', error: 'Не удалось сохранить настройки музыки.', retry: 'Повторить', preview: 'Проверить музыку', stopPreview: 'Остановить', loadingTrack: 'Загрузка музыки…', effects: 'Звуки викторины', effectsHint: 'Тихие сигналы за правильные ответы и прохождение с первой попытки. По умолчанию выключены.', playbackError: 'Невозможно воспроизвести музыку на этом устройстве.' } }[language];
+  const musicCopy = { en: { title: 'Background music', hint: 'Original regional themes · offline. Off by default.', volume: 'Volume', error: 'Music preferences could not be loaded or saved.', retry: 'Retry', preview: 'Test music', stopPreview: 'Stop preview', loadingTrack: 'Loading music…', effects: 'Quiz sound effects', effectsHint: 'Soft sounds for correct answers and first-try completions. Off by default.', playbackError: 'Music cannot be played on this device.' }, pl: { title: 'Muzyka w tle', hint: 'Oryginalne motywy regionalne · offline. Domyślnie wyłączone.', volume: 'Głośność', error: 'Nie udało się wczytać lub zapisać ustawień muzyki.', retry: 'Ponów', preview: 'Testuj muzykę', stopPreview: 'Zatrzymaj podgląd', loadingTrack: 'Ładowanie muzyki…', effects: 'Dźwięki w quizach', effectsHint: 'Delikatne dźwięki za poprawne odpowiedzi i ukończenie za pierwszym razem. Domyślnie wyłączone.', playbackError: 'Nie można odtworzyć muzyki na tym urządzeniu.' }, ru: { title: 'Фоновая музыка', hint: 'Оригинальные региональные темы · офлайн. По умолчанию выключены.', volume: 'Громкость', error: 'Не удалось загрузить или сохранить настройки музыки.', retry: 'Повторить', preview: 'Проверить музыку', stopPreview: 'Остановить', loadingTrack: 'Загрузка музыки…', effects: 'Звуки викторины', effectsHint: 'Тихие сигналы за правильные ответы и прохождение с первой попытки. По умолчанию выключены.', playbackError: 'Невозможно воспроизвести музыку на этом устройстве.' } }[language];
   const [showLicenses, setShowLicenses] = useState(false);
   const c = gameCopy[language];
   return <SafeAreaView edges={['top']} style={styles.screen}>
@@ -56,12 +57,8 @@ export function SettingsScreen() {
         <Text style={styles.hint}>{musicCopy.hint}</Text>
         <Text style={styles.hint}>{mapName(mapId, language)}</Text>
         <Text style={styles.text}>{musicCopy.volume}: {music.volume}%</Text>
-        <View style={styles.volumeRow}>{[0, 10, 20, 30].map(value =>
-          <Pressable key={value} accessibilityRole="button" accessibilityState={{ selected: music.volume === value, disabled: !music.loaded || music.error }} disabled={!music.loaded || music.error}
-            onPress={() => music.update({ volume: value })} style={[styles.volumeButton, { backgroundColor: music.volume === value ? theme.brandDark : theme.paper }]}>
-            <Text style={{ color: music.volume === value ? '#FFF' : theme.navy, fontWeight: '700' }}>{value}%</Text>
-          </Pressable>)}
-        </View>
+        <MusicVolumeSlider label={musicCopy.volume} value={music.volume} disabled={!music.loaded || music.error}
+          onValueChange={volume => music.update({ volume })} />
         <Pressable accessibilityRole="button" accessibilityLabel={music.preview ? musicCopy.stopPreview : musicCopy.preview}
           disabled={!music.trackReady || !!music.playbackError} onPress={() => music.setPreview(!music.preview)}
           style={styles.row}>
@@ -106,6 +103,5 @@ const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
   title: { color: theme.navy, fontSize: 28, fontWeight: '800' }, card: { backgroundColor: theme.surface, borderRadius: 18, padding: 16, gap: 8 },
   cardTitle: { fontSize: 16, fontWeight: '800', color: theme.navy, flexShrink: 1 }, text: { fontSize: 14, color: theme.navy }, hint: { fontSize: 12, color: theme.muted, lineHeight: 19 },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', minHeight: 48, gap: 10 }, link: { color: theme.brand, fontSize: 14, fontWeight: '700' }, error: { color: '#823C19', fontSize: 12 },
-  volumeRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 }, volumeButton: { minWidth: 57, minHeight: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 12 },
   historyRow: { paddingVertical: 8, gap: 4 }, modalHeader: { flexDirection: 'row', paddingHorizontal: 16, justifyContent: 'space-between', alignItems: 'center' }, close: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
 });

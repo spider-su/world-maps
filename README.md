@@ -175,3 +175,13 @@ in a secondary sheet. Settings contains language, audio and attribution. Library
 Undiscovered filter and the same country sheet as Learn; its search, region and scroll remain
 mounted behind details. These flows keep the existing canonical v4 progress and preference keys.
 See [market polish verification](docs/evidence/market-polish/README.md) for validation and limits.
+
+Audio preference recovery uses serialized writes on the existing storage key;
+read failures retry restoration without replacing saved choices with defaults.
+See [audio behavior](docs/music-prototype.md).
+
+Background music volume uses an accessible slider with 1% steps from 0–30%,
+with the current percentage displayed in Settings.
+
+Home keeps launch controls compact; Difficulty is displayed and adjusted in Maps.
+All modes continue to use the saved difficulty.

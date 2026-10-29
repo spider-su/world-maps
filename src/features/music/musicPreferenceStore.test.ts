@@ -90,4 +90,16 @@ describe('audio preference persistence', () => {
     await store.flush();
     expect(store.getSnapshot()).toEqual({ preferences: { ...DEFAULT_MUSIC, enabled: true, volume: 30 }, status: 'ready' });
   });
+
+  it('saves a slider drag that returns to its starting volume before prior writes finish', async () => {
+    const firstWrite = deferred<void>();
+    const setItem = vi.fn().mockImplementationOnce(() => firstWrite.promise).mockResolvedValue(undefined);
+    const store = createMusicPreferenceStore({ getItem: async () => null, setItem });
+    await store.load();
+    for (const volume of [13, 27, 0, 30, 12]) store.update({ volume });
+    firstWrite.resolve();
+    await store.flush();
+    expect(JSON.parse(setItem.mock.lastCall![1])).toEqual(DEFAULT_MUSIC);
+    expect(store.getSnapshot().preferences.volume).toBe(12);
+  });
 });

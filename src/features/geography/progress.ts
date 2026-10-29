@@ -1,4 +1,4 @@
-import { isExplorer, type ExplorerId } from './explorer';
+import { isExplorer, parseExplorerAppearance, type ExplorerAppearance, type ExplorerId } from './explorer';
 import type { Round } from './engine';
 import { DEFAULT_DIFFICULTY, isDifficulty, type Difficulty } from './difficulty';
 import { parseLearning, type LearningProgress, type PracticeMode } from './learning';
@@ -19,6 +19,7 @@ export interface GameProgress {
   difficulty: Difficulty;
   schemaVersion: 4;
   explorer: ExplorerId;
+  explorerAppearance?: ExplorerAppearance;
   explored: string[];
   learning: LearningProgress;
   practiceMode: PracticeMode;
@@ -92,10 +93,12 @@ export function parseProgress(raw: string | null): GameProgress {
     const candidate = value as Partial<GameProgress>;
     if (candidate.schemaVersion !== 4) throw new Error('Unsupported progress version');
     const sessions = Array.isArray(candidate.sessions) ? candidate.sessions.filter(isSession).slice(-MAX_HISTORY) : [];
+    const explorerAppearance = parseExplorerAppearance(candidate.explorerAppearance);
     return {
       difficulty: isDifficulty(candidate.difficulty) ? candidate.difficulty : DEFAULT_DIFFICULTY,
       schemaVersion: 4,
       explorer: isExplorer(candidate.explorer) ? candidate.explorer : 'amber',
+      ...(explorerAppearance ? { explorerAppearance } : {}),
       explored: Array.isArray(candidate.explored) ? [...new Set(candidate.explored.filter((id): id is string => typeof id === 'string' && /^[A-Z]{3}$/.test(id)))] : [],
       practiceMode: candidate.practiceMode === 'random' ? 'random' : 'adaptive',
       learning: parseLearning(candidate.learning),

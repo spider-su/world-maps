@@ -1,18 +1,12 @@
 import { View } from 'react-native';
 import Svg, { Circle, ClipPath, Defs, Ellipse, G, Line, Path, Rect } from 'react-native-svg';
-import type { ExplorerId } from './explorer';
-
-const palettes = {
-  amber: { skin: '#DDA77E', hair: '#49332B', shirt: '#0E8985', accent: '#F2AC42', sky: '#DDF2F0' },
-  ocean: { skin: '#F1C8AD', hair: '#343747', shirt: '#3476BF', accent: '#EF9862', sky: '#E2EFFC' },
-  forest: { skin: '#976249', hair: '#252B31', shirt: '#617E47', accent: '#E9B94F', sky: '#ECF1DB' },
-};
+import { explorerColors, type ExplorerAppearance, type ExplorerId } from './explorer';
 
 /** Bundled vector portrait. Accessories follow earned stages; no remote avatar service. */
-export function ExplorerAvatar({ explorer, stage, size = 160, label }: {
-  explorer: ExplorerId; stage: number; size?: number; label: string;
+export function ExplorerAvatar({ explorer, appearance, stage, size = 160, label }: {
+  explorer: ExplorerId; appearance?: ExplorerAppearance; stage: number; size?: number; label: string;
 }) {
-  const p = palettes[explorer];
+  const p = explorerColors(explorer, appearance);
   return <View accessible accessibilityRole="image" accessibilityLabel={label} style={{ width: size, height: size }}>
     <Svg width={size} height={size} viewBox="0 0 200 200" aria-hidden={true}>
       <Defs><ClipPath id="avatar-scenery-clip"><Circle cx={100} cy={100} r={97} /></ClipPath></Defs>
@@ -33,7 +27,8 @@ export function ExplorerAvatar({ explorer, stage, size = 160, label }: {
       <Path d="M65 74Q68 40 102 39Q129 38 136 67Q117 63 108 49Q95 70 65 74Z" fill={p.hair} />
       {explorer === 'forest' && <><Circle cx={71} cy={51} r={12} fill={p.hair} /><Circle cx={88} cy={42} r={13} fill={p.hair} /><Circle cx={110} cy={42} r={14} fill={p.hair} /><Circle cx={128} cy={54} r={12} fill={p.hair} /></>}
       <Path d="M79 77Q86 73 92 77M108 77Q115 73 122 77" fill="none" stroke={p.hair} strokeWidth={3} strokeLinecap="round" />
-      <Circle cx={86} cy={86} r={3.2} fill="#27323E" /><Circle cx={114} cy={86} r={3.2} fill="#27323E" />
+      <Ellipse cx={86} cy={86} rx={5} ry={4} fill="#FFF" /><Ellipse cx={114} cy={86} rx={5} ry={4} fill="#FFF" />
+      {[86, 114].map(x => <G key={x}><Circle cx={x} cy={86} r={3.2} fill={p.eyes} /><Circle cx={x} cy={86} r={1.5} fill="#192330" /><Circle cx={x - 0.8} cy={85} r={0.7} fill="#FFF" /></G>)}
       <Path d="M100 88L97 98H102" fill="none" stroke="#9A6650" strokeWidth={2} strokeLinecap="round" />
       <Path d="M88 105Q100 117 112 105" fill="#FFF" stroke="#855B4C" strokeWidth={1.5} strokeLinejoin="round" />
       {stage >= 1 && stage < 4 && <><Path d="M61 63Q64 28 100 28Q133 28 139 63Z" fill={p.accent} /><Path d="M58 61Q104 50 145 62L143 68Q99 60 58 68Z" fill={p.shirt} /><Circle cx={101} cy={45} r={7} fill="#FFF" opacity={0.8} /></>}

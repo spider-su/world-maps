@@ -184,3 +184,9 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 - `PlaySetup.showDifficulty` / `QuizSetupSummary.showDifficulty` default true.
   Home passes false so Difficulty appears only in Maps setup and its summary.
   This is presentation only; gameplay still uses the saved difficulty.
+
+- `ExplorerAppearanceEditor`: two labelled radio groups for Original/Brown/Blond/Red
+  hair and Original/Brown/Blue/Green eyes, with a live portrait. The caller merges
+  partial colour edits into the latest progress through the existing writer.
+- `ExplorerAvatar.appearance`: optional validated hair/eye IDs; omitted fields use
+  the selected explorer’s original palette. Shared by Profile and all outfit previews.

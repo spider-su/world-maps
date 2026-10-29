@@ -45,7 +45,8 @@ contract. See `docs/continent-maps.md` for data coverage and regeneration.
 Profile progression is derived by `explorerProgress.ts` from cumulative learning
 and unique discoveries, independent of bounded score history. `explorer.ts` owns
 cosmetic IDs/stages; `ExplorerAvatar` renders bundled human portraits. Schema 4
-persists only the selected cosmetic ID through the existing serialized store.
+persists the selected cosmetic ID and optional validated hair/eye colour overrides
+through the existing serialized store. Earlier v4 records retain original colours.
 
 
 Launch configuration is composed by `PlaySetup` and `QuizSetupSummary` from existing

@@ -9,7 +9,7 @@ This is the current application inventory. Previous starter-template and early P
 | Six continent registry | `maps.ts`, `EuropeMap.tsx`, bundled `data/` | Europe, Asia, Africa, North America, South America, Oceania; terrain background does not own hit-testing |
 | Country selection | `CountryPath.tsx`, `CountryPath.web.tsx`, `mapPicker.ts`, `selection.ts` | Keep native/web SVG adapters, zoom/pan guard and small-country pickers |
 | Local progress | `ProgressContext.tsx`, `progressStore.ts`, `progressStorage.ts`, `progress.ts` | Pre-release canonical v4; serialized saves, read-error protection, retry |
-| Learning and XP | `learning.ts`, `explorerProgress.ts`, `explorer.ts` | Adaptive/random practice, discoveries, avatars, achievements; validate restart restoration |
+| Learning and XP | `learning.ts`, `explorerProgress.ts`, `explorer.ts`, `ExplorerAppearanceEditor` | Adaptive/random practice, discoveries, avatars, achievements; validate restart restoration |
 | Map and quiz preferences | `MapContext.tsx`, `mapQuizPreferences.ts` | Persist selected continent, Find It clue and Name It answer variant |
 | Language / pronunciation | `LanguageContext.tsx`, `countryFacts.ts`, `speechController.ts` | EN/PL/RU UI and capitals, native voice availability; device test required |
 | Audio | `MusicContext.tsx`, `MusicVolumeSlider(.web).tsx`, `musicPreferenceStore.ts`, `musicAssets.ts`, `soundPolicy.ts` | Serialized audio preferences with read/save retry; six optional region themes, optional quiz cues, speech priority, no background playback |

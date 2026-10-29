@@ -185,3 +185,6 @@ with the current percentage displayed in Settings.
 
 Home keeps launch controls compact; Difficulty is displayed and adjusted in Maps.
 All modes continue to use the saved difficulty.
+
+Profile’s explorer editor offers hair and eye colour choices with a live preview.
+Cosmetic changes save locally and retain earned outfits, XP and quiz progress.

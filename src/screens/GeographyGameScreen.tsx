@@ -184,7 +184,6 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
         {mode === 'learn' && !feedback && <Text style={styles.learnHint}>{p.clusterHint}</Text>}
         {mode === 'learn' && feedback && <CountryInfoCard compact id={feedback.id} language={language} onSpeak={() => speak(countryName(feedback.id, language))} onDetails={() => setShowDetails(true)} />}
         {mode !== 'learn' && <>
-          {!feedback && mode !== 'name-it' && mode !== 'capital-name' && <Text style={styles.sheetHint}>{p.clusterHint}</Text>}
           {completed && reward && reward.xp > 0 && <View accessibilityLiveRegion="polite" style={styles.reward}><Text style={styles.rewardTitle}>+{reward.xp} {pc.xp} · {p.reward}</Text>{reward.level && <Text style={styles.rewardText}>{pc.level} {reward.level}</Text>}{reward.outfit && <Text style={styles.rewardText}>{p.outfit}</Text>}{reward.badges.map(id => <Text key={id} style={styles.rewardText}>{pc.badges[id].title} · {pc.earned}</Text>)}</View>}
           {feedback && <View style={styles.feedback} accessibilityLiveRegion="polite"><View style={[styles.feedbackDot, { backgroundColor: CLUE_COLORS[feedback.result] }]} /><Text style={styles.feedbackText}>{countryName(feedback.id, language)} · {mode === 'hot-cold' ? c.proximity[feedback.result] : feedback.result === 'correct' ? c.correct : c.retry}</Text></View>}
           {mode === 'hot-cold' && !completed && <View style={styles.legend}><Text style={styles.legendText}>{c.cold}</Text>
@@ -214,6 +213,7 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
       </Pressable>
       {canShowNames && <Pressable accessibilityRole="button" style={styles.sheetAction} onPress={() => setShowNames(value => !value)}><Ionicons name="text-outline" size={22} color={theme.brand} /><Text style={styles.actionText}>{showNames ? c.hideNames : c.showNames}</Text></Pressable>}
       {mode === 'learn' && <Pressable accessibilityRole="button" style={styles.sheetAction} onPress={() => setShowBorders(value => !value)}><Ionicons name="map-outline" size={22} color={theme.brand} /><Text style={styles.actionText}>{showBorders ? c.hideBorders : c.showBorders}</Text></Pressable>}
+      <Text style={styles.sheetHint}>{p.clusterHint}</Text>
       {mode !== 'learn' && <Text style={styles.sheetHint}>{c.levels[difficulty]} · {c.levelHints[difficulty]}{ '\n' }{c.history} · {c.solved}: {stats.played}</Text>}
       <ProgressStatus language={language} />
     </OptionsSheet>
@@ -233,11 +233,11 @@ const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
   reward: { gap: 3 }, rewardTitle: { color: theme.brand, fontSize: 14, fontWeight: '800' }, rewardText: { color: theme.navy, fontSize: 12 },
   learnIntro: { gap: 8 },
   promptRow: { flexGrow: 1, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingVertical: 8, backgroundColor: theme.surface, borderRadius: 16, minHeight: 52 },
-  prompt: { flex: 1, color: theme.navy, fontSize: 18, fontWeight: '800', lineHeight: 24 },
+  prompt: { flex: 1, color: theme.navy, fontSize: 17, fontWeight: '800', lineHeight: 23 },
   replay: { width: 44, minHeight: 44, borderRadius: 20, backgroundColor: theme.ocean, alignItems: 'center', justifyContent: 'center' },
   mapArea: { flex: 1, minHeight: 180 },
   dock: { marginHorizontal: 12, flexGrow: 0, flexShrink: 0, backgroundColor: theme.surface, borderRadius: 18 },
-  dockContent: { padding: 12, gap: 8 },
+  dockContent: { paddingHorizontal: 12, paddingVertical: 8, gap: 5 },
   options: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   option: { flexGrow: 1, flexBasis: '46%', minHeight: 48, padding: 10, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.paper, borderRadius: 14, borderWidth: 1, borderColor: theme.border },
   optionWide: { flexBasis: '100%' },

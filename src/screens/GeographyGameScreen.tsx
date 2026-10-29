@@ -176,7 +176,7 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
         {(mode === 'name-it' || mode === 'capital-name') && !completed && <View style={styles.options}>
           {choices.map(option => <Pressable key={option.id} accessibilityRole="button" accessibilityState={{ disabled: completed || round.guesses.includes(option.id) || !progressLoaded }}
             disabled={completed || round.guesses.includes(option.id) || !progressLoaded} onPress={() => selectAnswer(option.id)}
-            style={[styles.option, round.guesses.includes(option.id) && (option.id === round.targetId ? styles.optionCorrect : styles.optionWrong)]}><Text style={styles.optionText}>{answerType === 'capital' ? capitalName(option.id, language) : countryName(option.id, language)}</Text></Pressable>)}
+            style={[styles.option, width < 360 && fontScale > 1.3 && styles.optionWide, round.guesses.includes(option.id) && (option.id === round.targetId ? styles.optionCorrect : styles.optionWrong)]}><Text style={styles.optionText}>{answerType === 'capital' ? capitalName(option.id, language) : countryName(option.id, language)}</Text></Pressable>)}
         </View>}
         {mode === 'learn' && !feedback && <View style={styles.learnIntro}><Text style={styles.actionText}>{c.learnPrompt}</Text><Text style={styles.sheetHint}>{p.clusterHint}</Text></View>}
         {mode === 'learn' && feedback && <CountryInfoCard compact id={feedback.id} language={language} onSpeak={() => speak(countryName(feedback.id, language))} onDetails={() => setShowDetails(true)} />}
@@ -237,6 +237,7 @@ const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
   dockContent: { padding: 12, gap: 8 },
   options: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   option: { flexGrow: 1, flexBasis: '46%', minHeight: 48, padding: 10, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.paper, borderRadius: 14, borderWidth: 1, borderColor: theme.border },
+  optionWide: { flexBasis: '100%' },
   optionWrong: { backgroundColor: theme.answerWrong, borderColor: theme.error }, optionCorrect: { backgroundColor: theme.answerRight, borderColor: theme.success }, optionText: { color: theme.navy, fontWeight: '600', fontSize: 14, textAlign: 'center' },
   feedback: { flexDirection: 'row', alignItems: 'center', gap: 8 }, feedbackDot: { width: 8, height: 8, borderRadius: 4 }, feedbackText: { color: theme.navy, flex: 1, fontSize: 13, fontWeight: '600' },
   legend: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 7 }, legendText: { color: theme.muted, fontSize: 10 }, swatch: { width: 10, height: 10, borderRadius: 5 },

@@ -58,7 +58,7 @@ export function SettingsScreen() {
         <Text style={styles.hint}>{mapName(mapId, language)}</Text>
         <Text style={styles.text}>{musicCopy.volume}: {music.volume}%</Text>
         <MusicVolumeSlider label={musicCopy.volume} value={music.volume} disabled={!music.loaded || music.error}
-          onValueChange={volume => { if (volume !== music.volume) music.update({ volume }); }} />
+          onValueChange={volume => music.update({ volume })} />
         <Pressable accessibilityRole="button" accessibilityLabel={music.preview ? musicCopy.stopPreview : musicCopy.preview}
           disabled={!music.trackReady || !!music.playbackError} onPress={() => music.setPreview(!music.preview)}
           style={styles.row}>

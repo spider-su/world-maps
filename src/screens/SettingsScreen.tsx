@@ -38,7 +38,7 @@ export function SettingsScreen() {
       <Text style={styles.title}>{c.settings}</Text>
       <View style={styles.card}>
         <Pressable accessibilityRole="button" accessibilityLabel={polishCopy[language].setup} accessibilityState={{ expanded: showQuizSetup }} style={styles.row} onPress={() => setShowQuizSetup(true)}>
-          <View style={styles.quizSetupTitle}><Ionicons name="options-outline" size={22} color={theme.brand} /><Text style={styles.cardTitle}>{polishCopy[language].setup}</Text></View>
+          <View style={styles.quizSetupTitle}><View style={styles.quizIcon}><Ionicons name="options-outline" size={25} color="#FFF" /></View><Text style={styles.cardTitle}>{polishCopy[language].setup}</Text></View>
           <Ionicons name="chevron-forward" size={20} color={theme.brand} />
         </Pressable>
       </View>
@@ -112,7 +112,8 @@ const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: theme.paper }, body: { padding: 16, gap: 16, width: '100%', maxWidth: 720, alignSelf: 'center', paddingBottom: 30 },
   title: { color: theme.navy, fontSize: 28, fontWeight: '800' }, card: { backgroundColor: theme.surface, borderRadius: 18, padding: 16, gap: 8 },
   cardTitle: { fontSize: 16, fontWeight: '800', color: theme.navy, flexShrink: 1 }, text: { fontSize: 14, color: theme.navy }, hint: { fontSize: 12, color: theme.muted, lineHeight: 19 },
-  quizSetupTitle: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  quizSetupTitle: { flexDirection: 'row', alignItems: 'center', gap: 12, flexShrink: 1 },
+  quizIcon: { width: 48, height: 48, borderRadius: 14, backgroundColor: theme.brandDark, alignItems: 'center', justifyContent: 'center' },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', minHeight: 48, gap: 10 }, link: { color: theme.brand, fontSize: 14, fontWeight: '700' }, error: { color: '#823C19', fontSize: 12 },
   historyRow: { paddingVertical: 8, gap: 4 }, modalHeader: { flexDirection: 'row', paddingHorizontal: 16, justifyContent: 'space-between', alignItems: 'center' }, close: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
 });

@@ -172,7 +172,7 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
           learn={mode === 'learn'} atlas={mode === 'learn'} showBorders={showBorders} selectableIds={mode === 'learn' ? undefined : pack.locations.map(location => location.id)} onSelect={selectCountry} enabled={progressLoaded && !completed && mode !== 'name-it' && mode !== 'capital-name'} language={language} targetId={(mode === 'name-it' || mode === 'capital-name') && !completed ? target.id : undefined} />
 
       </View>
-      <ScrollView style={[styles.dock, { height: dockHeight, flexBasis: dockHeight }]} contentContainerStyle={styles.dockContent} keyboardShouldPersistTaps="handled">
+      <ScrollView key={`${round.startedAt}:${completed ? 'result' : 'play'}`} style={[styles.dock, { height: dockHeight, flexBasis: dockHeight }]} contentContainerStyle={styles.dockContent} keyboardShouldPersistTaps="handled">
         {(mode === 'name-it' || mode === 'capital-name') && !completed && <View style={styles.options}>
           {choices.map(option => <Pressable key={option.id} accessibilityRole="button" accessibilityState={{ disabled: completed || round.guesses.includes(option.id) || !progressLoaded }}
             disabled={completed || round.guesses.includes(option.id) || !progressLoaded} onPress={() => selectAnswer(option.id)}

@@ -168,3 +168,6 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 - `playLayout` reserves prompt/dock space by mode, font scale and available safe height;
   answer/result state never changes the map size. Short screens scroll the dock while
   keeping at least 180dp for map targets.
+
+- The bounded game dock resets its scroll on completion/new round, so scrolling through
+  large-text answers cannot hide newly earned rewards or the next set of choices.

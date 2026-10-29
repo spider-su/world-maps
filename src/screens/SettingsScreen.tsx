@@ -17,6 +17,7 @@ import { mapName } from '../features/geography/maps';
 import { PlaySetup } from '../features/geography/PlaySetup';
 import { polishCopy } from '../features/geography/polishCopy';
 import licenses from '../features/geography/data/licenses.json';
+import globeLicenses from '../features/geography/data/globe-licenses.json';
 
 export function SettingsScreen() {
   const { mapId } = useMap();
@@ -103,6 +104,9 @@ export function SettingsScreen() {
           <Text style={styles.hint}>{licenses.facts}</Text>
           <Text style={styles.text}>Flags: flag-icons · MIT{ '\n' }github.com/lipis/flag-icons</Text>
           <Text style={styles.hint}>{licenses.flags}</Text>
+          <Text style={styles.text}>Natural Earth · D3</Text>
+          <Text style={styles.hint}>{globeLicenses.land}</Text>
+          <Text style={styles.hint}>{globeLicenses.software}</Text>
         </ScrollView>
       </SafeAreaView>
     </Modal>

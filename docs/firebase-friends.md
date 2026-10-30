@@ -178,3 +178,37 @@ not a production security-rule bypass.
 
 Deployment and live end-to-end tests are **not** performed by this PR; it prepares
 the missing Firebase CLI configuration and makes the error actionable.
+
+## Android App Check (Play Integrity)
+
+The Android Friends callable requests use `@react-native-firebase/app-check`
+to obtain a native attestation token and attach it as `X-Firebase-AppCheck`
+along with the Firebase Auth bearer token. This preserves the existing JS
+Firebase Authentication integration.
+
+**Firebase Console must be configured before testing:**
+
+1. Firebase → App Check → Apps → register Android
+   `com.spidersu.worldmaps` for **Play Integrity** with the APK signing
+   SHA-256 certificate fingerprint.
+2. Link the Play Integrity API to the same Google Cloud/Firebase project.
+3. **Sideloaded preview APKs:** turn OFF the `PLAY_RECOGNIZED` and
+   `LICENSED` requirements. Those labels require Google Play distribution.
+   Choose appropriate device integrity requirements for your test phone.
+4. Deploy `firebase/functions`. All four callable Functions currently
+   enforce App Check. Firestore security rules separately enforce per-user
+   access, regardless of App Check.
+5. Install a *new* APK that includes this App Check integration. The previously
+   installed APK cannot send valid tokens.
+6. Sign in, create an invite, accept it on a second device, and verify friends.
+
+For emulators or builds where Play Integrity cannot attest, the native SDK can
+use a Firebase App Check **debug provider** with
+`EXPO_PUBLIC_APP_CHECK_DEBUG_TOKEN`. Register that debug token under
+App Check → Manage debug tokens. Restrict this to development/testing and do not
+publish a build embedding a registered debug token; it is a bypass credential.
+
+The SDK is initialized lazily on the first protected invitation call, so
+ordinary offline gameplay does not trigger an App Check attestation.
+Do not turn on global Firestore App Check enforcement while the app still uses
+the Firebase JS Firestore client without an App Check token attachment.

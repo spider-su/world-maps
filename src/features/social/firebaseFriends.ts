@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 import { firebaseClient } from './firebaseClient';
+import { readCallableResponse } from './callableResponse';
 import { friendInviteUrl } from './friendInvite';
 import { parseSocialProfile, type SocialProfile } from './socialProfile';
 import { socialFingerprint } from './socialSync';
@@ -32,12 +33,7 @@ async function callFriendsFunction<T>(name: string, data: Record<string, unknown
     },
     body: JSON.stringify({ data }),
   });
-  const payload = await response.json() as { result?: T; error?: {message?: string;status?: string} };
-  if (!response.ok || payload.error) {
-    throw new Error(payload.error?.message ?? `Firebase function ${name} failed (HTTP ${response.status})`);
-  }
-  if (payload.result === undefined) throw new Error(`Empty response from ${name}`);
-  return payload.result;
+  return readCallableResponse<T>(response, name);
 }
 
 export async function createInvitation(): Promise<string> {

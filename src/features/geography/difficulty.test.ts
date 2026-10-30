@@ -3,8 +3,22 @@ import { DEFAULT_DIFFICULTY, DIFFICULTIES, difficultyPack } from './difficulty';
 import { europePack, europeShapes } from './europe';
 import { startRound, guess } from './engine';
 import { answerChoices } from './modes';
+import { MAP_IDS, maps } from './maps';
 
 describe('country difficulty pools', () => {
+  it('offers broad Normal coverage and nested pools on every continent', () => {
+    for (const id of MAP_IDS) {
+      const map = maps[id];
+      const easy = difficultyPack('easy', map).locations;
+      const normal = difficultyPack('normal', map).locations;
+      expect(normal.length).toBeGreaterThanOrEqual(Math.ceil(map.pack.locations.length * 2 / 3));
+      expect(easy.every(location => normal.some(item => item.id === location.id))).toBe(true);
+      expect(normal.every(location => map.pack.locations.some(item => item.id === location.id))).toBe(true);
+      expect(answerChoices(difficultyPack('normal', map), normal[0]!.id)).toHaveLength(4);
+    }
+    expect(difficultyPack('normal', maps['north-america']).locations).toHaveLength(16);
+    expect(difficultyPack('normal', maps['north-america']).locations.some(item => item.id === 'JAM')).toBe(true);
+  });
   it('defaults to medium/large outlines and nests the three pools', () => {
     expect(DEFAULT_DIFFICULTY).toBe('normal');
     const easy = difficultyPack('easy');

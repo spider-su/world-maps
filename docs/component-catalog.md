@@ -24,11 +24,13 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 - `features/geography/ModeSelector`: four icon-led mode cards in `GAME_MODES`
   order, localized through `gameCopy`, no round state.
 - `screens/GeographyGameScreen`: one game mode/round, compact prompt and answers.
-- `features/geography/DifficultySelector`: saved Home level selection.
+- `features/geography/DifficultySelector`: saved level selection in Settings/Maps quiz setup.
   `difficultyPack` supplies eligible quiz locations; `EuropeMap.selectableIds`
   restricts interactions while retaining geographic context.
 - `features/geography/learning`: per-country/mode canonical v4 attempt records,
-  adaptive/random sampling and pure summaries. `LearningOverview` is displayed in
+  adaptive/random sampling with a recent-target cooldown and pure summaries.
+  `practiceTarget` excludes up to four recent eligible targets, capped at half the
+  pool, using existing per-mode learning plus the previous transient target. `LearningOverview` is displayed in
   Profile’s learning sheet; `PracticeSelector` saves the sampling preference.
 - `EuropeMap.atlas` / `showBorders`: bundled relief registered to the shared viewBox.
 - `speechController`: serialized pronunciation with installed-voice matching,
@@ -78,7 +80,8 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
   uses the same projected bundled Blue Marble relief on all six packs, including
   Europe’s original independent x/y projection scales.
 - `difficultyPack(level, map?)`: derives eligible countries from each map's outline
-  areas; normal retains at least four targets for multiple-choice modes.
+  areas; Normal retains at least two thirds of a map and all Easy targets.
+  North America Normal includes 16/23; Europe retains 34/47.
 
 ## Wikipedia discovery
 

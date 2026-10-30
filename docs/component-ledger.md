@@ -6,10 +6,10 @@ This is the current application inventory. Previous starter-template and early P
 |---|---|---|
 | Navigation / safe areas | `src/navigation.tsx`, `src/platform/safeArea.ts` | Five tabs: Home, Maps, Library, Profile, Settings; game hides tabs and owns both insets; verify native gestures |
 | Four game modes and variants | `HomeScreen`, `GeographyGameScreen`, `engine.ts`, `modes.ts` | Hot & Cold, Find It, Name It, Learn; maintain answer secrecy and verify completion flow |
-| Six continent registry | `maps.ts`, `EuropeMap.tsx`, bundled `data/` | Europe, Asia, Africa, North America, South America, Oceania; shared Blue Marble relief on all six maps; terrain background does not own hit-testing |
+| Six continent registry | `maps.ts`, `EuropeMap.tsx`, bundled `data/` | Europe, Asia, Africa, North America, South America, Oceania; shared Blue Marble relief; Normal pools cover at least two thirds and contain Easy pools; terrain background does not own hit-testing |
 | Country selection | `CountryPath.tsx`, `CountryPath.web.tsx`, `mapPicker.ts`, `selection.ts` | Keep native/web SVG adapters, zoom/pan guard and small-country pickers |
 | Local progress | `ProgressContext.tsx`, `progressStore.ts`, `progressStorage.ts`, `progress.ts` | Pre-release canonical v4; serialized saves, read-error protection, retry |
-| Learning and XP | `learning.ts`, `explorerProgress.ts`, `explorer.ts` | Adaptive/random practice, discoveries, avatars, achievements; validate restart restoration |
+| Learning and XP | `learning.ts`, `explorerProgress.ts`, `explorer.ts` | Adaptive/random practice excludes up to four recent targets (at most half the active pool), derived from saved learning; discoveries, avatars, achievements |
 | Map and quiz preferences | `MapContext.tsx`, `mapQuizPreferences.ts` | Persist selected continent, Find It clue and Name It answer variant |
 | Language / pronunciation | `LanguageContext.tsx`, `countryFacts.ts`, `speechController.ts` | EN/PL/RU UI and capitals, native voice availability; device test required |
 | Audio | `MusicContext.tsx`, `MusicVolumeSlider(.web).tsx`, `musicPreferenceStore.ts`, `musicAssets.ts`, `soundPolicy.ts` | Serialized audio preferences with read/save retry; six optional region themes, optional quiz cues, speech priority, no background playback |

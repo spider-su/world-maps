@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { initialProgress, parseProgress } from './progress';
 import { attempts, learningSummary, mastered, practiceTarget, practiceWeight, recordPractice, type LearningProgress } from './learning';
 import type { GeographyPack, Round } from './engine';
+import { maps } from './maps';
+import { difficultyPack } from './difficulty';
 const round: Round = { packId: 'europe', targetId: 'POL', guesses: [], startedAt: 1 };
 const pack: GeographyPack = { id: 'europe', title: 'Europe', kind: 'country', locations: ['POL', 'DEU', 'FRA'].map(id => ({ id, name: id, latitude: 50, longitude: 10 })) };
 
@@ -58,5 +60,42 @@ describe('country learning and adaptive practice', () => {
   it('discards malformed learning records without losing valid scored history', () => {
     const source = { ...initialProgress, learning: { europe: { POL: { correct: -1 } } } };
     expect(parseProgress(JSON.stringify(source)).learning).toEqual({});
+  });
+  it('spaces recent targets in both practice modes, including after reopening', () => {
+    const largePack = { ...pack, locations: Array.from({ length: 12 }, (_, i) => ({ ...pack.locations[0]!, id: `C${i}` })) };
+    let learning: LearningProgress = {};
+    for (let i = 0; i < 5; i++) learning = recordPractice(learning, pack.id, { ...round, targetId: `C${i}`, startedAt: i + 10 }, 'wrong', i + 10);
+    for (const mode of ['adaptive', 'random'] as const) {
+      for (let i = 0; i < 100; i++) {
+        const target = practiceTarget(largePack, learning, pack.id, mode, undefined, () => i / 100, 20);
+        expect(['C1', 'C2', 'C3', 'C4']).not.toContain(target);
+      }
+      // An explicitly skipped round also gets a cooldown slot.
+      expect(practiceTarget(largePack, learning, pack.id, mode, 'C0', () => 0, 20)).not.toBe('C0');
+    }
+  });
+  it('keeps cooldown scoped to the active map/mode and leaves small pools playable', () => {
+    const learning = recordPractice({}, 'other-mode', round, 'DEU', 2);
+    expect(practiceTarget(pack, learning, pack.id, 'random', undefined, () => 0)).toBe('POL');
+    const two = { ...pack, locations: pack.locations.slice(0, 2) };
+    expect(practiceTarget(two, learning, pack.id, 'random', 'POL', () => 0)).toBe('DEU');
+    const outside = recordPractice({}, pack.id, { ...round, targetId: 'OUTSIDE' }, 'wrong', 10);
+    expect(practiceTarget(pack, outside, pack.id, 'random', undefined, () => 0)).toBe('POL');
+  });
+  it('gives North America varied quiz runs without repeating the last four targets', () => {
+    const pool = difficultyPack('normal', maps['north-america']);
+    for (const mode of ['adaptive', 'random'] as const) {
+      let learning: LearningProgress = {};
+      let seed = 42;
+      const random = () => { seed = (1664525 * seed + 1013904223) >>> 0; return seed / 2 ** 32; };
+      const targets: string[] = [];
+      for (let i = 0; i < 80; i++) {
+        const id = practiceTarget(pool, learning, pool.id, mode, targets.at(-1), random, i + 1);
+        expect(targets.slice(-4)).not.toContain(id);
+        targets.push(id);
+        learning = recordPractice(learning, pool.id, { packId: pool.id, targetId: id, guesses: [], startedAt: i + 1 }, id, i + 1);
+      }
+      expect(new Set(targets).size).toBe(pool.locations.length);
+    }
   });
 });

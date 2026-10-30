@@ -221,7 +221,7 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
       {canShowNames && <Pressable accessibilityRole="button" style={styles.sheetAction} onPress={() => setShowNames(value => !value)}><Ionicons name="text-outline" size={22} color={theme.brand} /><Text style={styles.actionText}>{showNames ? c.hideNames : c.showNames}</Text></Pressable>}
       {mode === 'learn' && <Pressable accessibilityRole="button" style={styles.sheetAction} onPress={() => setShowBorders(value => !value)}><Ionicons name="map-outline" size={22} color={theme.brand} /><Text style={styles.actionText}>{showBorders ? c.hideBorders : c.showBorders}</Text></Pressable>}
       <Text style={styles.sheetHint}>{p.clusterHint}</Text>
-      {mode !== 'learn' && <Text style={styles.sheetHint}>{c.levels[difficulty]} · {c.levelHints[difficulty]}{ '\n' }{c.history} · {c.solved}: {stats.played}</Text>}
+      {mode !== 'learn' && <Text style={styles.sheetHint}>{c.levels[difficulty]} · {pack.locations.length}/{map.pack.locations.length} {c.countries}{ '\n' }{c.history} · {c.solved}: {stats.played}</Text>}
       <ProgressStatus language={language} />
     </OptionsSheet>
     <OptionsSheet heading={feedback ? <CountryInfoHeading id={feedback.id} language={language} onSpeak={() => speak(countryName(feedback.id, language))} /> : undefined} visible={showDetails && !!feedback} title={c.moreDetails} closeLabel={c.close} onClose={() => setShowDetails(false)}>

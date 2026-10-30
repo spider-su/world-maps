@@ -7,9 +7,9 @@ on:
     branches: [main, develop]
   workflow_dispatch:
 
-# A PR and its branch push validate the same source; keep only the newest run.
+# Keep expensive Gradle builds alive. PRs validate checks; APKs build on branch push or manual dispatch.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: false
 
 permissions:
@@ -29,6 +29,7 @@ jobs:
       - run: npx expo-doctor
 
   android-apk:
+    if: github.event_name != 'pull_request'
     needs: checks
     runs-on: ubuntu-24.04
     timeout-minutes: 60

@@ -194,7 +194,10 @@ style. Europe retains its original country outlines and tap targets.
 Home’s “Explore the globe” card opens a separate full-screen offline globe: drag to rotate/tilt, scroll over it on web to
 rotate, or use the direction/centre controls. Arrow keys and Home work on web.
 The globe starts centred on the selected region and does not change quiz settings
-or progress. Country learning still uses the existing region maps.
+or progress. Tap a place to drop a pin and open country facts, flag and expanded
+photos using Learn’s details sheet. Ocean/unsupported areas show coordinates.
+The pin rotates with the globe; drags do not open details. The location button
+(or Enter/Space on web) explores the centre for precise alternative selection.
 
 ### Continent framing and regional maps
 

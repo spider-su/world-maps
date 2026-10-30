@@ -17,7 +17,7 @@ This is the current application inventory. Previous starter-template and early P
 | Country details | `CountryInfoCard`, `CountryGallery`, `ExploreScreen` | Offline facts/flags; attributed online photos open by default in Learn details, opt-in in Library |
 | Launch setup / continue | `PlaySetup`, `QuizSetupSummary`, `launch.ts` | Home hides Difficulty; Maps owns its adjustment. Existing saved contexts; transient route launch; latest completed selected-map family |
 | Learning presentation | `ProfileScreen`, `LearningOverview`, `explorerReward` | Profile owns history/statistics; result rewards are derived; Library keeps list mounted behind shared details |
-| Full-screen globe | `GlobeScreen`, `RotatingGlobe`, `GlobeSurface(.web)`, `globe.ts` | Offline overview opened from Home; no country selection or persistence; drag/scroll/buttons/keyboard |
+| Full-screen globe | `GlobeScreen`, `RotatingGlobe`, `GlobeSurface(.web)`, `globe.ts` | Offline overview opened from Home; transient place pin and shared Learn details; ocean/unsupported coordinates; no progress writes; drag/scroll/buttons/keyboard |
 | Native release verification | `.github/workflows/mobile-ci.yml`, `docs/release-checklist.md` | CI and APK build are not physical-device or iOS acceptance |
 
 ## Cleanup policy

@@ -41,3 +41,29 @@ to owner-only: that permits one user to forge access grants to another user's pr
 
 No Firebase credentials, cloud project, authentication provider, invitation backend or live
 synchronization are configured by this foundational PR.
+
+## Minimum Firestore reads and writes
+
+- Never poll on a timer. No background sync and no upload for every tap, guess, or round.
+- Once the player opts into sharing, derive the snapshot locally. Compare a stable fingerprint
+  excluding `updatedAt` and ignoring badge order. Send **one coalesced upload** only after the
+  summary changes, when connected and authenticated; use a short debounce during bursts.
+- Save the last **server-acknowledged** fingerprint locally. Do not mark it acknowledged on
+  enqueue or failed writes; retry pending changes on the next foreground or connectivity event,
+  with backoff. If a newer change arrives during an upload, compare again after acknowledgement.
+- On reconnect do **not** blindly read/write every profile. Check existing cached data and known
+  revisions. Remote profiles should be fetched only when missing or changed. A periodic refresh
+  is not required for the MVP.
+- Avoid permanent Firestore listeners on all friends. For a small friends list, read the
+  friend index when the Friends screen opens, use a revision/last-updated marker to fetch only
+  changed profiles, and reuse cached summaries on subsequent opens. The initial index read
+  is still billable. When truly automatic changes are needed later, prefer a single foreground
+  listener for the friend index, not one listener per friend.
+- Explicitly throttle repeated Friends-screen openings and failed fetches. Never claim zero
+  reads: reconnect, listeners, and index refreshes incur actual Firestore reads.
+- A friend profile's `updatedAt` changes only when its meaningful fields change. Synchronizing
+  local data on another device must not overwrite newer cloud summaries without conflict checks.
+
+The helper functions in `socialSync.ts` codify fingerprint and revision decisions only. The
+Firebase SDK, durable acknowledgment cache, retry coordinator and actual network calls are
+**not implemented yet**; they must follow this policy when wired.

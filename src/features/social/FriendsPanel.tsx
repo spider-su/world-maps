@@ -11,6 +11,7 @@ import { createInvitation, acceptInvitation, listFriends, deleteSharedProfile } 
 import { createSocialAccount, signInSocial, signOutSocial, firebaseClient } from './firebaseClient';
 import { signInWithGoogle } from './googleSignIn';
 import { syncChangedSocialProfile } from './socialSession';
+import { socialActionError } from './socialError';
 import type { SocialProfile } from './socialProfile';
 
 const copy = {
@@ -56,7 +57,7 @@ export function FriendsPanel() {
   useEffect(() => { let active = true; loadSocialPreferences().then(value => { if(active) setPrefs(value); }).catch(() => { if(active) setError(c.saving); }); return () => { active = false; }; }, [c.saving]);
   const act = async (action: () => Promise<void>) => {
     setBusy(true); setError('');
-    try { await action(); } catch (e) { setError(e instanceof Error ? e.message : String(e)); }
+    try { await action(); } catch (e) { setError(socialActionError(e)); }
     finally { setBusy(false); }
   };
   const save = (next: SocialPreferences) => {

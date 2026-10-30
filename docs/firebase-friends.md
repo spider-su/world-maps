@@ -147,3 +147,34 @@ a checked-in Web config does not deploy services or grant access.
   invitations and concurrent acceptance require deployed integration testing.
 - Authentication errors are surfaced in the Friends panel. No cloud calls are made
   by ordinary gameplay while sharing is disabled.
+
+## Invitation 404 troubleshooting
+
+The Android `functions/not-found [404]` after **Create invitation link** comes from the
+callable `createFriendInvite`, not from URL generation or Firestore rules. App code calls
+the default `us-central1` Firebase Functions region; the callable is defined in
+`firebase/functions/index.js` but will return 404 until deployed in that same region.
+Before deploying, enable Blaze billing, Functions, Firestore, Authentication and App Check
+as required by the existing `enforceAppCheck: true` configuration.
+
+Deployment from repository root (Firebase CLI authentication required):
+
+```sh
+cd firebase/functions
+npm install
+cd ../..
+npx firebase-tools use world-map-1
+npx firebase-tools deploy --only functions:friends,firestore:rules --project world-map-1
+npx firebase-tools functions:list --project world-map-1
+```
+
+Confirm `createFriendInvite` and `acceptFriendInvite` show **us-central1**. For
+another region, change both the callable deployment region and the client
+`getFunctions(app, '<region>')` together. The checked-in `.firebaserc` is a project
+ID (not a secret); it does not indicate deployment has happened.
+App Check must be correctly configured on the client before calls can succeed.
+If enabling App Check is not yet possible, use a *development-only* environment,
+not a production security-rule bypass.
+
+Deployment and live end-to-end tests are **not** performed by this PR; it prepares
+the missing Firebase CLI configuration and makes the error actionable.

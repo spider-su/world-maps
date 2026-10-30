@@ -27,7 +27,8 @@ export async function nativeAppCheckToken(): Promise<string> {
     })().catch(error => { initialized = undefined; throw error; });
   }
   const instance = await initialized;
-  const result = await instance.getToken();
+  const { getToken } = await import('@react-native-firebase/app-check');
+  const result = await getToken(instance);
   if (!result.token) throw new Error('Firebase App Check did not return a token');
   return result.token;
 }

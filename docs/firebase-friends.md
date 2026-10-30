@@ -112,3 +112,38 @@ social opt-in, persist auth safely on React Native, deploy/test the existing
 Firestore rules and callable Functions, then connect Friends/QR UI and the
 change-only synchronization coordinator. A real Firebase Auth provider,
 App Check attestation and callable endpoints must be enabled before activating UI.
+
+## Client integration branch (pending Firebase deployment)
+
+The integration uses public Web app configuration, pinned `firebase@13.1.0`, lazy SDK
+initialization, React Native AsyncStorage auth persistence, email/password sign-in,
+opt-in profile uploads with a 1.2-second debounce, and small callable friend actions.
+
+Required Firebase Console setup:
+- Enable **Email/Password** in Authentication.
+- Create a Firestore database and deploy `firebase/firestore.rules`.
+- Deploy `firebase/functions` callables (Cloud Functions requires billing setup).
+- Enable and configure Firebase App Check on Android and web before using the callable
+  endpoints, since the Functions currently use `enforceAppCheck: true`.
+- Provide correct Hosting domain configuration and app links for QR invitations.
+- Verify the npm lockfile CI regeneration, Android release build and Firestore rules
+  emulator tests before releasing.
+
+The UI currently supports pasted invite URLs and native share links. Camera-based
+QR scanning and QR image rendering are **not** yet integrated. Cloud access remains
+disabled until user opt-in. Firebase itself must be configured by a project admin;
+a checked-in Web config does not deploy services or grant access.
+
+### Important limitations before production
+
+- Friends list currently fetches small profiles on an explicit refresh or invitation
+  acceptance. This is foreground-only, not real-time live presence.
+- Local acknowledged fingerprints are device-local. Sign-out, sign-in on another
+  device and server-side deletion require a reconciliation handshake before treating
+  the local marker as server truth. Initial upload after enabling consent is allowed.
+- Disabling consent locally must also delete the previously uploaded Firestore profile;
+  account deletion, friend removal and revocation need complete UI flows.
+- Cloud Function authentication, abuse limits, App Check, server rules, expired
+  invitations and concurrent acceptance require deployed integration testing.
+- Authentication errors are surfaced in the Friends panel. No cloud calls are made
+  by ordinary gameplay while sharing is disabled.

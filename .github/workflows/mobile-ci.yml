@@ -52,20 +52,14 @@ jobs:
           packages: 'platform-tools'
       - run: npm ci
       - name: Prepare Firebase Android configuration
-        env:
-          FIREBASE_API_KEY: ${{ secrets.FIREBASE_ANDROID_API_KEY }}
         run: |
-          if [[ -z "$FIREBASE_API_KEY" ]]; then
-            echo "::error::Set repository secret FIREBASE_ANDROID_API_KEY to current_key from Firebase google-services.json"
-            exit 1
-          fi
           python3 - <<'PY'
           import json, os
           config = {
             "project_info": {"project_number":"923307762389","project_id":"world-map-1","storage_bucket":"world-map-1.firebasestorage.app"},
             "client": [{"client_info":{"mobilesdk_app_id":"1:923307762389:android:a79d671618eaf3874cb85c","android_client_info":{"package_name":"com.spidersu.worldmaps"}},
-                        "oauth_client":[{"client_id":"923307762389-9g278rmrjcosnnvqeavlb469bp9kk1b7.apps.googleusercontent.com","client_type":3}],
-                        "api_key":[{"current_key":os.environ["FIREBASE_API_KEY"]}]}],
+                        "oauth_client":[{"client_id":"923307762389-frv764cl7mp6ecie4q0j3ahv7r4koiuf.apps.googleusercontent.com","client_type":1,"android_info":{"package_name":"com.spidersu.worldmaps","certificate_hash":"5e8f16062ea3cd2c4a0d547876baa6f38cabf625"}},{"client_id":"923307762389-9g278rmrjcosnnvqeavlb469bp9kk1b7.apps.googleusercontent.com","client_type":3}],
+                        "api_key":[{"current_key":"AIzaSyBqPUkvpq694_sk8HvZeccg6rxSWElZjN8"}]}],
             "configuration_version":"1"
           }
           with open("google-services.ci.json","w") as out: json.dump(config,out)

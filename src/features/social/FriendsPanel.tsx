@@ -9,6 +9,7 @@ import { loadSocialPreferences, saveSocialPreferences, type SocialPreferences } 
 import { parseFriendInviteUrl } from './friendInvite';
 import { createInvitation, acceptInvitation, listFriends, deleteSharedProfile } from './firebaseFriends';
 import { createSocialAccount, signInSocial, signOutSocial, firebaseClient } from './firebaseClient';
+import { signInWithGoogle } from './googleSignIn';
 import { syncChangedSocialProfile } from './socialSession';
 import type { SocialProfile } from './socialProfile';
 
@@ -100,6 +101,7 @@ export function FriendsPanel() {
           </View>)}
           <Pressable accessibilityRole="button" disabled={busy} style={styles.button} onPress={() => void act(async () => { await signOutSocial(); setUserId(null); setFriends([]); })}><Text style={{color:theme.brand}}>Sign out</Text></Pressable>
         </> : <>
+          <Pressable accessibilityRole="button" disabled={busy} style={styles.button} onPress={() => void act(async () => { await signInWithGoogle(); })}><Ionicons name="logo-google" size={20} color={theme.brand}/><Text style={{color:theme.brand,fontWeight:"700"}}>Continue with Google</Text></Pressable>
           <TextInput accessibilityLabel="Email" autoCapitalize="none" keyboardType="email-address" value={email} onChangeText={setEmail} placeholder="Email" style={[styles.input,{color:theme.navy,borderColor:theme.border}]} />
           <TextInput accessibilityLabel="Password" secureTextEntry value={password} onChangeText={setPassword} placeholder="Password (6+ characters)" style={[styles.input,{color:theme.navy,borderColor:theme.border}]} />
           <Pressable accessibilityRole="button" disabled={busy} style={styles.button} onPress={() => void act(async () => { const result = await signInSocial(email,password); setUserId(result.user.uid); await syncChangedSocialProfile(progress); })}><Text style={{color:theme.brand}}>Sign in</Text></Pressable>

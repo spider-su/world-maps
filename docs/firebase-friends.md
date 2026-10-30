@@ -67,3 +67,26 @@ synchronization are configured by this foundational PR.
 The helper functions in `socialSync.ts` codify fingerprint and revision decisions only. The
 Firebase SDK, durable acknowledgment cache, retry coordinator and actual network calls are
 **not implemented yet**; they must follow this policy when wired.
+
+## QR/link invitations (implementation contract)
+
+`friendInvite.ts` creates/parses an allowlisted HTTPS link with an opaque, random token;
+it never includes UID, email or progress. The same link can be encoded into a QR image
+or shared through the native share sheet. Its domain must be configured as an actual
+Firebase Hosting/App Links/Universal Links domain before distributing invitations.
+
+`firebase/functions/index.js` contains authenticated callable Cloud Functions:
+`createFriendInvite` (24-hour token), `acceptFriendInvite` (one-use atomic mutual friendship),
+`revokeFriendInvite` and `removeFriend`. Invitation tokens are stored as SHA-256 IDs, not plaintext.
+Firestore's catch-all deny rule blocks clients from accessing the invitations collection directly.
+App Check enforcement is enabled for the callables; it must be configured for installed apps.
+Deploy with Firebase CLI after installing the functions dependencies and generating a lockfile.
+
+These functions have NOT been deployed or exercised against a real Firebase project yet.
+Before production, add function integration/emulator tests (expiry, replay, concurrent accept,
+unauthorized revoke, remove, blocked users), request throttling, abuse controls and a delete-account
+workflow that removes pending invites. The URL parser and expiry logic do have unit tests.
+
+**UI integration remains pending:** QR rendering/scanning, share sheet, deep-link handling,
+Firebase client initialization and consent screens require the configured Firebase project
+and Expo-compatible SDKs. Do not show a working Invite button until the callable is deployed.

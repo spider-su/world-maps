@@ -1,5 +1,5 @@
 /** Public deep link contains an opaque short-lived token, never a UID or profile. */
-export const FRIEND_INVITE_BASE = 'https://world-maps.web.app/friend';
+export const FRIEND_INVITE_BASE = 'https://world-map-1.web.app/friend';
 const TOKEN = /^[A-Za-z0-9_-]{32,128}$/;
 export const INVITE_TTL_MS = 24 * 60 * 60 * 1000;
 
@@ -12,7 +12,7 @@ export function friendInviteUrl(token: string): string {
 export function parseFriendInviteUrl(raw: string): string | null {
   try {
     const url = new URL(raw);
-    if (url.origin !== 'https://world-maps.web.app' || url.pathname !== '/friend' ||
+    if (url.origin !== 'https://world-map-1.web.app' || url.pathname !== '/friend' ||
       [...url.searchParams.keys()].some(key => key !== 'invite') ||
       url.searchParams.getAll('invite').length !== 1 || url.hash) return null;
     const token = url.searchParams.get('invite');

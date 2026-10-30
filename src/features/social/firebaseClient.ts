@@ -20,7 +20,15 @@ export function firebaseClient() {
       auth = authSdk.getAuth(app);
     } else {
       try {
-        auth = authSdk.initializeAuth(app, { persistence: authSdk.getReactNativePersistence(AsyncStorage) });
+        // Firebase's React Native entry point exports this at runtime, but the
+        // web-oriented TypeScript resolution omits it from firebase/auth typings.
+        const reactNativeAuth = authSdk as unknown as typeof authSdk & {
+          getReactNativePersistence: (storage: typeof AsyncStorage) => import('firebase/auth').Persistence;
+        };
+        if (typeof reactNativeAuth.getReactNativePersistence !== 'function') {
+          throw new Error('Firebase React Native auth persistence is unavailable in this bundle');
+        }
+        auth = authSdk.initializeAuth(app, { persistence: reactNativeAuth.getReactNativePersistence(AsyncStorage) });
       } catch (error) {
         // Existing auth is valid if initialization happened during a previous call.
         if ((error as {code?: string}).code !== 'auth/already-initialized') throw error;

@@ -7,10 +7,10 @@ describe('QR and share-link invitations', () => {
   it('rejects third-party domains, tokens in fragment and extra query data', () => {
     for (const url of [
       'https://evil.example/friend?invite=' + token,
-      'http://world-maps.web.app/friend?invite=' + token,
-      'https://world-maps.web.app/friend?invite=' + token + '&uid=someone',
-      'https://world-maps.web.app/friend?invite=abc',
-      'https://world-maps.web.app/friend?invite=' + token + '#foo'
+      'http://world-map-1.web.app/friend?invite=' + token,
+      'https://world-map-1.web.app/friend?invite=' + token + '&uid=someone',
+      'https://world-map-1.web.app/friend?invite=abc',
+      'https://world-map-1.web.app/friend?invite=' + token + '#foo'
     ]) expect(parseFriendInviteUrl(url)).toBeNull();
     expect(() => friendInviteUrl('abc')).toThrow();
   });

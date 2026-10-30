@@ -31,6 +31,7 @@ export function FriendsPanel() {
   const [friends, setFriends] = useState<Array<{uid:string;profile:SocialProfile|null}>>([]);
   const [invite, setInvite] = useState('');
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
   useEffect(() => {
     if (!prefs?.enabled) return;
     let active = true;
@@ -49,7 +50,7 @@ export function FriendsPanel() {
     }, 1200);
     return () => clearTimeout(pending);
   }, [prefs?.enabled, prefs?.nickname, userId, progress]);
-  const [error, setError] = useState('');
+
   const [link, setLink] = useState('');
   const [linkValid, setLinkValid] = useState<boolean | null>(null);
   useEffect(() => { let active = true; loadSocialPreferences().then(value => { if(active) setPrefs(value); }).catch(() => { if(active) setError(c.saving); }); return () => { active = false; }; }, [c.saving]);

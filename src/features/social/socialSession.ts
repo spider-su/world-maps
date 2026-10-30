@@ -1,7 +1,7 @@
 import { firebaseClient } from './firebaseClient';
 import { loadSocialPreferences } from './socialPreferences';
 import { sharedProfile } from './socialProfile';
-import { needsSocialUpload, socialFingerprint } from './socialSync';
+import { needsSocialUpload } from './socialSync';
 import type { GameProgress } from '../geography/progress';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 

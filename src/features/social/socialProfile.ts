@@ -43,7 +43,7 @@ export function parseSocialProfile(value: unknown): SocialProfile | null {
   try { validateNickname(p.nickname); } catch { return null; }
   if (!['amber', 'ocean', 'forest'].includes(p.explorer ?? '')) return null;
   if (![p.xp, p.level, p.discovered, p.mastered, p.updatedAt].every(n => typeof n === 'number' && Number.isSafeInteger(n) && n >= 0)) return null;
-  if (p.level! < 1 || p.discovered! > 250 || p.mastered! > 250 || p.mastered! > p.discovered! || p.xp! > 100000000) return null;
+  if (p.level! < 1 || p.discovered! > 250 || p.mastered! > 250 || p.xp! > 100000000) return null;
   if (!Array.isArray(p.badges) || p.badges.length > ACHIEVEMENTS.length ||
     p.badges.some(id => typeof id !== 'string' || !ACHIEVEMENTS.includes(id as typeof ACHIEVEMENTS[number]))) return null;
   return p as SocialProfile;

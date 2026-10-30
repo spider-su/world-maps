@@ -22,7 +22,7 @@ export function firebaseClient() {
       try {
         // Firebase's React Native entry point exports this at runtime, but the
         // web-oriented TypeScript resolution omits it from firebase/auth typings.
-        const reactNativeAuth = authSdk as typeof authSdk & {
+        const reactNativeAuth = authSdk as unknown as typeof authSdk & {
           getReactNativePersistence: (storage: typeof AsyncStorage) => import('firebase/auth').Persistence;
         };
         if (typeof reactNativeAuth.getReactNativePersistence !== 'function') {

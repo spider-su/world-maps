@@ -90,3 +90,25 @@ workflow that removes pending invites. The URL parser and expiry logic do have u
 **UI integration remains pending:** QR rendering/scanning, share sheet, deep-link handling,
 Firebase client initialization and consent screens require the configured Firebase project
 and Expo-compatible SDKs. Do not show a working Invite button until the callable is deployed.
+
+## Registered Firebase project (2026-10-30)
+
+The owner registered Firebase project `world-map-1` (sender/project number
+`923307762389`), Android package `com.spidersu.worldmaps` and Web app
+`1:923307762389:web:1c9f78e38e058f204cb85c`. Public Web SDK identifiers
+are in `src/features/social/firebaseConfig.ts`. A Firebase Web API key identifies
+the client and is **not** a privileged service-account credential. Restrict the key
+to the applicable Firebase APIs, enable App Check and enforce Firebase Security
+Rules; do not rely on secrecy of client config to protect records.
+
+The project's downloaded `google-services.json` is **not** committed. The
+current Expo application plans to use the Firebase JavaScript SDK, so it does not
+require manually adding the native Google Services Gradle plugin or BoM.
+This commit records configuration only and does **not** initialize Firebase,
+add an SDK dependency, make network calls, create accounts or sync data.
+
+Next: add and lock the `firebase` npm dependency, initialize the SDK only after
+social opt-in, persist auth safely on React Native, deploy/test the existing
+Firestore rules and callable Functions, then connect Friends/QR UI and the
+change-only synchronization coordinator. A real Firebase Auth provider,
+App Check attestation and callable endpoints must be enabled before activating UI.

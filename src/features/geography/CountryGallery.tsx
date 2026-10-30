@@ -29,11 +29,11 @@ function Photo({ photo, language, open, width }: { photo: CountryPhoto; language
 }
 
 /** Separate from quiz prompts; mounted only in the expanded Learn/collection details. */
-export function CountryGallery({ id, language }: { id: string; language: Language }) {
+export function CountryGallery({ id, language, defaultExpanded = false }: { id: string; language: Language; defaultExpanded?: boolean }) {
   const entry = countryWikipedia[id];
   const [width, setWidth] = useState(258);
   const [photoIndex, setPhotoIndex] = useState(0);
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(defaultExpanded);
   const [linkFailed, setLinkFailed] = useState(false);
   const theme = themeForScheme(useColorScheme());
   const c = galleryCopy[language];

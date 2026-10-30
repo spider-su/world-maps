@@ -35,9 +35,9 @@ export function CountryInfoHeading({ id, language, onSpeak, compact = false, onD
 }
 
 /** Expanded essentials and optional discovery, shared with the country collection. */
-export function CountryInfoCard({ id, language, onSpeak, compact = false, onDetails, showHeader = true }: {
+export function CountryInfoCard({ id, language, onSpeak, compact = false, onDetails, showHeader = true, photosExpandedByDefault = false }: {
   id: string; language: Language; onSpeak: () => void; compact?: boolean;
-  onDetails?: () => void; showHeader?: boolean;
+  onDetails?: () => void; showHeader?: boolean; photosExpandedByDefault?: boolean;
 }) {
   const facts = countryFacts[id];
   const styles = makeStyles(themeForScheme(useColorScheme()));
@@ -49,7 +49,7 @@ export function CountryInfoCard({ id, language, onSpeak, compact = false, onDeta
     {!compact && <>
       <View style={styles.factRow}><Text style={styles.label}>{c.capital}</Text><Text style={styles.value}>{facts.capital[language]}</Text></View>
       {landmark && <View style={styles.factRow}><Text style={styles.label}>{educationCopy[language].landmark}</Text><Text style={styles.value}>{landmark}</Text></View>}
-      <CountryGallery key={id} id={id} language={language} />
+      <CountryGallery key={id} id={id} language={language} defaultExpanded={photosExpandedByDefault} />
     </>}
   </View>;
 }

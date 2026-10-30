@@ -61,4 +61,12 @@ Home’s globe card opens a separate full-screen overview (`GlobeScreen`,
 land geometry. D3 Geo supplies pure-JavaScript spherical clipping and projection;
 existing SVG rendering supplies the drawing. Platform gesture adapters isolate
 web wheel/pointer events from native PanResponder. The globe view hides tabs, owns both safe edges and supports system Back. Rotation is transient and does not affect
-map/quiz preferences, progress or country-selection geometry.
+map/quiz preferences, progress or country-selection geometry. Globe taps invert
+the orthographic projection and reuse existing country outlines for identification
+(`globeSelection.ts`). A transient pin opens the shared Learn details sheet without
+recording discoveries. Ocean/unsupported areas show coordinates.
+
+`mapPresentation.ts` owns derived display bounds and regional inset definitions.
+`EuropeMap` retains original geometry, gestures and selection; `RegionMapInset`
+provides thumbnails and enlarged choices through the same `onSelect`. Viewport
+bounds are transient presentation, never progress or a second geography dataset.

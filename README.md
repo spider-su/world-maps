@@ -120,7 +120,8 @@ See [coverage, sources and generation](docs/continent-maps.md).
 ### Wikipedia discovery
 
 Country details include a Wikipedia article link and optional credited photographs
-of places and landscapes. Tap **Show photos** to load images online; country facts,
+of places and landscapes. Learn details expand photos by default; in Library, tap
+**Show photos** to load them. Photos require internet; country facts,
 flags, maps and progress continue working offline. Source/author and license links
 are shown for each image. See [Wikipedia gallery](docs/wikipedia-gallery.md).
 
@@ -193,4 +194,17 @@ style. Europe retains its original country outlines and tap targets.
 Home’s “Explore the globe” card opens a separate full-screen offline globe: drag to rotate/tilt, scroll over it on web to
 rotate, or use the direction/centre controls. Arrow keys and Home work on web.
 The globe starts centred on the selected region and does not change quiz settings
-or progress. Country learning still uses the existing region maps.
+or progress. Tap a place to drop a pin and open country facts, flag and expanded
+photos using Learn’s details sheet. Ocean/unsupported areas show coordinates.
+The pin rotates with the globe; drags do not open details. The location button
+(or Enter/Space on web) explores the centre for precise alternative selection.
+
+### Continent framing and regional maps
+
+Play views fit each continent’s mainland geography instead of a shared wide canvas.
+North Atlantic, Caribbean, Pacific, Gulf and Indian Ocean insets keep remote or crowded
+locations available without shrinking the mainland or drawing a leader line to every country.
+Tap an inset to enlarge its map and choose a country from 48dp controls. Quiz controls
+stay anonymous until their existing reveal rules allow names; Name It insets are read-only.
+Visible zoom and Whole map/Main view controls retain access to all original geometry,
+including remote islands. Maps tab previews follow each region’s proportions.

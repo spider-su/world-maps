@@ -1,0 +1,17 @@
+{
+  "maps": [
+    "Europe",
+    "Asia",
+    "Africa",
+    "North America",
+    "South America",
+    "Oceania"
+  ],
+  "xpBefore": "350 XP",
+  "xpAfter": "350 XP",
+  "originalMapRestored": "Europe",
+  "displayRestored": true,
+  "firstMapIndex": 6,
+  "sourceCommit": "a5e9e2259976964cf7e3167f51ad111c9b3a1b22",
+  "priorMapEvidence": "native-first-pass.json"
+}

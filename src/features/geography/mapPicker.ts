@@ -82,7 +82,7 @@ export function expandPicker(target: PickerTarget, viewport: Viewport, width: nu
   }
   const desiredScale = (size + GAP + 4) / Math.max(closest, 1);
   const scale = Math.max(width / old.w * 1.7, Math.min(fitScale, desiredScale));
-  return normalize({ zoom: Math.min(MAX_ZOOM, scale * old.w / width * viewport.zoom), center: {
+  return normalize({ ...viewport, zoom: Math.min(MAX_ZOOM, scale * old.w / width * viewport.zoom), center: {
     x: (Math.min(...xs) + Math.max(...xs)) / 2, y: (Math.min(...ys) + Math.max(...ys)) / 2,
   } }, height / width);
 }

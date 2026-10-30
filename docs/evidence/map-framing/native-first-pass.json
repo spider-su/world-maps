@@ -1,0 +1,5 @@
+{
+  "sourceCommit": "a5e9e2259976964cf7e3167f51ad111c9b3a1b22",
+  "passedMaps": ["Europe", "Asia", "Africa", "North America", "South America", "Oceania"],
+  "result": "Learn, regional sheets and zoom/reset, Caribbean zoom/drag pixel comparison, Find It, read-only Name It, anonymous Hot & Cold, main-map pan and Maps preview passed. Small-layout section resumed separately after correcting the test to scroll within the actual ScrollView instead of the tab bar."
+}

@@ -171,7 +171,7 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
         </Pressable>}
       </ScrollView>}
       <View style={styles.mapArea}>
-        <EuropeMap map={map} key={`${mode}:${round.startedAt}:${round.targetId}`} fill toolsVisible={showMapTools} quickToolsVisible={false} results={resultById} revealedIds={completedIds} showNames={showNames && canShowNames}
+        <EuropeMap map={map} key={`${mode}:${round.startedAt}:${round.targetId}`} fill toolsVisible={showMapTools} results={resultById} revealedIds={completedIds} showNames={showNames && canShowNames}
           learn={mode === 'learn'} atlas={mode === 'learn'} showBorders={showBorders} selectableIds={mode === 'learn' ? undefined : pack.locations.map(location => location.id)} onSelect={selectCountry} enabled={progressLoaded && !completed && mode !== 'name-it' && mode !== 'capital-name'} language={language} targetId={(mode === 'name-it' || mode === 'capital-name') && !completed ? target.id : undefined} />
 
       </View>
@@ -225,7 +225,7 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
       <ProgressStatus language={language} />
     </OptionsSheet>
     <OptionsSheet heading={feedback ? <CountryInfoHeading id={feedback.id} language={language} onSpeak={() => speak(countryName(feedback.id, language))} /> : undefined} visible={showDetails && !!feedback} title={c.moreDetails} closeLabel={c.close} onClose={() => setShowDetails(false)}>
-      {mode === 'learn' && feedback && <CountryInfoCard showHeader={false} id={feedback.id} language={language} onSpeak={() => speak(countryName(feedback.id, language))} />}
+      {mode === 'learn' && showDetails && feedback && <CountryInfoCard photosExpandedByDefault showHeader={false} id={feedback.id} language={language} onSpeak={() => speak(countryName(feedback.id, language))} />}
     </OptionsSheet>
   </SafeAreaView>;
 }

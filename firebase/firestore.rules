@@ -1,0 +1,37 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isOwner(uid) { return signedIn() && request.auth.uid == uid; }
+    function isFriend(owner) {
+      return signedIn() &&
+        exists(/databases/$(database)/documents/users/$(owner)/friends/$(request.auth.uid));
+    }
+    function profileValid() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['nickname','explorer','xp','level','discovered','mastered','badges','updatedAt']) &&
+        d.keys().hasAll(['nickname','explorer','xp','level','discovered','mastered','badges','updatedAt']) &&
+        d.nickname is string && d.nickname.size() >= 2 && d.nickname.size() <= 24 &&
+        d.explorer in ['amber','ocean','forest'] &&
+        d.xp is int && d.xp >= 0 && d.xp <= 100000000 &&
+        d.level is int && d.level >= 1 &&
+        d.discovered is int && d.discovered >= 0 && d.discovered <= 250 &&
+        d.mastered is int && d.mastered >= 0 && d.mastered <= d.discovered &&
+        d.badges is list && d.badges.size() <= 6 &&
+        d.updatedAt is int && d.updatedAt >= 0;
+    }
+    match /users/{uid}/profile/public {
+      allow get: if isOwner(uid) || isFriend(uid);
+      allow list: if false;
+      allow create, update: if isOwner(uid) && profileValid();
+      allow delete: if isOwner(uid);
+    }
+    // Friend documents must be established by trusted invitation acceptance.
+    // Clients cannot grant themselves access to another player's private profile.
+    match /users/{uid}/friends/{friendUid} {
+      allow get, list: if isOwner(uid);
+      allow write: if false;
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}

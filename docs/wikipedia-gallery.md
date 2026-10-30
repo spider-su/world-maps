@@ -7,10 +7,13 @@ Congos, Micronesia and Palestine have explicit country-article mappings.
 
 Article links, captions, source pages, creator credits and licenses are bundled in
 `data/wikipedia-gallery.json`. No API call is made by the app. No image is requested
-until **Show photos** is pressed; compact gameplay cards never mount the gallery.
+until country details open in Learn, where photos expand by default. Library keeps
+photos hidden until **Show photos** is pressed. Compact gameplay cards never mount
+the gallery.
 Maps, flags, facts and saved progress remain available offline. Remote image
 failures show an offline-friendly placeholder with Retry; failed external link
-opens show an inline error. A new country remounts the gallery with photos hidden.
+opens show an inline error. Opening Learn details or changing country resets the gallery to expanded; Library
+resets it to hidden. Both views retain the Show/Hide photos control.
 
 Photos are displayed without cropping, with a caption and creator credit. Source
 & author opens the original Commons file page (including full creator metadata),

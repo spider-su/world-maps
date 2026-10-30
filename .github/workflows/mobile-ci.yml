@@ -7,10 +7,10 @@ on:
     branches: [main, develop]
   workflow_dispatch:
 
-# A PR and its branch push validate the same source; keep only the newest run.
+# Keep expensive Gradle builds alive. PRs validate checks; APKs build on branch push or manual dispatch.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: read
@@ -29,6 +29,7 @@ jobs:
       - run: npx expo-doctor
 
   android-apk:
+    if: github.event_name != 'pull_request'
     needs: checks
     runs-on: ubuntu-24.04
     timeout-minutes: 60
@@ -36,6 +37,7 @@ jobs:
       CI: '1'
       EXPO_NO_TELEMETRY: '1'
       ANDROID_PACKAGE: com.spidersu.worldmaps
+      EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID: 923307762389-9g278rmrjcosnnvqeavlb469bp9kk1b7.apps.googleusercontent.com
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -50,6 +52,20 @@ jobs:
         with:
           packages: 'platform-tools'
       - run: npm ci
+      - name: Prepare Firebase Android configuration
+        run: |
+          python3 - <<'PY'
+          import json, os
+          config = {
+            "project_info": {"project_number":"923307762389","project_id":"world-map-1","storage_bucket":"world-map-1.firebasestorage.app"},
+            "client": [{"client_info":{"mobilesdk_app_id":"1:923307762389:android:a79d671618eaf3874cb85c","android_client_info":{"package_name":"com.spidersu.worldmaps"}},
+                        "oauth_client":[{"client_id":"923307762389-frv764cl7mp6ecie4q0j3ahv7r4koiuf.apps.googleusercontent.com","client_type":1,"android_info":{"package_name":"com.spidersu.worldmaps","certificate_hash":"5e8f16062ea3cd2c4a0d547876baa6f38cabf625"}},{"client_id":"923307762389-9g278rmrjcosnnvqeavlb469bp9kk1b7.apps.googleusercontent.com","client_type":3}],
+                        "api_key":[{"current_key":"AIzaSyBqPUkvpq694_sk8HvZeccg6rxSWElZjN8"}]}],
+            "configuration_version":"1"
+          }
+          with open("google-services.ci.json","w") as out: json.dump(config,out)
+          PY
+          echo "GOOGLE_SERVICES_JSON=./google-services.ci.json" >> "$GITHUB_ENV"
       - name: Build standalone development-signed preview
         run: npm run build:android:preview
       - name: Upload installable APK

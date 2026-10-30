@@ -19,8 +19,9 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 
 - `features/geography/EuropeMap`: shared interactive renderer and noninteractive
   Home preview; takes guess results, revealed IDs, label visibility and selection.
-  Small countries have 48dp on-map picker targets connected to their geographic
-  anchors. Crowded targets cluster and zoom on tap; polygon hit areas are unchanged.
+  Small countries have 48dp on-map picker targets. Groups use one centroid connector
+  and expand on tap. Regional insets replace distant/crowded country fans; polygon
+  geometry and progress IDs are unchanged.
 - `features/geography/ModeSelector`: four icon-led mode cards in `GAME_MODES`
   order, localized through `gameCopy`, no round state.
 - `screens/GeographyGameScreen`: one game mode/round, compact prompt and answers.
@@ -44,8 +45,9 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 ## Map-first presentation
 
 - `EuropeMap.fill`: fills a flex-height play surface without distorting outlines.
-  Non-European maps start at full extent; Europe uses a balanced phone overview.
-  Small highlighted quiz targets are focused, and Whole map always restores full extent.
+  Each continent fits its primary land bounds; remote/crowded regions use insets.
+  Small highlighted mainland targets are focused. Whole map fits every original
+  polygon/marker; Main view restores the mainland overview.
   Map tools disclose zoom and directional controls without removing keyboard or
   non-gesture access. `viewport` helpers accept optional height/width aspect ratio.
 - `OptionsSheet`: shared dismissible, scrollable modal for secondary play controls;
@@ -87,7 +89,8 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 
 - `CountryGallery`: expanded Learn/collection details only. Bundled country article
   link, optional horizontal gallery (up to three images), per-image load/error/retry
-  and source/license links. Images mount only after Show photos; callers key by
+  and source/license links. `defaultExpanded` defaults false; Learn details pass true. Images mount when
+  expanded, only while details are open; callers key by
   country ID to reset gallery/error state. Compact cards remain offline.
 - `countryPhotos.ts` / `data/wikipedia-gallery.json`: typed article/photo metadata;
   replaced the two automatically loaded curated photos. Refreshed by
@@ -126,13 +129,16 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 - `CountryInfoCard.showHeader`: defaults true for collection/preview; false when
   the surrounding sheet supplies `CountryInfoHeading` as its sticky heading.
   Expanded contents are capital, optional landmark and `CountryGallery`.
+  `photosExpandedByDefault` defaults false; Learn sets it true and mounts details
+  only while open, resetting expansion on reopening or changing country.
 - `OptionsSheet.heading`: optional custom heading; the heading and Close remain
   above its scrollable contents. Existing title-only sheets behave as before.
 - Learn starts with collision-managed map names and a small selection hint;
   selection removes the hint. Named controls remain available; quizzes stay
   anonymous. The unused second-atlas component and technical display helpers
   were removed; map geometry, source metadata and licenses remain intact.
-- `CountryGallery`: one opt-in photos action with Online hint, responsive image
+- `CountryGallery`: collapsible photos (initially open in Learn details; Library opt-in
+  with Online hint), responsive image
   widths, pagination dots, full credits and source/license links; one Wikipedia
   link below. Per-image loading/retry and native request headers are retained.
 
@@ -192,11 +198,36 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 ## Full-screen globe
 
 - `GlobeScreen` / `RotatingGlobe`: separate responsive orthographic vector globe, selected-region initial view,
-  transient rotation, frame-coalesced updates, no autoplay or saved state.
+  transient rotation/pin, frame-coalesced updates, no autoplay or saved state.
+  `RotatingGlobe.onSelect(GlobePoint)` reports valid sphere taps; `GlobeScreen`
+  opens shared country details with expanded photos, or coordinates for water/
+  unsupported areas. No discovery/progress writes.
 - `GlobeSurface(.web)`: native PanResponder / web pointer capture and nonpassive
   wheel listener. Owns gestures inside the full-screen surface; release/cancel/unmount ends
   interaction. Home’s page scrolling is independent. Web arrow/Home keys,
   native adjustable actions and 44dp direction/centre buttons offer alternatives.
+  `onTap` receives 200×200 SVG coordinates after a tap-only gesture; drag,
+  multi-touch and cancellation cannot open details. Enter/Space and the location
+  button select the centre; reset retains the geographic pin.
+- `globeSelection.ts`: projection inversion, hemisphere-aware pin projection,
+  bundled outline hit-testing (even/odd holes, date-line wrapping) and tap guard.
+  No nearest-country fallback; tiny marker-only countries and areas outside the
+  bundled outline coverage show coordinates.
 - `globe.ts`: pure rotation wrapping/tilt bounds and D3 hemisphere projection.
   `data/globe-land.json` is generated by `scripts/build-globe.mjs`; source hashes
   and offline license notices ship beside it. Geography game geometry is separate.
+
+## Regional map presentation
+
+- `mapPresentation`: pure region definitions, generated straight-line ring bounds,
+  primary-land/whole-map fits and small-target focus. Whole map retains every
+  original ring; primary land can omit remote rings and the far extent of Russia.
+- `viewport.bounds`: optional geographic fit extent, preserved by pan/zoom and
+  picker expansion; omitted bounds retain the original 864×570 contract.
+- `RegionMapInset`: offline SVG thumbnail, a single geographic locator, enlarged
+  sheet and 48dp country choices. Uses the same relief in Learn, political quiz
+  fills, eligible pool and reveal rules. Name It maps are read-only; selecting in
+  Learn/Find It/Hot & Cold calls the existing `onSelect` without separate storage.
+- `EuropeMap` shows eligible insets inside the existing play surface, reserves
+  their height, and keeps zoom/reset controls above them. Narrow/short layouts
+  use compact expandable region cards. Preview height follows region proportions.

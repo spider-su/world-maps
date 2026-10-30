@@ -4,6 +4,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { CountryInfoCard } from './CountryInfoCard';
 import { countryFacts } from './countryFacts';
 import { gameCopy } from './copy';
+import { galleryCopy } from './galleryCopy';
+import { countryWikipedia } from './countryPhotos';
 
 vi.mock('@expo/vector-icons', () => ({ Ionicons: () => null }));
 vi.mock('react-native-svg', () => ({ SvgXml: () => null }));
@@ -28,7 +30,17 @@ describe('country essentials', () => {
     expect(html).toContain('Show photos');
     expect(html).toContain('Read on Wikipedia');
     for (const text of ['Country code','Map position','Physical atlas','Tap another country']) expect(html).not.toContain(text);
-    expect(html).not.toContain('<img');
+    expect(html).not.toContain(countryWikipedia.DEU!.photos[0]!.caption);
+  });
+  it('shows photos immediately when Learn details request them, but never in compact cards', () => {
+    for (const language of ['en', 'pl', 'ru'] as const) {
+      const html = renderToStaticMarkup(<CountryInfoCard id="DEU" language={language} photosExpandedByDefault onSpeak={noop} />);
+      expect(html).toContain(galleryCopy[language].hide);
+      expect(html).toContain(countryWikipedia.DEU!.photos[0]!.caption);
+      expect(html).toContain(galleryCopy[language].loading);
+      const compact = renderToStaticMarkup(<CountryInfoCard id="DEU" language={language} compact photosExpandedByDefault onSpeak={noop} />);
+      expect(compact).not.toContain(countryWikipedia.DEU!.photos[0]!.caption);
+    }
   });
   it('omits absent landmarks and unknown countries without fabricated facts', () => {
     const html = renderToStaticMarkup(<CountryInfoCard id="VUT" language="en" onSpeak={noop} />);

@@ -36,3 +36,10 @@ export async function uploadProfile(profile: SocialProfile): Promise<string> {
   await setDoc(doc(client.db, 'users', uid, 'profile', 'public'), profile);
   return socialFingerprint(profile);
 }
+
+/** Consent withdrawal removes the server-side shared snapshot. */
+export async function deleteSharedProfile(): Promise<void> {
+  const [{ doc, deleteDoc }, client] = await Promise.all([import('firebase/firestore'), firebaseClient()]);
+  const uid = userId(client.auth.currentUser?.uid);
+  await deleteDoc(doc(client.db, 'users', uid, 'profile', 'public'));
+}

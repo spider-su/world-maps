@@ -1,5 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 const KEY = '@world-maps/social-consent-v1';
 export interface SocialPreferences { enabled: boolean; nickname: string; }
 export const DEFAULT_SOCIAL_PREFERENCES: SocialPreferences = { enabled: false, nickname: '' };
@@ -17,8 +15,10 @@ export function parseSocialPreferences(raw: string | null): SocialPreferences {
   } catch { return DEFAULT_SOCIAL_PREFERENCES; }
 }
 export async function loadSocialPreferences(): Promise<SocialPreferences> {
+  const { default: AsyncStorage } = await import('@react-native-async-storage/async-storage');
   return parseSocialPreferences(await AsyncStorage.getItem(KEY));
 }
 export async function saveSocialPreferences(value: SocialPreferences): Promise<void> {
+  const { default: AsyncStorage } = await import('@react-native-async-storage/async-storage');
   await AsyncStorage.setItem(KEY, JSON.stringify(value));
 }

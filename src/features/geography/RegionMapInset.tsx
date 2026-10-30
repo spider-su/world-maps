@@ -45,10 +45,11 @@ export function RegionMapInset({ map, region, language, theme, width, height, en
   useEffect(() => { current.current = detail; }, [detail]);
   // eslint-disable-next-line react-hooks/refs -- PanResponder stores callbacks for later gesture events.
   const responder = useMemo(() => PanResponder.create({
-    onStartShouldSetPanResponder: () => false,
+    onStartShouldSetPanResponder: () => true,
     onMoveShouldSetPanResponderCapture: (_, gesture) => Math.abs(gesture.dx) > 5 || Math.abs(gesture.dy) > 5,
     onPanResponderGrant: () => { start.current = current.current; },
     onPanResponderMove: (_, gesture) => setDetailViewport(pan(start.current, gesture.dx, gesture.dy, sheetWidth, 190 / sheetWidth)),
+    onPanResponderTerminationRequest: () => false,
   }), [sheetWidth]);
   const countries = region.countryIds.filter(id => !eligibleIds || eligibleIds.includes(id));
   const draw = (screenWidth: number, screenHeight: number, labels: boolean) => {

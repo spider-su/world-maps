@@ -30,6 +30,24 @@ export function FriendsPanel() {
   const [friends, setFriends] = useState<Array<{uid:string;profile:SocialProfile|null}>>([]);
   const [invite, setInvite] = useState('');
   const [busy, setBusy] = useState(false);
+  useEffect(() => {
+    if (!prefs?.enabled) return;
+    let active = true;
+    let unsubscribe: (() => void) | undefined;
+    void firebaseClient().then(async ({auth}) => {
+      const { onAuthStateChanged } = await import('firebase/auth');
+      if (!active) return;
+      unsubscribe = onAuthStateChanged(auth, user => { if (active) setUserId(user?.uid ?? null); });
+    }).catch(error => { if (active) setError(error instanceof Error ? error.message : String(error)); });
+    return () => { active = false; unsubscribe?.(); };
+  }, [prefs?.enabled]);
+  useEffect(() => {
+    if (!prefs?.enabled || !userId || prefs.nickname.trim().length < 2) return;
+    const pending = setTimeout(() => {
+      void syncChangedSocialProfile(progress).catch(error => setError(error instanceof Error ? error.message : String(error)));
+    }, 1200);
+    return () => clearTimeout(pending);
+  }, [prefs?.enabled, prefs?.nickname, userId, progress]);
   const [error, setError] = useState('');
   const [link, setLink] = useState('');
   const [linkValid, setLinkValid] = useState<boolean | null>(null);

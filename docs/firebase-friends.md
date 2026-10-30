@@ -1,0 +1,92 @@
+# Firebase friends — staged implementation
+
+## Product contract
+
+World Maps remains offline-first. Local canonical v4 progress is authoritative. Firebase is opt-in;
+never sign in, publish, or synchronize progress until the player explicitly enables social sharing.
+
+The only public-facing payload is `SocialProfile`: chosen nickname, explorer ID, XP, level,
+discovered/mastered counts, earned badge IDs, and updated-at timestamp. Never transmit
+raw attempts, learning records, country IDs, voice preference, email or device identifiers.
+
+Friends can view *snapshots*, with an explicit last-updated time; do not imply live data
+while offline. Account deletion must remove the profile, relationships and invitation tokens.
+
+## Firestore layout
+
+- `users/{uid}/profile/public`: opt-in social snapshot; read by owner or accepted friends
+- `users/{uid}/friends/{friendUid}`: accepted relationship; provision **only by trusted workflow**
+- Invitations require an authenticated serverless function (Cloud Functions) or equivalent trusted
+  backend for one-time opaque tokens and atomic bidirectional friendship acceptance.
+
+**Important:** The included Firestore rules are deliberately fail-closed for invitations and friend
+writes. They cannot create a social graph by themselves. Do **not** loosen friend document writes
+to owner-only: that permits one user to forge access grants to another user's profile.
+
+## Setup needed before connecting UI
+
+1. Create a Firebase project and register Android `com.spidersu.worldmaps` and iOS `com.spidersu.worldmaps`.
+2. Enable Firebase Authentication (choose a recoverable sign-in provider; do not rely solely
+   on anonymous auth for friendships that should survive device loss).
+3. Create Firestore and deploy `firebase/firestore.rules`; test owner, stranger, friend and
+   blocked/deleted cases with Firebase emulator rule tests.
+4. Implement and deploy a trusted invite/accept/revoke workflow, with rate limits and
+   predictable friendship state across both users.
+5. Integrate the Firebase JavaScript SDK with React Native persistence and lockfile updates;
+   gate initialization by build-time public config. Configure authentication, sign-out,
+   offline/error state, and explicit opt-in/opt-out.
+6. Add Friends to Profile (not another Home card), QR/deep-link invitations, friend list,
+   comparison by XP/discoveries, last updated, unlink/block and account deletion.
+7. Verify Android/iOS, EN/PL/RU, offline gameplay, rules and consent before enabling.
+
+No Firebase credentials, cloud project, authentication provider, invitation backend or live
+synchronization are configured by this foundational PR.
+
+## Minimum Firestore reads and writes
+
+- Never poll on a timer. No background sync and no upload for every tap, guess, or round.
+- Once the player opts into sharing, derive the snapshot locally. Compare a stable fingerprint
+  excluding `updatedAt` and ignoring badge order. Send **one coalesced upload** only after the
+  summary changes, when connected and authenticated; use a short debounce during bursts.
+- Save the last **server-acknowledged** fingerprint locally. Do not mark it acknowledged on
+  enqueue or failed writes; retry pending changes on the next foreground or connectivity event,
+  with backoff. If a newer change arrives during an upload, compare again after acknowledgement.
+- On reconnect do **not** blindly read/write every profile. Check existing cached data and known
+  revisions. Remote profiles should be fetched only when missing or changed. A periodic refresh
+  is not required for the MVP.
+- Avoid permanent Firestore listeners on all friends. For a small friends list, read the
+  friend index when the Friends screen opens, use a revision/last-updated marker to fetch only
+  changed profiles, and reuse cached summaries on subsequent opens. The initial index read
+  is still billable. When truly automatic changes are needed later, prefer a single foreground
+  listener for the friend index, not one listener per friend.
+- Explicitly throttle repeated Friends-screen openings and failed fetches. Never claim zero
+  reads: reconnect, listeners, and index refreshes incur actual Firestore reads.
+- A friend profile's `updatedAt` changes only when its meaningful fields change. Synchronizing
+  local data on another device must not overwrite newer cloud summaries without conflict checks.
+
+The helper functions in `socialSync.ts` codify fingerprint and revision decisions only. The
+Firebase SDK, durable acknowledgment cache, retry coordinator and actual network calls are
+**not implemented yet**; they must follow this policy when wired.
+
+## QR/link invitations (implementation contract)
+
+`friendInvite.ts` creates/parses an allowlisted HTTPS link with an opaque, random token;
+it never includes UID, email or progress. The same link can be encoded into a QR image
+or shared through the native share sheet. Its domain must be configured as an actual
+Firebase Hosting/App Links/Universal Links domain before distributing invitations.
+
+`firebase/functions/index.js` contains authenticated callable Cloud Functions:
+`createFriendInvite` (24-hour token), `acceptFriendInvite` (one-use atomic mutual friendship),
+`revokeFriendInvite` and `removeFriend`. Invitation tokens are stored as SHA-256 IDs, not plaintext.
+Firestore's catch-all deny rule blocks clients from accessing the invitations collection directly.
+App Check enforcement is enabled for the callables; it must be configured for installed apps.
+Deploy with Firebase CLI after installing the functions dependencies and generating a lockfile.
+
+These functions have NOT been deployed or exercised against a real Firebase project yet.
+Before production, add function integration/emulator tests (expiry, replay, concurrent accept,
+unauthorized revoke, remove, blocked users), request throttling, abuse controls and a delete-account
+workflow that removes pending invites. The URL parser and expiry logic do have unit tests.
+
+**UI integration remains pending:** QR rendering/scanning, share sheet, deep-link handling,
+Firebase client initialization and consent screens require the configured Firebase project
+and Expo-compatible SDKs. Do not show a working Invite button until the callable is deployed.

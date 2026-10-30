@@ -120,7 +120,8 @@ See [coverage, sources and generation](docs/continent-maps.md).
 ### Wikipedia discovery
 
 Country details include a Wikipedia article link and optional credited photographs
-of places and landscapes. Tap **Show photos** to load images online; country facts,
+of places and landscapes. Learn details expand photos by default; in Library, tap
+**Show photos** to load them. Photos require internet; country facts,
 flags, maps and progress continue working offline. Source/author and license links
 are shown for each image. See [Wikipedia gallery](docs/wikipedia-gallery.md).
 

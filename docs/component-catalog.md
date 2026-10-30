@@ -89,7 +89,8 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 
 - `CountryGallery`: expanded Learn/collection details only. Bundled country article
   link, optional horizontal gallery (up to three images), per-image load/error/retry
-  and source/license links. Images mount only after Show photos; callers key by
+  and source/license links. `defaultExpanded` defaults false; Learn details pass true. Images mount when
+  expanded, only while details are open; callers key by
   country ID to reset gallery/error state. Compact cards remain offline.
 - `countryPhotos.ts` / `data/wikipedia-gallery.json`: typed article/photo metadata;
   replaced the two automatically loaded curated photos. Refreshed by
@@ -128,13 +129,16 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 - `CountryInfoCard.showHeader`: defaults true for collection/preview; false when
   the surrounding sheet supplies `CountryInfoHeading` as its sticky heading.
   Expanded contents are capital, optional landmark and `CountryGallery`.
+  `photosExpandedByDefault` defaults false; Learn sets it true and mounts details
+  only while open, resetting expansion on reopening or changing country.
 - `OptionsSheet.heading`: optional custom heading; the heading and Close remain
   above its scrollable contents. Existing title-only sheets behave as before.
 - Learn starts with collision-managed map names and a small selection hint;
   selection removes the hint. Named controls remain available; quizzes stay
   anonymous. The unused second-atlas component and technical display helpers
   were removed; map geometry, source metadata and licenses remain intact.
-- `CountryGallery`: one opt-in photos action with Online hint, responsive image
+- `CountryGallery`: collapsible photos (initially open in Learn details; Library opt-in
+  with Online hint), responsive image
   widths, pagination dots, full credits and source/license links; one Wikipedia
   link below. Per-image loading/retry and native request headers are retained.
 

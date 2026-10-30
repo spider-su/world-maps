@@ -225,7 +225,7 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
       <ProgressStatus language={language} />
     </OptionsSheet>
     <OptionsSheet heading={feedback ? <CountryInfoHeading id={feedback.id} language={language} onSpeak={() => speak(countryName(feedback.id, language))} /> : undefined} visible={showDetails && !!feedback} title={c.moreDetails} closeLabel={c.close} onClose={() => setShowDetails(false)}>
-      {mode === 'learn' && feedback && <CountryInfoCard showHeader={false} id={feedback.id} language={language} onSpeak={() => speak(countryName(feedback.id, language))} />}
+      {mode === 'learn' && showDetails && feedback && <CountryInfoCard photosExpandedByDefault showHeader={false} id={feedback.id} language={language} onSpeak={() => speak(countryName(feedback.id, language))} />}
     </OptionsSheet>
   </SafeAreaView>;
 }

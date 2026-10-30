@@ -194,3 +194,13 @@ Home’s “Explore the globe” card opens a separate full-screen offline globe
 rotate, or use the direction/centre controls. Arrow keys and Home work on web.
 The globe starts centred on the selected region and does not change quiz settings
 or progress. Country learning still uses the existing region maps.
+
+### Continent framing and regional maps
+
+Play views fit each continent’s mainland geography instead of a shared wide canvas.
+North Atlantic, Caribbean, Pacific, Gulf and Indian Ocean insets keep remote or crowded
+locations available without shrinking the mainland or drawing a leader line to every country.
+Tap an inset to enlarge its map and choose a country from 48dp controls. Quiz controls
+stay anonymous until their existing reveal rules allow names; Name It insets are read-only.
+Visible zoom and Whole map/Main view controls retain access to all original geometry,
+including remote islands. Maps tab previews follow each region’s proportions.

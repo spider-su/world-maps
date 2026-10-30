@@ -6,6 +6,7 @@ import { MAP_IDS, maps } from './maps';
 import worldRelief from '../../../assets/maps/world-blue-marble.jpg';
 
 vi.mock('@expo/vector-icons', () => ({ Ionicons: () => null }));
+vi.mock('../../ui/OptionsSheet', () => ({ OptionsSheet: () => null }));
 vi.mock('react-native-svg', () => {
   const tag = (name: string) => ({ children, testID, pointerEvents, ...props }: Record<string, unknown>) => React.createElement(name, { ...props, 'data-testid': testID, 'data-pointer-events': pointerEvents }, children as React.ReactNode);
   return { default: tag('svg'), Circle: tag('circle'), ClipPath: tag('clipPath'), Defs: tag('defs'), Image: tag('image'), Line: tag('line'), Path: tag('path'), Rect: tag('rect'), Text: tag('text') };
@@ -39,6 +40,19 @@ describe('consistent offline relief', () => {
   });
 });
 describe('map label interaction boundary', () => {
+  it('replaces Caribbean country pins with a regional map without leaking quiz names', () => {
+    const html = renderToStaticMarkup(<EuropeMap {...base} map={maps['north-america']} fill enabled={false} targetId="BRB" showNames={false} />);
+    expect(html).toContain('data-testid="region-inset-caribbean"');
+    expect(html).toContain('data-testid="region-locators"');
+    expect(html).toContain('Expand regional map: Caribbean');
+    expect(html).not.toContain('Barbados');
+    expect(html).not.toContain('Jamaica');
+    expect(html).toContain('#F5AD18');
+  });
+  it('does not offer regions with no eligible quiz countries', () => {
+    const html = renderToStaticMarkup(<EuropeMap {...base} map={maps['north-america']} fill selectableIds={['CAN','USA','MEX','NIC']} showNames={false} />);
+    expect(html).not.toContain('data-testid="region-inset-caribbean"');
+  });
   it('puts atlas names in a separate noninteractive SVG, keeping polygon taps underneath', () => {
     const html = renderToStaticMarkup(<EuropeMap {...base} learn showNames />);
     const layers = html.match(/<svg[\s\S]*?<\/svg>/g)!;

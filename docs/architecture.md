@@ -62,3 +62,8 @@ land geometry. D3 Geo supplies pure-JavaScript spherical clipping and projection
 existing SVG rendering supplies the drawing. Platform gesture adapters isolate
 web wheel/pointer events from native PanResponder. The globe view hides tabs, owns both safe edges and supports system Back. Rotation is transient and does not affect
 map/quiz preferences, progress or country-selection geometry.
+
+`mapPresentation.ts` owns derived display bounds and regional inset definitions.
+`EuropeMap` retains original geometry, gestures and selection; `RegionMapInset`
+provides thumbnails and enlarged choices through the same `onSelect`. Viewport
+bounds are transient presentation, never progress or a second geography dataset.

@@ -52,7 +52,7 @@ export function FriendsPanel() {
   }, [prefs?.enabled, prefs?.nickname, userId, progress]);
 
   const [link, setLink] = useState('');
-  const [linkValid, setLinkValid] = useState<boolean | null>(null);
+  const linkValid = parseFriendInviteUrl(link.trim()) !== null;
   useEffect(() => { let active = true; loadSocialPreferences().then(value => { if(active) setPrefs(value); }).catch(() => { if(active) setError(c.saving); }); return () => { active = false; }; }, [c.saving]);
   const act = async (action: () => Promise<void>) => {
     setBusy(true); setError('');
@@ -110,12 +110,12 @@ export function FriendsPanel() {
         </>}
       </View>}
       <Text style={[styles.label, { color: theme.navy }]}>{c.import}</Text>
-      <TextInput accessibilityLabel={c.import} style={[styles.input, { color: theme.navy, borderColor: theme.border }]} value={link} autoCapitalize="none" autoCorrect={false} onChangeText={value => { setLink(value); setLinkValid(null); }} placeholder={c.placeholder} />
-      <Pressable accessibilityRole="button" style={[styles.button, { backgroundColor: theme.paper }]} onPress={() => setLinkValid(parseFriendInviteUrl(link.trim()) !== null)}>
+      <TextInput accessibilityLabel={c.import} style={[styles.input, { color: theme.navy, borderColor: theme.border }]} value={link} autoCapitalize="none" autoCorrect={false} onChangeText={setLink} placeholder={c.placeholder} />
+      <View style={[styles.button, { backgroundColor: theme.paper }]}>
         <Ionicons name="link-outline" size={19} color={theme.brand} /><Text style={{ color: theme.brand, fontWeight: '700' }}>{c.check}</Text>
-      </Pressable>
-      {linkValid !== null && <Text style={{ color: theme.muted }}>{linkValid ? c.valid : c.invalid}</Text>}
-      <Text style={{ color: theme.muted, fontSize: 12 }}>{c.pending}</Text>
+      </View>
+      {link.trim().length > 0 && <Text style={{ color: theme.muted }}>{linkValid ? c.valid : c.invalid}</Text>}
+      <Text style={{ color: theme.muted, fontSize: 12 }}>Invitations require deployed Firebase Functions and valid App Check configuration. QR scanning is not yet available; paste a link above.</Text>
       <Pressable accessibilityRole="button" style={styles.button} onPress={() => { void Share.share({ message: 'World Maps' }); }}>
         <Ionicons name="share-social-outline" size={18} color={theme.brand}/><Text style={{ color: theme.brand }}>{c.share}</Text>
       </Pressable>

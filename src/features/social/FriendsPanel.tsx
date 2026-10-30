@@ -7,7 +7,7 @@ import { useProgress } from '../geography/ProgressContext';
 import { sharedProfile, validateNickname } from './socialProfile';
 import { loadSocialPreferences, saveSocialPreferences, type SocialPreferences } from './socialPreferences';
 import { parseFriendInviteUrl } from './friendInvite';
-import { createInvitation, acceptInvitation, listFriends } from './firebaseFriends';
+import { createInvitation, acceptInvitation, listFriends, deleteSharedProfile } from './firebaseFriends';
 import { createSocialAccount, signInSocial, signOutSocial, firebaseClient } from './firebaseClient';
 import { syncChangedSocialProfile } from './socialSession';
 import type { SocialProfile } from './socialProfile';
@@ -59,7 +59,12 @@ export function FriendsPanel() {
   };
   const save = (next: SocialPreferences) => {
     setError('');
-    void saveSocialPreferences(next).then(() => setPrefs(next)).catch(() => setError(c.saving));
+    void (async () => {
+      // Withdraw remote sharing before switching local consent off.
+      if (prefs?.enabled && !next.enabled && userId) await deleteSharedProfile();
+      await saveSocialPreferences(next);
+      setPrefs(next);
+    })().catch(error => setError(error instanceof Error ? error.message : c.saving));
   };
   const preview = prefs?.enabled && prefs.nickname.trim().length >= 2 && prefs.nickname.trim().length <= 24
     ? (() => { try { return sharedProfile(progress, validateNickname(prefs.nickname)); } catch { return null; } })()

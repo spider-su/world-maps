@@ -23,6 +23,7 @@ import { profileCopy } from '../features/geography/profileCopy';
 import { EXPLORERS, EXPLORER_STAGES } from '../features/geography/explorer';
 import { ExplorerAvatar } from '../features/geography/ExplorerAvatar';
 import { ExplorerAppearanceEditor } from '../features/geography/ExplorerAppearanceEditor';
+import { FriendsPanel } from '../features/social/FriendsPanel';
 import { explorerProgress, DISCOVERY_XP, CORRECT_XP, FIRST_TRY_XP, XP_PER_LEVEL, type AchievementId } from '../features/geography/explorerProgress';
 
 const badgeIcons = { 'first-discovery': 'footsteps-outline', curious: 'compass-outline', collector: 'albums-outline', 'sharp-eye': 'flash-outline', 'all-rounder': 'ribbon-outline', globetrotter: 'earth-outline' } as const;
@@ -89,6 +90,7 @@ export function ProfileScreen() {
         <Pressable accessibilityRole="button" onPress={() => setSheet('learning')} style={styles.map}><View style={styles.titleRow}><Text style={styles.mapTitle}>{c.learningProgress} · {mapName(selectedMap.id, language)}</Text><Ionicons name="chevron-forward" size={18} color={theme.brand} /></View><Text style={styles.detail}>{c.history}</Text></Pressable>
         <View style={styles.titleRow}><Text accessibilityRole="header" style={styles.section}>{p.achievements}</Text><Pressable accessibilityRole="button" accessibilityLabel={p.allBadges} style={styles.iconButton} onPress={() => setSheet('badges')}><Ionicons name="arrow-forward" size={22} color={theme.brand} /></Pressable></View>
         <View style={styles.badges}>{badges.map(b => <Pressable key={b.id} accessibilityRole="button" accessibilityLabel={`${p.badges[b.id].title}. ${b.earned ? p.earned : `${b.current}/${b.target}`}`} onPress={() => setSheet('badges')} style={styles.badgeTile}>{badge(b.id,b.earned)}<Text style={styles.badgeTitle}>{p.badges[b.id].title}</Text>{b.earned ? <Ionicons name="checkmark-circle" size={16} color={theme.success} /> : <Text style={styles.hint}>{b.current}/{b.target}</Text>}</Pressable>)}</View>
+        <FriendsPanel />
         <Text accessibilityRole="header" style={styles.section}>{p.yourMaps}</Text>
         {journey.maps.map(map => <Pressable key={map.id} accessibilityRole="button" accessibilityLabel={`${mapName(map.id,language)}. ${map.discovered}/${map.total} ${p.discovered}`} onPress={() => { setMapId(map.id); navigation.navigate('Explore', { filter: 'all', reset: true }); }} style={styles.map}>
           <View style={styles.titleRow}><Text style={styles.mapTitle}>{mapName(map.id,language)}</Text><Text style={styles.hint}>{map.discovered}/{map.total}</Text><Ionicons name="chevron-forward" size={16} color={theme.muted} /></View>

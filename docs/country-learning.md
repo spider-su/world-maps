@@ -17,9 +17,12 @@ last 100 completed score sessions. Mode-specific pack IDs are unchanged.
 Adaptive practice uses a small weighted draw: unseen countries have weight 4;
 recent misses increase weight, three first-try successes and three recent correct
 answers reduce weight, and up to three points accrue over 21 days without practice.
-The immediately previous target is excluded when alternatives exist. Random mode
-uses uniform weights and also excludes immediate repeats. Both stay inside the
-active pack (and the difficulty pool in the integrated application).
+Both modes exclude up to four recently practiced targets, capped at half the active
+pool so small packs remain playable. The previous transient target takes the first
+cooldown slot; remaining recency comes from existing per-mode last-practiced records,
+including on reopening. Random mode uses uniform weights among the remaining targets;
+Adaptive retains its weights there. Both stay inside the active difficulty pool.
+Normal includes at least two thirds of each map, while Difficult includes every country.
 
 Home shows the saved practice selector. Home and Settings show Europe coverage,
 mastery, needing-practice and attempt accuracy, with an expandable country list.

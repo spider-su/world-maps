@@ -8,7 +8,7 @@ const en = {
   zoomCountries: 'Zoom to nearby countries',
   playOptions: 'Play options', countryCollection: 'Country collection', collectionHint: 'Explore countries by region and learn at your own pace.', backToCollection: 'Back to collection', searchCountry: 'Search country or capital', noCountriesFound: 'No matching countries', profile: 'Profile', countriesExplored: 'Countries explored', roundsPlayed: 'Rounds played', regionProgress: 'Regions', mapTools: 'Map tools', moreDetails: 'Country details', cold: 'Cold', hot: 'Hot',
   learningProgress: 'Learning progress', practiced: 'Practiced', mastered: 'Mastered', needsPractice: 'Needs practice', accuracy: 'Accuracy',
-  practice: 'Practice', practiceModes: { adaptive: 'Adaptive', random: 'Random' }, practiceHint: 'Adaptive favors recent misses and revisits older practice. No immediate repeats.',
+  practice: 'Practice', practiceModes: { adaptive: 'Adaptive', random: 'Random' }, practiceHint: 'Adaptive favors recent misses and revisits older practice. Recent questions are spaced out.',
   masteryHint: 'Mastered: three first-try successes in one mode and the last three answers correct.', showProgress: 'Show country progress', hideProgress: 'Hide country progress', notPracticed: 'Not practiced yet',
 
   hideBorders: 'Hide borders', showBorders: 'Show borders',
@@ -51,7 +51,7 @@ const pl: Copy = {
   zoomCountries: 'Przybliż pobliskie państwa',
   playOptions: 'Opcje gry', countryCollection: 'Kolekcja państw', collectionHint: 'Poznawaj państwa według regionów we własnym tempie.', backToCollection: 'Powrót do kolekcji', searchCountry: 'Szukaj państwa lub stolicy', noCountriesFound: 'Brak wyników', profile: 'Profil', countriesExplored: 'Odkryte państwa', roundsPlayed: 'Rozegrane rundy', regionProgress: 'Regiony', mapTools: 'Narzędzia mapy', moreDetails: 'Informacje o państwie', cold: 'Zimno', hot: 'Ciepło',
   learningProgress: 'Postępy w nauce', practiced: 'Ćwiczone', mastered: 'Opanowane', needsPractice: 'Do powtórki', accuracy: 'Trafność',
-  practice: 'Ćwiczenie', practiceModes: { adaptive: 'Adaptacyjne', random: 'Losowe' }, practiceHint: 'Tryb adaptacyjny częściej wybiera ostatnie błędy i starsze powtórki. Bez powtórzeń z rzędu.',
+  practice: 'Ćwiczenie', practiceModes: { adaptive: 'Adaptacyjne', random: 'Losowe' }, practiceHint: 'Tryb adaptacyjny częściej wybiera ostatnie błędy i starsze powtórki. Ostatnie pytania wracają po przerwie.',
   masteryHint: 'Opanowane: trzy sukcesy w pierwszej próbie w jednym trybie i ostatnie trzy odpowiedzi poprawne.', showProgress: 'Pokaż postępy państw', hideProgress: 'Ukryj postępy państw', notPracticed: 'Jeszcze niećwiczone',
 
   hideBorders: 'Ukryj granice', showBorders: 'Pokaż granice',
@@ -93,7 +93,7 @@ const ru: Copy = {
   zoomCountries: 'Приблизить соседние страны',
   playOptions: 'Настройки игры', countryCollection: 'Коллекция стран', collectionHint: 'Изучайте страны по регионам в своём темпе.', backToCollection: 'Назад к коллекции', searchCountry: 'Найти страну или столицу', noCountriesFound: 'Страны не найдены', profile: 'Профиль', countriesExplored: 'Открытые страны', roundsPlayed: 'Сыграно раундов', regionProgress: 'Регионы', mapTools: 'Инструменты карты', moreDetails: 'О стране', cold: 'Холодно', hot: 'Горячо',
   learningProgress: 'Прогресс обучения', practiced: 'Изучено', mastered: 'Освоено', needsPractice: 'Нужна практика', accuracy: 'Точность',
-  practice: 'Практика', practiceModes: { adaptive: 'Адаптивная', random: 'Случайная' }, practiceHint: 'Адаптивный режим чаще выбирает недавние ошибки и давние задания. Без повторов подряд.',
+  practice: 'Практика', practiceModes: { adaptive: 'Адаптивная', random: 'Случайная' }, practiceHint: 'Адаптивный режим чаще выбирает недавние ошибки и давние задания. Недавние вопросы повторяются после перерыва.',
   masteryHint: 'Освоено: три успеха с первой попытки в одном режиме и последние три ответа верны.', showProgress: 'Показать прогресс по странам', hideProgress: 'Скрыть прогресс по странам', notPracticed: 'Ещё не изучено',
   hideBorders: 'Скрыть границы', showBorders: 'Показать границы',
   difficulty: 'Сложность', levels: { easy: 'Легко', normal: 'Обычно', difficult: 'Сложно' },

@@ -151,6 +151,8 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
   const insets = useSafeAreaInsets();
   const { dockHeight, promptHeight } = playLayout(height - insets.top - insets.bottom, mode, fontScale);
   const prompt = gamePrompt(language, mode, target.id, completed, clue, answerType);
+  const compactPrompt = mode === 'find-it' && clue === 'name' && !completed
+    ? `${p.findCountry} ${countryName(target.id, language)}` : prompt;
   return <SafeAreaView edges={['top', 'bottom']} style={styles.screen}>
     <StatusBar style="auto" />
     <View style={styles.header}>
@@ -159,16 +161,17 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
       <Pressable accessibilityRole="button" accessibilityLabel={c.playOptions} style={styles.iconButton} onPress={() => setShowOptions(true)}><Ionicons name="ellipsis-horizontal" size={23} color={theme.navy} /></Pressable>
     </View>
     <View style={styles.playArea}>
+      {mode === 'learn' && <Text style={styles.learnHint}>{p.selectCountry}</Text>}
       {mode !== 'learn' && <ScrollView style={[styles.promptSlot, { height: promptHeight }]} contentContainerStyle={styles.promptRow}>
         {mode === 'find-it' && clue === 'flag' && !completed && <View accessible accessibilityLabel={c.flagPrompt}><SvgXml xml={countryFacts[target.id]?.flagSvg ?? ''} width={64} height={44} /></View>}
-        <Text style={styles.prompt} accessibilityLiveRegion="polite">{progressLoaded ? prompt : c.loading}</Text>
+        <Text style={styles.prompt} accessibilityLiveRegion="polite">{progressLoaded ? compactPrompt : c.loading}</Text>
         {!completed && replayId && canReplayPrompt(mode, clue, completed) && <Pressable accessibilityRole="button" accessibilityLabel={c.hear} style={styles.replay}
           onPress={() => speak(mode === 'capital-find' || (mode === 'find-it' && clue === 'capital') ? capitalName(replayId, language) : countryName(replayId, language))}>
           <Ionicons name="volume-high" size={21} color={theme.brand} />
         </Pressable>}
       </ScrollView>}
       <View style={styles.mapArea}>
-        <EuropeMap map={map} key={`${mode}:${round.startedAt}:${round.targetId}`} fill toolsVisible={showMapTools} results={resultById} revealedIds={completedIds} showNames={showNames && canShowNames}
+        <EuropeMap map={map} key={`${mode}:${round.startedAt}:${round.targetId}`} fill toolsVisible={showMapTools} quickToolsVisible={false} results={resultById} revealedIds={completedIds} showNames={showNames && canShowNames}
           learn={mode === 'learn'} atlas={mode === 'learn'} showBorders={showBorders} selectableIds={mode === 'learn' ? undefined : pack.locations.map(location => location.id)} onSelect={selectCountry} enabled={progressLoaded && !completed && mode !== 'name-it' && mode !== 'capital-name'} language={language} targetId={(mode === 'name-it' || mode === 'capital-name') && !completed ? target.id : undefined} />
 
       </View>
@@ -178,10 +181,9 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
             disabled={completed || round.guesses.includes(option.id) || !progressLoaded} onPress={() => selectAnswer(option.id)}
             style={[styles.option, width < 360 && fontScale > 1.3 && styles.optionWide, round.guesses.includes(option.id) && (option.id === round.targetId ? styles.optionCorrect : styles.optionWrong)]}><Text style={styles.optionText}>{answerType === 'capital' ? capitalName(option.id, language) : countryName(option.id, language)}</Text></Pressable>)}
         </View>}
-        {mode === 'learn' && !feedback && <View style={styles.learnIntro}><Text style={styles.actionText}>{c.learnPrompt}</Text><Text style={styles.sheetHint}>{p.clusterHint}</Text></View>}
+        {mode === 'learn' && !feedback && <Text style={styles.learnHint}>{p.clusterHint}</Text>}
         {mode === 'learn' && feedback && <CountryInfoCard compact id={feedback.id} language={language} onSpeak={() => speak(countryName(feedback.id, language))} onDetails={() => setShowDetails(true)} />}
         {mode !== 'learn' && <>
-          {!feedback && mode !== 'name-it' && mode !== 'capital-name' && <Text style={styles.sheetHint}>{p.clusterHint}</Text>}
           {completed && reward && reward.xp > 0 && <View accessibilityLiveRegion="polite" style={styles.reward}><Text style={styles.rewardTitle}>+{reward.xp} {pc.xp} · {p.reward}</Text>{reward.level && <Text style={styles.rewardText}>{pc.level} {reward.level}</Text>}{reward.outfit && <Text style={styles.rewardText}>{p.outfit}</Text>}{reward.badges.map(id => <Text key={id} style={styles.rewardText}>{pc.badges[id].title} · {pc.earned}</Text>)}</View>}
           {feedback && <View style={styles.feedback} accessibilityLiveRegion="polite"><View style={[styles.feedbackDot, { backgroundColor: CLUE_COLORS[feedback.result] }]} /><Text style={styles.feedbackText}>{countryName(feedback.id, language)} · {mode === 'hot-cold' ? c.proximity[feedback.result] : feedback.result === 'correct' ? c.correct : c.retry}</Text></View>}
           {mode === 'hot-cold' && !completed && <View style={styles.legend}><Text style={styles.legendText}>{c.cold}</Text>
@@ -193,15 +195,22 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
             <View style={styles.metric}><Text style={styles.metricValue}>{round.guesses.length}</Text><Text style={styles.metricLabel}>{c.attempts}</Text></View>
             <View style={styles.divider} />
             <View style={styles.metric}><Text style={styles.metricValue}>{completed ? `+${scoreRound(round.guesses.length)}` : stats.bestScore}</Text><Text style={styles.metricLabel}>{completed ? c.score : c.best}</Text></View>
-            {completed && <Pressable accessibilityRole="button" disabled={!progressLoaded} style={[styles.nextButton, styles.nextComplete, (width < 480 || fontScale > 1.3) && styles.nextWide]} accessibilityLabel={c.next} onPress={restart}>
-              <Ionicons name="arrow-forward" size={23} color="#FFF" />
-              <Text style={styles.nextText}>{c.next}</Text>
-            </Pressable>}
+
           </View>
         </>}
         {speechFailed && <Text accessibilityRole="alert" style={styles.warning}>{c.speechError}</Text>}
         <ProgressStatus language={language} />
       </ScrollView>
+      {completed && <View style={styles.completionActions}>
+        <Pressable accessibilityRole="button" accessibilityLabel={c.back} style={styles.completionHome} onPress={onBack}>
+          <Ionicons name="home-outline" size={20} color={theme.navy} />
+          <Text style={styles.completionHomeText}>{c.home}</Text>
+        </Pressable>
+        <Pressable accessibilityRole="button" disabled={!progressLoaded} accessibilityLabel={c.next} style={styles.completionNext} onPress={restart}>
+          <Text style={styles.nextText}>{c.next}</Text>
+          <Ionicons name="arrow-forward" size={20} color="#FFF" />
+        </Pressable>
+      </View>}
     </View>
     <OptionsSheet visible={showOptions} title={c.playOptions} closeLabel={c.close} onClose={() => setShowOptions(false)}>
       <Pressable accessibilityRole="button" accessibilityLabel={c.mapTools} accessibilityState={{ expanded: showMapTools }} style={styles.sheetAction} onPress={() => { setShowMapTools(value => !value); setShowOptions(false); }}><Ionicons name="expand-outline" size={22} color={theme.brand} /><Text style={styles.actionText}>{c.mapTools}</Text></Pressable>
@@ -211,7 +220,8 @@ export function GeographyGameScreen({ mode, onBack, findClue = 'mixed', nameAnsw
       </Pressable>
       {canShowNames && <Pressable accessibilityRole="button" style={styles.sheetAction} onPress={() => setShowNames(value => !value)}><Ionicons name="text-outline" size={22} color={theme.brand} /><Text style={styles.actionText}>{showNames ? c.hideNames : c.showNames}</Text></Pressable>}
       {mode === 'learn' && <Pressable accessibilityRole="button" style={styles.sheetAction} onPress={() => setShowBorders(value => !value)}><Ionicons name="map-outline" size={22} color={theme.brand} /><Text style={styles.actionText}>{showBorders ? c.hideBorders : c.showBorders}</Text></Pressable>}
-      {mode !== 'learn' && <Text style={styles.sheetHint}>{c.levels[difficulty]} · {c.levelHints[difficulty]}{ '\n' }{c.history} · {c.solved}: {stats.played}</Text>}
+      <Text style={styles.sheetHint}>{p.clusterHint}</Text>
+      {mode !== 'learn' && <Text style={styles.sheetHint}>{c.levels[difficulty]} · {pack.locations.length}/{map.pack.locations.length} {c.countries}{ '\n' }{c.history} · {c.solved}: {stats.played}</Text>}
       <ProgressStatus language={language} />
     </OptionsSheet>
     <OptionsSheet heading={feedback ? <CountryInfoHeading id={feedback.id} language={language} onSpeak={() => speak(countryName(feedback.id, language))} /> : undefined} visible={showDetails && !!feedback} title={c.moreDetails} closeLabel={c.close} onClose={() => setShowDetails(false)}>
@@ -226,15 +236,15 @@ const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
   heading: { flexDirection: 'row', alignItems: 'center', gap: 8, flexShrink: 1 }, modeTitle: { fontSize: 16, fontWeight: '800', color: theme.navy, flexShrink: 1 },
   playArea: { flex: 1, width: '100%', maxWidth: 900, alignSelf: 'center', paddingBottom: 8, gap: 0 },
   learnHint: { color: theme.muted, fontSize: 12, textAlign: 'center', paddingHorizontal: 16, paddingVertical: 6 },
-  promptSlot: { flexGrow: 0, flexShrink: 0, marginHorizontal: 12, marginVertical: 4, backgroundColor: theme.surface, borderRadius: 18 },
+  promptSlot: { flexGrow: 0, flexShrink: 0, marginHorizontal: 12, marginVertical: 3, backgroundColor: theme.surface, borderRadius: 16 },
   reward: { gap: 3 }, rewardTitle: { color: theme.brand, fontSize: 14, fontWeight: '800' }, rewardText: { color: theme.navy, fontSize: 12 },
   learnIntro: { gap: 8 },
-  promptRow: { flexGrow: 1, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingVertical: 12, backgroundColor: theme.surface, borderRadius: 18, minHeight: 60 },
-  prompt: { flex: 1, color: theme.navy, fontSize: 18, fontWeight: '800', lineHeight: 24 },
+  promptRow: { flexGrow: 1, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingVertical: 8, backgroundColor: theme.surface, borderRadius: 16, minHeight: 52 },
+  prompt: { flex: 1, color: theme.navy, fontSize: 17, fontWeight: '800', lineHeight: 23 },
   replay: { width: 44, minHeight: 44, borderRadius: 20, backgroundColor: theme.ocean, alignItems: 'center', justifyContent: 'center' },
   mapArea: { flex: 1, minHeight: 180 },
-  dock: { marginHorizontal: 12, flexGrow: 0, flexShrink: 0, backgroundColor: theme.surface, borderRadius: 22 },
-  dockContent: { padding: 12, gap: 8 },
+  dock: { marginHorizontal: 12, flexGrow: 0, flexShrink: 0, backgroundColor: theme.surface, borderRadius: 18 },
+  dockContent: { paddingHorizontal: 12, paddingVertical: 8, gap: 5 },
   options: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   option: { flexGrow: 1, flexBasis: '46%', minHeight: 48, padding: 10, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.paper, borderRadius: 14, borderWidth: 1, borderColor: theme.border },
   optionWide: { flexBasis: '100%' },
@@ -243,9 +253,11 @@ const makeStyles = (theme: WorldMapsPalette) => StyleSheet.create({
   legend: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 7 }, legendText: { color: theme.muted, fontSize: 10 }, swatch: { width: 10, height: 10, borderRadius: 5 },
   scoreRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 12 }, metric: { flex: 1, minWidth: 64, alignItems: 'center', gap: 2 }, metricValue: { color: theme.navy, fontSize: 18, fontWeight: '800' }, metricLabel: { color: theme.muted, fontSize: 10 },
   divider: { height: 26, width: 1, backgroundColor: theme.border, opacity: 0.4 },
-  nextButton: { minWidth: 48, minHeight: 48, borderRadius: 16, backgroundColor: theme.ocean, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingHorizontal: 12 },
-  nextWide: { flexBasis: '100%' },
-  nextComplete: { backgroundColor: theme.brandDark, flexShrink: 1 }, nextText: { flexShrink: 1, color: '#FFF', fontSize: 13, fontWeight: '800' },
+  completionActions: { flexDirection: 'row', gap: 10, paddingHorizontal: 12, paddingTop: 8, paddingBottom: 4 },
+  completionHome: { flex: 1, minHeight: 52, borderRadius: 16, backgroundColor: theme.surface, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
+  completionHomeText: { color: theme.navy, fontSize: 14, fontWeight: '700' },
+  completionNext: { flex: 2, minHeight: 52, borderRadius: 16, backgroundColor: theme.brandDark, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingHorizontal: 12 },
+  nextText: { flexShrink: 1, color: '#FFF', fontSize: 14, fontWeight: '800', textAlign: 'center' },
   sheetAction: { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 48 }, actionText: { color: theme.navy, fontWeight: '700' }, sheetHint: { color: theme.muted, fontSize: 12, lineHeight: 20 },
   warning: { color: theme.error, fontSize: 12, lineHeight: 18 },
 });

@@ -2,6 +2,8 @@ import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 import { EuropeMap } from './EuropeMap';
+import { MAP_IDS, maps } from './maps';
+import worldRelief from '../../../assets/maps/world-blue-marble.jpg';
 
 vi.mock('@expo/vector-icons', () => ({ Ionicons: () => null }));
 vi.mock('react-native-svg', () => {
@@ -10,6 +12,32 @@ vi.mock('react-native-svg', () => {
 });
 
 const base = { language: 'en' as const, results: new Map(), revealedIds: [], onSelect: () => {} };
+describe('consistent offline relief', () => {
+  it.each(MAP_IDS)('uses the same clipped Blue Marble source for %s', id => {
+    const html = renderToStaticMarkup(<EuropeMap {...base} map={maps[id]} atlas preview showNames={false} />);
+    const images = html.match(/<image\b[^>]*>/g)!;
+    expect(images).toHaveLength(2);
+    for (const image of images) {
+      expect(image).toContain(`href="${worldRelief}"`);
+      expect(image).toContain('clip-path="url(#atlas-land-');
+      expect(image).toContain('data-pointer-events="none"');
+    }
+  });
+  it('registers Europe relief to its existing independent x/y geometry scales', () => {
+    const projection = maps.europe.projection!;
+    for (const [longitude, latitude] of [[-26, 72], [46, 34], [20, 52]]) {
+      const x = projection.xoff + (longitude! - projection.west) * projection.cosLatitude * projection.scale;
+      const y = projection.yoff + (projection.north - latitude!) * projection.scale;
+      expect(x).toBeCloseTo((longitude! + 26) * 12);
+      expect(y).toBeCloseTo((72 - latitude!) * 15);
+    }
+  });
+  it('keeps quiz land independent of terrain imagery', () => {
+    const html = renderToStaticMarkup(<EuropeMap {...base} map={maps.europe} showNames={false} />);
+    expect(html).not.toContain('<image');
+    expect(html).toContain('<path');
+  });
+});
 describe('map label interaction boundary', () => {
   it('puts atlas names in a separate noninteractive SVG, keeping polygon taps underneath', () => {
     const html = renderToStaticMarkup(<EuropeMap {...base} learn showNames />);

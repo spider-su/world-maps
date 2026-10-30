@@ -1,4 +1,17 @@
-# Offline atlas presentation
+# Current offline relief
+
+All six Maps previews and Learn maps use the bundled NASA Blue Marble source
+and attribution documented in [continent maps](continent-maps.md). Europe's
+original geometry uses independent horizontal/vertical scales, so its projection
+metadata preserves x=(longitude+26)*12 and y=(72-latitude)*15 when placing the
+same global image. Political outlines, hit targets, quiz fills and progress IDs
+are unchanged. No runtime download or additional raster asset is required.
+
+## Historical Europe-only raster
+
+The following documents the retained Natural Earth raster/generator. It is no
+longer rendered in the app.
+
 
 Home and Learn use a bundled Natural Earth I 1:50m Shaded Relief 3.2.0 raster.
 Source: https://www.naturalearthdata.com/downloads/50m-raster-data/50m-natural-earth-1/

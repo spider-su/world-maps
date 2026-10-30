@@ -76,10 +76,16 @@ export function practiceWeight(record: CountryLearning | undefined, now: number)
   return (mastered(record) ? 0.3 : 1) + 3 * record.incorrect / Math.max(1, attempts(record)) + recentMiss + due;
 }
 
-/** Deterministic weighted draw, always within the active difficulty pool. */
+/** Weighted draw with a short recent-target cooldown, within the active pool.
+ * Derive recency from existing learning facts so reopening does not reset variety.
+ */
 export function practiceTarget(pack: GeographyPack, learning: LearningProgress, packId: string, mode: PracticeMode, previousId?: string, random: () => number = Math.random, now = Date.now()): string {
-  const lastId = previousId ?? Object.entries(learning[packId] ?? {}).sort((a, b) => b[1].lastPracticed - a[1].lastPracticed)[0]?.[0];
-  const candidates = pack.locations.filter(location => pack.locations.length === 1 || location.id !== lastId);
+  const eligible = new Set(pack.locations.map(location => location.id));
+  const recent = Object.entries(learning[packId] ?? {}).filter(([id]) => eligible.has(id))
+    .sort((a, b) => b[1].lastPracticed - a[1].lastPracticed).map(([id]) => id);
+  const cooldown = Math.min(4, Math.floor(pack.locations.length / 2));
+  const excluded = new Set([...new Set([...(previousId && eligible.has(previousId) ? [previousId] : []), ...recent])].slice(0, cooldown));
+  const candidates = pack.locations.filter(location => !excluded.has(location.id));
   if (!candidates.length) throw new Error('Map pack cannot be empty');
   const weights = candidates.map(location => mode === 'random' ? 1 : practiceWeight(learning[packId]?.[location.id], now));
   let choice = Math.min(0.999999999, Math.max(0, random())) * weights.reduce((a, b) => a + b, 0);

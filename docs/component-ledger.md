@@ -6,16 +6,17 @@ This is the current application inventory. Previous starter-template and early P
 |---|---|---|
 | Navigation / safe areas | `src/navigation.tsx`, `src/platform/safeArea.ts` | Five tabs: Home, Maps, Library, Profile, Settings; game hides tabs and owns both insets; verify native gestures |
 | Four game modes and variants | `HomeScreen`, `GeographyGameScreen`, `engine.ts`, `modes.ts` | Hot & Cold, Find It, Name It, Learn; maintain answer secrecy and verify completion flow |
-| Six continent registry | `maps.ts`, `EuropeMap.tsx`, bundled `data/` | Europe, Asia, Africa, North America, South America, Oceania; terrain background does not own hit-testing |
+| Six continent registry | `maps.ts`, `EuropeMap.tsx`, bundled `data/` | Europe, Asia, Africa, North America, South America, Oceania; shared Blue Marble relief; Normal pools cover at least two thirds and contain Easy pools; terrain background does not own hit-testing |
 | Country selection | `CountryPath.tsx`, `CountryPath.web.tsx`, `mapPicker.ts`, `selection.ts` | Keep native/web SVG adapters, zoom/pan guard and small-country pickers |
 | Local progress | `ProgressContext.tsx`, `progressStore.ts`, `progressStorage.ts`, `progress.ts` | Pre-release canonical v4; serialized saves, read-error protection, retry |
-| Learning and XP | `learning.ts`, `explorerProgress.ts`, `explorer.ts` | Adaptive/random practice, discoveries, avatars, achievements; validate restart restoration |
+| Learning and XP | `learning.ts`, `explorerProgress.ts`, `explorer.ts` | Adaptive/random practice excludes up to four recent targets (at most half the active pool), derived from saved learning; discoveries, avatars, achievements |
 | Map and quiz preferences | `MapContext.tsx`, `mapQuizPreferences.ts` | Persist selected continent, Find It clue and Name It answer variant |
 | Language / pronunciation | `LanguageContext.tsx`, `countryFacts.ts`, `speechController.ts` | EN/PL/RU UI and capitals, native voice availability; device test required |
-| Audio | `MusicContext.tsx`, `musicAssets.ts`, `soundPolicy.ts` | Six optional region themes, optional quiz cues, speech priority, no background playback |
+| Audio | `MusicContext.tsx`, `MusicVolumeSlider(.web).tsx`, `musicPreferenceStore.ts`, `musicAssets.ts`, `soundPolicy.ts` | Serialized audio preferences with read/save retry; six optional region themes, optional quiz cues, speech priority, no background playback |
 | Country details | `CountryInfoCard`, `CountryGallery`, `ExploreScreen` | Offline facts/flags; attributed online photos are opt-in |
-| Launch setup / continue | `PlaySetup`, `QuizSetupSummary`, `launch.ts` | Existing saved contexts; transient route launch; latest completed selected-map family |
+| Launch setup / continue | `PlaySetup`, `QuizSetupSummary`, `launch.ts` | Home hides Difficulty; Maps owns its adjustment. Existing saved contexts; transient route launch; latest completed selected-map family |
 | Learning presentation | `ProfileScreen`, `LearningOverview`, `explorerReward` | Profile owns history/statistics; result rewards are derived; Library keeps list mounted behind shared details |
+| Full-screen globe | `GlobeScreen`, `RotatingGlobe`, `GlobeSurface(.web)`, `globe.ts` | Offline overview opened from Home; no country selection or persistence; drag/scroll/buttons/keyboard |
 | Native release verification | `.github/workflows/mobile-ci.yml`, `docs/release-checklist.md` | CI and APK build are not physical-device or iOS acceptance |
 
 ## Cleanup policy

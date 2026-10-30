@@ -12,7 +12,6 @@ import { mapLabels } from './mapLabels';
 import { frame, INITIAL_VIEWPORT, normalize, pan, zoomAt, focusPoint, type Viewport } from './viewport';
 import { CLUE_COLORS } from './mapColors';
 import { themeForScheme, type WorldMapsPalette } from '../../ui/worldMapsTheme';
-import atlasImage from '../../../assets/maps/europe-atlas.jpg';
 import worldRelief from '../../../assets/maps/world-blue-marble.jpg';
 import { countryName } from './countryFacts';
 import { gameCopy } from './copy';
@@ -34,10 +33,11 @@ interface Props {
   selectableIds?: readonly string[];
   toolsVisible?: boolean;
   learn?: boolean;
+  quickToolsVisible?: boolean;
 }
 
 /** Shared, offline renderer. Country geometry remains authoritative for taps. */
-export function EuropeMap({ results, revealedIds, showNames, onSelect, language, enabled = true, preview = false, fill = false, targetId, selectableIds, toolsVisible = false, learn = false, atlas = false, showBorders = true, map = maps.europe }: Props) {
+export function EuropeMap({ results, revealedIds, showNames, onSelect, language, enabled = true, preview = false, fill = false, targetId, selectableIds, toolsVisible = false, learn = false, quickToolsVisible = true, atlas = false, showBorders = true, map = maps.europe }: Props) {
   const shapes = map.shapes;
   const contextShapes = map.context;
   const markers = map.markers;
@@ -63,8 +63,8 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
     const small = markers.find(location => location.id === targetId);
     const shape = shapes.find(location => location.id === targetId);
     return small ? focusPoint({ x: small.x, y: small.y }, 4) : shape && shape.area < 700
-      ? focusPoint({ x: shape.labelX, y: shape.labelY }, 3) : fill && width < 600 && map.id === 'europe'
-        ? focusPoint(shape ? { x: shape.labelX, y: shape.labelY } : INITIAL_VIEWPORT.center, 1.35) : INITIAL_VIEWPORT;
+      ? focusPoint({ x: shape.labelX, y: shape.labelY }, 3) : fill && width < 600
+        ? focusPoint(shape ? { x: shape.labelX, y: shape.labelY } : INITIAL_VIEWPORT.center, map.id === 'europe' ? 1.35 : 1.25) : INITIAL_VIEWPORT;
   });
   const targetPoint = markers.find(location => location.id === targetId)
     ?? shapes.find(location => location.id === targetId);
@@ -121,9 +121,7 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
       <Svg width={mapWidth} height={mapHeight} viewBox={`${visible.x} ${visible.y} ${visible.w} ${visible.h}`} accessibilityRole={preview ? 'image' : 'none'} accessibilityLabel={mapName(map.id, language)}>
         <Rect x="-2000" y="-2000" width="5000" height="5000" fill={theme.ocean} />
         {physicalAtlas && <><Defs><ClipPath id={atlasClipId}>{[...shapes, ...contextShapes].map(shape => <Path key={shape.id} d={shape.path} fillRule="evenodd" clipRule="evenodd" />)}</ClipPath></Defs>
-          {map.id === 'europe'
-            ? <SvgImage href={atlasImage} x={0} y={0} width={864} height={570} clipPath={`url(#${atlasClipId})`} preserveAspectRatio="none" pointerEvents="none" />
-            : globe && <><SvgImage href={worldRelief} x={reliefX} y={reliefY} width={reliefWidth} height={reliefHeight} clipPath={`url(#${atlasClipId})`} preserveAspectRatio="none" pointerEvents="none" />
+          {globe && <><SvgImage href={worldRelief} x={reliefX} y={reliefY} width={reliefWidth} height={reliefHeight} clipPath={`url(#${atlasClipId})`} preserveAspectRatio="none" pointerEvents="none" />
               <SvgImage href={worldRelief} x={reliefX + reliefWidth} y={reliefY} width={reliefWidth} height={reliefHeight} clipPath={`url(#${atlasClipId})`} preserveAspectRatio="none" pointerEvents="none" /></>}
         </>}
         {contextShapes.map(shape => <Path key={shape.id} d={shape.path} fillRule="evenodd" fill={physicalAtlas ? 'transparent' : theme.oceanDeep} stroke={atlas && !showBorders ? 'transparent' : theme.border} strokeWidth={0.6 / viewport.zoom} />)}
@@ -173,16 +171,16 @@ export function EuropeMap({ results, revealedIds, showNames, onSelect, language,
         })}
       </View>}
     </View>
-    {!preview && <View style={styles.tools}>
+    {!preview && (toolsVisible || quickToolsVisible) && <View style={styles.tools}>
       {toolsVisible && <View style={styles.controls}>
         {controls.map(control => <Pressable key={control.label} accessibilityRole="button" accessibilityLabel={control.label}
           style={styles.control} onPress={control.action}><Ionicons name={control.icon} size={18} color={theme.navy} /></Pressable>)}
       </View>}
-      <View style={styles.quickTools}>
+      {quickToolsVisible && <View style={styles.quickTools}>
       <Pressable accessibilityRole="button" accessibilityLabel={c.zoomOut} style={styles.toolToggle} onPress={() => adjustZoom(1 / 1.5)}><Ionicons name="remove" size={20} color={theme.navy} /></Pressable>
       <Pressable accessibilityRole="button" accessibilityLabel={c.zoomIn} style={styles.toolToggle} onPress={() => adjustZoom(1.5)}><Ionicons name="add" size={20} color={theme.navy} /></Pressable>
       <Pressable accessibilityRole="button" accessibilityLabel={c.resetMap} style={[styles.toolToggle, styles.fitButton]} onPress={() => setViewport(INITIAL_VIEWPORT)}><Ionicons name="scan-outline" size={18} color={theme.navy} /><Text style={styles.fitText}>{p.wholeMap}</Text></Pressable>
-      </View>
+      </View>}
     </View>}
 
   </View>;

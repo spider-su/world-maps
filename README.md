@@ -58,8 +58,8 @@ licenses are available in Settings and [data attribution](docs/country-data.md).
 
 ### Difficulty
 
-Choose a level from the compact Difficulty row on Home before starting a quiz. **Normal** is the default
-(large/medium outlines, with at least four choices); **Easy** uses the seven largest
+Choose a level in Quiz setup from Settings or Maps before starting a quiz. **Normal** is the default
+(large/medium outlines, with at least two thirds of each map and all Easy targets); **Easy** uses the seven largest
 outlines on the selected map; **Difficult** uses every location on that map. Size is
 projected map area, not a ranking by national land area. Excluded countries remain
 visible in muted gray and cannot be guessed. Name It draws all four options from
@@ -70,8 +70,10 @@ by mode and level. Rounds without difficulty metadata are interpreted as Difficu
 
 ### Country learning
 
-Home offers Adaptive or Random practice. Adaptive revisits recent misses and older
-practice while reducing repeats of mastered countries. Home/Settings show local
+Quiz setup offers Adaptive or Random practice. Adaptive revisits recent misses and older
+practice while reducing repeats of mastered countries. Both modes space out up to four
+recent targets (at most half the pool), using existing saved learning records. North America
+Normal includes 16 of 23 countries rather than four; Difficult includes all 23. Profile shows
 selected-map learning statistics and per-country accuracy. Learning records and misses from unfinished rounds persist in canonical v4; older experimental schemas are not migrated. See
 [learning model](docs/country-learning.md).
 
@@ -175,3 +177,20 @@ in a secondary sheet. Settings contains language, audio and attribution. Library
 Undiscovered filter and the same country sheet as Learn; its search, region and scroll remain
 mounted behind details. These flows keep the existing canonical v4 progress and preference keys.
 See [market polish verification](docs/evidence/market-polish/README.md) for validation and limits.
+
+Audio preference recovery uses serialized writes on the existing storage key;
+read failures retry restoration without replacing saved choices with defaults.
+See [audio behavior](docs/music-prototype.md).
+
+Background music volume uses an accessible slider with 1% steps from 0–30%,
+with the current percentage displayed in Settings.
+
+Home keeps launch controls compact; Difficulty is displayed and adjusted in Maps.
+All modes continue to use the saved difficulty.
+
+All six region previews and Learn maps share the bundled NASA Blue Marble relief
+style. Europe retains its original country outlines and tap targets.
+Home’s “Explore the globe” card opens a separate full-screen offline globe: drag to rotate/tilt, scroll over it on web to
+rotate, or use the direction/centre controls. Arrow keys and Home work on web.
+The globe starts centred on the selected region and does not change quiz settings
+or progress. Country learning still uses the existing region maps.

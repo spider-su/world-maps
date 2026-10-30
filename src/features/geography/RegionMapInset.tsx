@@ -48,7 +48,7 @@ export function RegionMapInset({ map, region, language, theme, width, height, en
     const clip = `${clipId}-${labels ? 'large' : 'small'}`;
     const named = labels ? mapLabels(map.shapes.filter(shape => region.countryIds.includes(shape.id)).map(shape => ({ ...shape,
       name: learn || showNames || revealedIds.includes(shape.id) ? countryName(shape.id, language) : String(region.countryIds.indexOf(shape.id) + 1),
-    })), true, [], visible, screenWidth) : [];
+    })), enabled || learn || showNames, revealedIds, visible, screenWidth) : [];
     return <Svg width={screenWidth} height={screenHeight} viewBox={`${visible.x} ${visible.y} ${visible.w} ${visible.h}`} pointerEvents="none" aria-hidden accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
       {atlas && relief && <><Defs><ClipPath id={clip}>{map.shapes.filter(shape => countries.includes(shape.id)).map(shape => <Path key={shape.id} d={shape.path} fillRule="evenodd" clipRule="evenodd" />)}</ClipPath></Defs>
         <SvgImage href={worldRelief} {...relief} clipPath={`url(#${clip})`} preserveAspectRatio="none" />
@@ -75,7 +75,7 @@ export function RegionMapInset({ map, region, language, theme, width, height, en
     <OptionsSheet visible={expanded} title={name} closeLabel={c.close} onClose={() => setExpanded(false)}>
       <View testID={`region-detail-${region.id}`} onLayout={event => setSheetWidth(Math.max(160, event.nativeEvent.layout.width))} style={{ backgroundColor: theme.ocean, borderRadius: 16, overflow: 'hidden' }}>{draw(sheetWidth, 190, true)}</View>
       {enabled && <Text style={{ color: theme.muted, fontSize: 12 }}>{copy.hint}</Text>}
-      <View testID={`region-choices-${region.id}`} style={styles.choices}>{countries.map(id => {
+      <View testID={`region-choices-${region.id}`} style={styles.choices}>{enabled && countries.map(id => {
         const named = learn || showNames || revealedIds.includes(id);
         return <Pressable key={id} accessibilityRole="button" accessibilityLabel={named ? countryName(id, language) : `${c.marker} ${region.countryIds.indexOf(id) + 1}`}
           disabled={!enabled} onPress={() => { onSelect(id); setExpanded(false); }}

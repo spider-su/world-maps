@@ -22,7 +22,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     package: process.env.ANDROID_PACKAGE ?? 'com.spidersu.worldmaps',
     ...(process.env.GOOGLE_SERVICES_JSON ? { googleServicesFile: process.env.GOOGLE_SERVICES_JSON } : {})
   },
-  plugins: ['expo-system-ui', '@react-native-google-signin/google-signin'],
+  plugins: ['expo-system-ui', '@react-native-google-signin/google-signin', '@react-native-firebase/app', '@react-native-firebase/app-check'],
   extra: {
     ...config.extra,
     ...(process.env.EAS_PROJECT_ID

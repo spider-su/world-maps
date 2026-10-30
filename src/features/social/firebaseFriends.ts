@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import { firebaseClient } from './firebaseClient';
 import { friendInviteUrl } from './friendInvite';
 import { parseSocialProfile, type SocialProfile } from './socialProfile';
@@ -7,17 +8,44 @@ function userId(uid: string | undefined): string {
   if (!uid) throw new Error('Sign in to use friends');
   return uid;
 }
+
+/** Callables enforce App Check; native SDK token must accompany Firebase Auth. */
+async function callFriendsFunction<T>(name: string, data: Record<string, unknown>): Promise<T> {
+  const client = await firebaseClient();
+  userId(client.auth.currentUser?.uid);
+  if (Platform.OS !== 'android') {
+    const { httpsCallable } = await import('firebase/functions');
+    const response = await httpsCallable<Record<string, unknown>, T>(client.functions, name)(data);
+    return response.data;
+  }
+  const [{ nativeAppCheckToken }, authToken] = await Promise.all([
+    import('./nativeAppCheck'),
+    client.auth.currentUser!.getIdToken(),
+  ]);
+  const appCheck = await nativeAppCheckToken();
+  const response = await fetch(`https://us-central1-world-map-1.cloudfunctions.net/${name}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${authToken}`,
+      'X-Firebase-AppCheck': appCheck,
+    },
+    body: JSON.stringify({ data }),
+  });
+  const payload = await response.json() as { result?: T; error?: {message?: string;status?: string} };
+  if (!response.ok || payload.error) {
+    throw new Error(payload.error?.message ?? `Firebase function ${name} failed (HTTP ${response.status})`);
+  }
+  if (payload.result === undefined) throw new Error(`Empty response from ${name}`);
+  return payload.result;
+}
+
 export async function createInvitation(): Promise<string> {
-  const [{ httpsCallable }, client] = await Promise.all([import('firebase/functions'), firebaseClient()]);
-  const user = userId(client.auth.currentUser?.uid);
-  if (!user) throw new Error('Sign in first');
-  const result = await httpsCallable<unknown, {token: string}>(client.functions, 'createFriendInvite')({});
-  return friendInviteUrl(result.data.token);
+  const result = await callFriendsFunction<{token: string}>('createFriendInvite', {});
+  return friendInviteUrl(result.token);
 }
 export async function acceptInvitation(token: string): Promise<void> {
-  const [{ httpsCallable }, client] = await Promise.all([import('firebase/functions'), firebaseClient()]);
-  userId(client.auth.currentUser?.uid);
-  await httpsCallable(client.functions, 'acceptFriendInvite')({ token });
+  await callFriendsFunction('acceptFriendInvite', { token });
 }
 /** No server reads during normal gameplay; only called on Friends page. */
 export async function listFriends(): Promise<Array<{uid: string; profile: SocialProfile | null}>> {

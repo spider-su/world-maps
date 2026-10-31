@@ -6,6 +6,43 @@ It uses keyless GitHub OIDC + Google Cloud Workload Identity Federation, not
 long-lived service-account JSON keys. No Firebase deployment has happened by
 adding this workflow.
 
+## Repair of run 41115847680
+
+The failing step is **Verify workload identity configuration**, before Google
+Cloud authentication. Both `GCP_WIF_PROVIDER` and `GCP_FIREBASE_DEPLOY_SA`
+are missing from the GitHub `firebase-production` environment. Mobile CI
+passed separately; no Cloud Function was deployed by that failed run.
+
+### One-time owner action
+
+In Google Cloud Shell or on a machine authenticated with `gcloud`,
+review and execute this repository-provided bootstrap:
+
+```bash
+bash scripts/bootstrap-firebase-deploy.sh --apply
+```
+
+The script verifies project `world-map-1` (number `923307762389`),
+creates a dedicated GitHub OIDC trust provider restricted to
+`spider-su/world-maps` on `main`, and grants the service account the
+necessary Cloud Functions and Firebase Rules IAM roles. It uses **no
+service-account keys** and does not grant project Owner or Editor.
+
+If `gh` is installed and authenticated with repository settings access,
+it writes the two GitHub environment variables. Otherwise it prints
+their exact values for manual entry under
+**Settings → Environments → firebase-production → Environment variables**.
+
+The script modifies Google Cloud IAM. It does not modify billing,
+enable APIs or deploy resources. You need a Google Cloud project owner or
+authorized IAM administrator to run it. Wait for IAM propagation (a few
+minutes) and trigger **Actions → Deploy Firebase friends → Run workflow**.
+
+A green Mobile CI run is not evidence of a deployed callable; confirm
+the Firebase deploy job reaches `firebase functions:list`. If later
+deploy steps fail, inspect their specific missing API or permission
+instead of broadening permissions to Owner/Editor.
+
 ## Initial Google Cloud authorization (project owner)
 
 Use the Google Cloud Console to configure a **Workload Identity Pool** and

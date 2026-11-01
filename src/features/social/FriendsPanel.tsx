@@ -12,12 +12,13 @@ import { createSocialAccount, signInSocial, signOutSocial, firebaseClient } from
 import { signInWithGoogle } from './googleSignIn';
 import { syncChangedSocialProfile } from './socialSession';
 import { socialActionError } from './socialError';
+import { FriendInviteQr } from './FriendInviteQr';
 import type { SocialProfile } from './socialProfile';
 
 const copy = {
-  en: { title: 'Friends', status: 'Cloud connection not enabled yet', consent: 'Share my progress with friends', nickname: 'Nickname', preview: 'Your shareable summary', discovered: 'countries', import: 'Invitation link', placeholder: 'Paste an invitation link', check: 'Check link', valid: 'Valid invitation link. Accepting requires Firebase sign-in and deployed functions.', invalid: 'Invalid invitation link', pending: 'Firebase sign-in, QR scanning and invites are not enabled in this build.', saving: 'Could not save social preferences', share: 'Share World Maps' },
-  pl: { title: 'Znajomi', status: 'Połączenie z chmurą nie jest jeszcze aktywne', consent: 'Udostępniaj postępy znajomym', nickname: 'Pseudonim', preview: 'Twój udostępniany profil', discovered: 'państw', import: 'Link zaproszenia', placeholder: 'Wklej link zaproszenia', check: 'Sprawdź link', valid: 'Poprawny link. Akceptacja wymaga logowania Firebase i wdrożonych funkcji.', invalid: 'Nieprawidłowy link', pending: 'Logowanie Firebase, skanowanie QR i zaproszenia nie są jeszcze dostępne w tej wersji.', saving: 'Nie udało się zapisać ustawień', share: 'Udostępnij World Maps' },
-  ru: { title: 'Друзья', status: 'Облачное подключение пока не включено', consent: 'Делиться прогрессом с друзьями', nickname: 'Имя игрока', preview: 'Ваш профиль для друзей', discovered: 'стран', import: 'Ссылка-приглашение', placeholder: 'Вставьте ссылку', check: 'Проверить ссылку', valid: 'Ссылка верна. Для принятия нужна авторизация Firebase и развернутые функции.', invalid: 'Недействительная ссылка', pending: 'Вход Firebase, QR-сканер и приглашения пока не включены в этой версии.', saving: 'Не удалось сохранить настройки', share: 'Поделиться World Maps' }
+  en: { title: 'Friends', status: 'Cloud connection not enabled yet', consent: 'Share my progress with friends', nickname: 'Nickname', preview: 'Your shareable summary', discovered: 'countries', import: 'Invitation link', placeholder: 'Paste an invitation link', check: 'Check link', valid: 'Valid invitation link. Accepting requires Firebase sign-in and deployed functions.', invalid: 'Invalid invitation link', pending: 'Firebase sign-in, QR scanning and invites are not enabled in this build.', saving: 'Could not save social preferences', share: 'Share World Maps', qr: 'Scan to add me', shareInvite: 'Share invitation', generate: 'Generate invitation QR' },
+  pl: { title: 'Znajomi', status: 'Połączenie z chmurą nie jest jeszcze aktywne', consent: 'Udostępniaj postępy znajomym', nickname: 'Pseudonim', preview: 'Twój udostępniany profil', discovered: 'państw', import: 'Link zaproszenia', placeholder: 'Wklej link zaproszenia', check: 'Sprawdź link', valid: 'Poprawny link. Akceptacja wymaga logowania Firebase i wdrożonych funkcji.', invalid: 'Nieprawidłowy link', pending: 'Logowanie Firebase, skanowanie QR i zaproszenia nie są jeszcze dostępne w tej wersji.', saving: 'Nie udało się zapisać ustawień', share: 'Udostępnij World Maps', qr: 'Zeskanuj, aby mnie dodać', shareInvite: 'Udostępnij zaproszenie', generate: 'Utwórz kod QR zaproszenia' },
+  ru: { title: 'Друзья', status: 'Облачное подключение пока не включено', consent: 'Делиться прогрессом с друзьями', nickname: 'Имя игрока', preview: 'Ваш профиль для друзей', discovered: 'стран', import: 'Ссылка-приглашение', placeholder: 'Вставьте ссылку', check: 'Проверить ссылку', valid: 'Ссылка верна. Для принятия нужна авторизация Firebase и развернутые функции.', invalid: 'Недействительная ссылка', pending: 'Вход Firebase, QR-сканер и приглашения пока не включены в этой версии.', saving: 'Не удалось сохранить настройки', share: 'Поделиться World Maps', qr: 'Отсканируйте, чтобы добавить меня', shareInvite: 'Поделиться приглашением', generate: 'Создать QR приглашения' }
 };
 
 export function FriendsPanel() {
@@ -90,10 +91,16 @@ export function FriendsPanel() {
           <Pressable disabled={busy} accessibilityRole="button" style={styles.button} onPress={() => void act(async () => { await syncChangedSocialProfile(progress); setFriends(await listFriends()); })}>
             <Ionicons name="sync-outline" size={19} color={theme.brand}/><Text style={{color:theme.brand}}>Sync changed progress and refresh friends</Text>
           </Pressable>
-          <Pressable disabled={busy} accessibilityRole="button" style={styles.button} onPress={() => void act(async () => { const url = await createInvitation(); setInvite(url); await Share.share({message:url}); })}>
-            <Ionicons name="qr-code-outline" size={19} color={theme.brand}/><Text style={{color:theme.brand}}>Create invitation link</Text>
+          <Pressable disabled={busy} accessibilityRole="button" style={styles.button} onPress={() => void act(async () => { const url = await createInvitation(); setInvite(url); })}>
+            <Ionicons name="qr-code-outline" size={19} color={theme.brand}/><Text style={{color:theme.brand}}>{c.generate}</Text>
           </Pressable>
-          {!!invite && <Text selectable style={{color:theme.muted}}>{invite}</Text>}
+          {!!invite && <>
+            <FriendInviteQr url={invite} label={c.qr} />
+            <Text selectable style={{color:theme.muted}}>{invite}</Text>
+            <Pressable accessibilityRole="button" style={styles.button} onPress={() => void Share.share({ message: invite })}>
+              <Ionicons name="share-social-outline" size={19} color={theme.brand}/><Text style={{color:theme.brand}}>{c.shareInvite}</Text>
+            </Pressable>
+          </>}
           <Pressable disabled={busy || !linkValid} accessibilityRole="button" style={styles.button} onPress={() => void act(async () => { const token = parseFriendInviteUrl(link.trim()); if(!token) throw new Error(c.invalid); await acceptInvitation(token); setFriends(await listFriends()); })}>
             <Text style={{color:theme.brand}}>Accept invitation</Text>
           </Pressable>
@@ -101,7 +108,7 @@ export function FriendsPanel() {
             <Text style={{color:theme.navy,fontWeight:'700'}}>{friend.profile?.nickname ?? 'Friend'}</Text>
             <Text style={{color:theme.muted}}>{friend.profile ? `${friend.profile.xp} XP · Level ${friend.profile.level}` : 'No shared profile yet'}</Text>
           </View>)}
-          <Pressable accessibilityRole="button" disabled={busy} style={styles.button} onPress={() => void act(async () => { await signOutSocial(); setUserId(null); setFriends([]); })}><Text style={{color:theme.brand}}>Sign out</Text></Pressable>
+          <Pressable accessibilityRole="button" disabled={busy} style={styles.button} onPress={() => void act(async () => { await signOutSocial(); setUserId(null); setFriends([]); setInvite(''); })}><Text style={{color:theme.brand}}>Sign out</Text></Pressable>
         </> : <>
           <Pressable accessibilityRole="button" disabled={busy} style={styles.button} onPress={() => void act(async () => { await signInWithGoogle(); })}><Ionicons name="logo-google" size={20} color={theme.brand}/><Text style={{color:theme.brand,fontWeight:"700"}}>Continue with Google</Text></Pressable>
           <TextInput accessibilityLabel="Email" autoCapitalize="none" keyboardType="email-address" value={email} onChangeText={setEmail} placeholder="Email" style={[styles.input,{color:theme.navy,borderColor:theme.border}]} />

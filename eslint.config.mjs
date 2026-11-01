@@ -3,7 +3,7 @@ import tsParser from 'typescript-eslint';
 import reactHooks from 'eslint-plugin-react-hooks';
 
 export default tsParser.config(
-  { ignores: ['node_modules/**', '.expo/**', 'dist/**', 'coverage/**'] },
+  { ignores: ['node_modules/**', '.expo/**', 'dist/**', 'coverage/**', 'src/features/social/qrcodeVendor.js'] },
   js.configs.recommended,
   ...tsParser.configs.recommended,
   {

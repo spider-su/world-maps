@@ -63,3 +63,7 @@ Android verification requires the deployed assetlinks document to match the
 installed app certificate ([Android reference](https://developer.android.com/training/app-links/verify-applinks)).
 iOS uses the app-scheme Open button; associated HTTPS links need a future Apple
 team/app association configuration. No iOS download is advertised.
+
+The Hosting public directory deliberately does not use the default `**/.*` ignore:
+Android's generated `.well-known/assetlinks.json` must be published. The generated
+APK and association are ignored by Git, not by Hosting.

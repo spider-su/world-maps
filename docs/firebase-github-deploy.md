@@ -46,3 +46,20 @@ function names and region in the Actions logs.
 
 First deploy may use Google Cloud resources with nonzero billing. Configure
 billing alerts in the Cloud Console, recognizing they are **not** hard caps.
+
+## App landing page and Android downloads
+
+`deploy-app-landing.yml` runs after a successful **Mobile CI** run on `main`. It
+downloads that run's APK artifact, checks the source commit/clean tree/digest,
+extracts its verified signing certificate, and deploys only Hosting. It uses the
+same `firebase-production` WIF variables; the deploy identity also needs
+`roles/firebasehosting.admin`. Existing Functions/rules deployment is unchanged.
+The public files include `/friend`, `/downloads/world-maps-preview.apk` and
+`/.well-known/assetlinks.json`. Never deploy a PR APK as the public download.
+The main promotion is the release gate; adding these files alone does not fix a
+live 404. After release, verify the download digest and Android domain verification
+with `adb shell pm get-app-links com.spidersu.worldmaps`, plus a real camera scan.
+Android verification requires the deployed assetlinks document to match the
+installed app certificate ([Android reference](https://developer.android.com/training/app-links/verify-applinks)).
+iOS uses the app-scheme Open button; associated HTTPS links need a future Apple
+team/app association configuration. No iOS download is advertised.

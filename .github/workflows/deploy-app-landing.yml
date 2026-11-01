@@ -1,0 +1,49 @@
+name: Deploy app download page
+on:
+  workflow_run:
+    workflows: [Mobile CI]
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+concurrency:
+  group: world-maps-app-hosting
+  cancel-in-progress: false
+jobs:
+  hosting:
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' && github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-24.04
+    environment: firebase-production
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - uses: actions/download-artifact@v6
+        with:
+          name: world-maps-preview-apk
+          path: firebase/hosting/downloads
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v4
+        with:
+          packages: 'build-tools;36.0.0'
+      - name: Verify APK and generate Android app association
+        run: |
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --print-certs firebase/hosting/downloads/world-maps-preview.apk > /tmp/apk-certificate.txt
+          python3 scripts/prepare-app-hosting.py /tmp/apk-certificate.txt "${{ github.event.workflow_run.head_sha }}"
+      - uses: google-github-actions/auth@v3
+        with:
+          project_id: world-map-1
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_FIREBASE_DEPLOY_SA }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Publish app page, APK and verified Android app link
+        run: npx --yes firebase-tools@14.19.1 deploy --project world-map-1 --only hosting --non-interactive

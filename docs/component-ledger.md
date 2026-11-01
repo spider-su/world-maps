@@ -14,6 +14,7 @@ This is the current application inventory. Previous starter-template and early P
 | Map and quiz preferences | `MapContext.tsx`, `mapQuizPreferences.ts` | Persist selected continent, Find It clue and Name It answer variant |
 | Language / pronunciation | `LanguageContext.tsx`, `countryFacts.ts`, `speechController.ts` | EN/PL/RU UI and capitals, native voice availability; device test required |
 | Audio | `MusicContext.tsx`, `MusicVolumeSlider(.web).tsx`, `musicPreferenceStore.ts`, `musicAssets.ts`, `soundPolicy.ts` | Serialized audio preferences with read/save retry; six optional region themes, optional quiz cues, speech priority, no background playback |
+| Profile sharing / QR | `FriendsPanel`, `FriendQrScanner`, `friendInvite.ts`, `AppNavigation`, `firebase/hosting` | Explicit consent and approval; localized busy states; camera only while scanning; public download/app links require main Hosting release |
 | Country details | `CountryInfoCard`, `CountryGallery`, `ExploreScreen` | Offline facts/flags; attributed online photos open by default in Learn details, opt-in in Library |
 | Launch setup / continue | `PlaySetup`, `QuizSetupSummary`, `launch.ts` | Home hides Difficulty; Maps owns its adjustment. Existing saved contexts; transient route launch; latest completed selected-map family |
 | Learning presentation | `ProfileScreen`, `LearningOverview`, `explorerReward` | Profile owns history/statistics; result rewards are derived; Library keeps list mounted behind shared details |

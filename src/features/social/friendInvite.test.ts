@@ -14,6 +14,13 @@ describe('QR and share-link invitations', () => {
     ]) expect(parseFriendInviteUrl(url)).toBeNull();
     expect(() => friendInviteUrl('abc')).toThrow();
   });
+  it('accepts app links and earlier QR domains without widening the token contract', () => {
+    for (const base of ['worldmaps://friend','https://world-map-1.web.app/friend','https://world-maps.web.app/friend']) {
+      expect(parseFriendInviteUrl(`${base}?invite=${token}`)).toBe(token);
+      for(const suffix of ['&invite='+token,'&uid=x','#token','&next=https://evil.example'])expect(parseFriendInviteUrl(`${base}?invite=${token}${suffix}`)).toBeNull();
+    }
+    for(const base of ['worldmaps://friend.evil','worldmaps://attacker@friend','worldmaps://friend/path','https://world-map-1.web.app.evil/friend'])expect(parseFriendInviteUrl(`${base}?invite=${token}`)).toBeNull();
+  });
   it('expires at 24 hours and rejects future timestamps', () => {
     expect(isInviteExpired(1000, 1000 + INVITE_TTL_MS - 1)).toBe(false);
     expect(isInviteExpired(1000, 1000 + INVITE_TTL_MS)).toBe(true);

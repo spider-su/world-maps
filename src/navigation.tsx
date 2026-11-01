@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import type { GameMode } from './features/geography/modes';
 import { MusicProvider } from './features/music/MusicContext';
 import { MapProvider, useMap } from './features/geography/MapContext';
@@ -5,8 +6,9 @@ import { EuropeScreen } from './screens/EuropeScreen';
 import { ExploreScreen } from './screens/ExploreScreen';
 import { ProfileScreen } from './screens/ProfileScreen';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
-import { useColorScheme } from 'react-native';
+import { NavigationContainer, DefaultTheme, DarkTheme, useNavigationContainerRef } from '@react-navigation/native';
+import { parseFriendInviteUrl } from './features/social/friendInvite';
+import { Linking, useColorScheme } from 'react-native';
 import { themeForScheme } from './ui/worldMapsTheme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HomeScreen } from './screens/HomeScreen';
@@ -16,7 +18,7 @@ import { getTabBarMetrics } from './platform/safeArea';
 import { useLanguage } from './ui/LanguageContext';
 import { gameCopy } from './features/geography/copy';
 
-export type TabParamList = { Home: { mode?: GameMode } | undefined; Europe: undefined; Explore: { filter?: 'all' | 'undiscovered'; reset?: boolean } | undefined; Profile: undefined; Settings: undefined };
+export type TabParamList = { Home: { mode?: GameMode } | undefined; Europe: undefined; Explore: { filter?: 'all' | 'undiscovered'; reset?: boolean } | undefined; Profile: { invite?: string } | undefined; Settings: undefined };
 const Tab = createBottomTabNavigator<TabParamList>();
 
 function Tabs() {
@@ -48,7 +50,26 @@ function Tabs() {
 }
 
 export function AppNavigation() {
+  const navigation = useNavigationContainerRef<TabParamList>();
+  const pending = useRef<string | null>(null);
+  const openPending = () => {
+    if (navigation.isReady() && pending.current) {
+      const invite = pending.current; pending.current = null;
+      navigation.navigate('Profile', { invite });
+    }
+  };
+  useEffect(() => {
+    let active = true;
+    const receive = (url: string | null) => {
+      if (!active || !url || !parseFriendInviteUrl(url)) return;
+      pending.current = url;
+      if (navigation.isReady()) { pending.current = null; navigation.navigate('Profile', { invite: url }); }
+    };
+    const subscription = Linking.addEventListener('url', event => receive(event.url));
+    void Linking.getInitialURL().then(receive).catch(() => {});
+    return () => { active = false; subscription.remove(); };
+  }, [navigation]);
   const theme = themeForScheme(useColorScheme());
   const base = useColorScheme() === 'dark' ? DarkTheme : DefaultTheme;
-  return <NavigationContainer theme={{ ...base, colors: { ...base.colors, background: theme.paper, card: theme.surface, text: theme.navy, border: theme.border, primary: theme.brand } }}><MapProvider><MusicProvider><Tabs /></MusicProvider></MapProvider></NavigationContainer>;
+  return <NavigationContainer ref={navigation} onReady={openPending} theme={{ ...base, colors: { ...base.colors, background: theme.paper, card: theme.surface, text: theme.navy, border: theme.border, primary: theme.brand } }}><MapProvider><MusicProvider><Tabs /></MusicProvider></MapProvider></NavigationContainer>;
 }

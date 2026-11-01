@@ -1,5 +1,7 @@
 /** Public deep link contains an opaque short-lived token, never a UID or profile. */
-export const FRIEND_INVITE_BASE = 'https://world-map-1.web.app/friend';
+export const APP_DOWNLOAD_URL = 'https://world-map-1.web.app';
+export const FRIEND_INVITE_BASE = `${APP_DOWNLOAD_URL}/friend`;
+export const FRIEND_APP_SCHEME = 'worldmaps://friend';
 const TOKEN = /^[A-Za-z0-9_-]{32,128}$/;
 export const INVITE_TTL_MS = 24 * 60 * 60 * 1000;
 
@@ -12,7 +14,9 @@ export function friendInviteUrl(token: string): string {
 export function parseFriendInviteUrl(raw: string): string | null {
   try {
     const url = new URL(raw);
-    if (url.origin !== 'https://world-map-1.web.app' || url.pathname !== '/friend' ||
+    const https = ['https://world-map-1.web.app', 'https://world-maps.web.app'].includes(url.origin) && url.pathname === '/friend';
+    const app = url.protocol === 'worldmaps:' && url.hostname === 'friend' && url.pathname === '' && !url.username && !url.password && !url.port;
+    if (url.username || url.password || (!https && !app) ||
       [...url.searchParams.keys()].some(key => key !== 'invite') ||
       url.searchParams.getAll('invite').length !== 1 || url.hash) return null;
     const token = url.searchParams.get('invite');

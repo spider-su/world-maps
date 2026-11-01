@@ -17,7 +17,7 @@ def tap(label):
   if n is not None:
    while n.get('clickable')!='true' and n in parents:n=parents[n]
    x,y,x2,y2=bounds(n)
-   if y2-y>=32 and y>50 and y2<2290:adb('shell','input','tap',str((x+x2)//2),str((y+y2)//2));return
+   if y2-y>=32 and y>50 and y2<=2340:adb('shell','input','tap',str((x+x2)//2),str((y+y2)//2));return
   scrolls=[n for n in t.iter('node')if n.get('scrollable')=='true'];assert scrolls,'No scroll surface for '+label
   x,y,x2,y2=bounds(max(scrolls,key=lambda n:bounds(n)[3]-bounds(n)[1]));adb('shell','input','swipe',str((x+x2)//2),str(round(y+(y2-y)*.8)),str((x+x2)//2),str(round(y+(y2-y)*.25)),'400')
  raise AssertionError('Missing '+label)
@@ -37,4 +37,4 @@ if permission is not None:
  x,y,x2,y2=bounds(permission);adb('shell','input','tap',str((x+x2)//2),str((y+y2)//2))
 time.sleep(2);t=shot('android-camera');assert find('Point your camera at a World Maps QR code.',t) is not None
 back();adb('shell','am','start','--user','10','-a','android.intent.action.VIEW','-d',url,PACKAGE);t=shot('android-warm-invitation');assert find('Friend invitation',t) is not None
-print('PASS cold/warm custom link, explicit approval, share URL, camera permission/preview; real optical scan and live friendship acceptance SKIP',flush=True)
+print('PASS cold/warm custom link, explicit approval, share URL, camera permission/loading UI; real optical scan and live friendship acceptance SKIP',flush=True)

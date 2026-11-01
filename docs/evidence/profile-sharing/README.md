@@ -55,10 +55,12 @@ Development-signed standalone APK, embedded JS, arm64-v8a. APK SHA-256:
 
 Verified API 35 emulator-5554, qemu=1, 1080×2400. An isolated ephemeral Android
 user (10) was used for consent/camera checks; existing user 0 app storage was not
-cleared or edited. `native-smoke.py` is intentionally restricted to this test user.
+cleared or edited. Test users were removed automatically on switching back;
+user 0 returned to Home with 360 XP / 10 discoveries. `native-smoke.py` is intentionally restricted to this test user.
 Cold/warm custom links and a package-targeted HTTPS link open Profile approval;
 Add friend stays disabled while signed out. Android's share sheet includes the
-real app URL. Camera permission/preview is checked independently of optical scan.
+real app URL. Camera permission and loading UI were captured independently of optical scan;
+preview readiness was not confirmed on the emulated pattern camera.
 The first native pass found RN URL.hostname does not support custom schemes; the
 parser now matches only the complete allowlisted generated URL format, without
 relying on browser-only URL behavior.

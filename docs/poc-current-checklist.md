@@ -37,3 +37,7 @@ The app has no deployed production users. Canonical progress schema v4 is requir
 Automated source checks are necessary but not sufficient. Historical emulator and browser runs are documented in [poc-testing.md](poc-testing.md). Fresh native-device audio, updated APK smoke and iOS results must be captured independently; unchecked items are **not** claims of failure or completion.
 
 See [continent coverage](continent-maps.md), [music behavior](music-prototype.md), [Learn and collection](explore-collections-profile.md), [game contract](geography-game-draft.md), and [release checklist](release-checklist.md).
+
+## Owner physical Android test — historical evidence
+
+Owner confirmed on **2026-11-01** that a prior Android APK installed on a physical phone and the primary quiz end-to-end scenario completed successfully. Mark that historical **install + main flow PASS (owner-reported)**, not a new/current candidate pass. No original build SHA, date, device or OS details supplied. All unchecked feature-specific acceptance tests above remain pending for the exact current release candidate.

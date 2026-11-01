@@ -34,3 +34,15 @@
 - [ ] Verify unique app IDs, version and signing configuration
 - [ ] Verify release build, privacy policy, support link and store metadata
 - [ ] Test the exact release artifact before distributing
+
+## Historical owner-confirmed Android smoke test (reported 2026-11-01)
+
+**PASS (owner report):** an earlier Android build was installed on a physical device and the main geography-quiz end-to-end flow completed. Device, OS, exact commit/build hash and original test date were not recorded. This supplements 2026-10-25 emulator evidence; it does **not** prove the current Firebase/social, music, collection, UI or store release candidate. Maintain all candidate-specific unchecked gates above.
+
+## Publication, privacy and third-party rights
+
+- [ ] Verify current social/Firebase behavior against [firebase-friends.md](firebase-friends.md): opt-in, authentication, real network transfers, deployed functions, invitation security, profile deletion and consent withdrawal; do not claim offline-only network behavior for social-enabled releases.
+- [ ] Prepare and publish **one** accurate app privacy policy (none is linked from the current release checklist), reflecting optional remote Wikipedia images and actual Firebase/Auth/Firestore/function/analytics usage. Confirm publisher identity, retention, deletion contact and a public URL; complete Play Data safety and account deletion requirements if accounts are enabled.
+- [ ] Reuse existing [country data](country-data.md), [atlas attribution](atlas-data.md), and [artwork provenance](licenses/home-artwork.md) instead of duplicating licenses. Preserve the repository MIT license and embedded third-party notices; check all new media assets.
+- [ ] Verify store audience/children declarations, permissions, support contact, screenshots, app rating, signed AAB and exact candidate installation/update.
+- [ ] Do not mark publication-ready solely from this historical user test.

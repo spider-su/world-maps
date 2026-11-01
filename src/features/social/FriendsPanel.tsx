@@ -17,8 +17,8 @@ import { FriendInviteQr } from './FriendInviteQr';
 import { FriendQrScanner } from './FriendQrScanner';
 import { friendsCopy } from './friendsCopy';
 
-function FriendAction({label,icon,onPress,disabled,theme}: {label:string;icon:keyof typeof Ionicons.glyphMap;onPress:()=>void;disabled:boolean;theme:WorldMapsPalette}) {
-  return <Pressable accessibilityRole="button" accessibilityLabel={label} disabled={disabled} accessibilityState={{disabled}} style={[styles.button,{backgroundColor:theme.paper,opacity:disabled?.5:1}]} onPress={onPress}><Ionicons name={icon} size={20} color={theme.brand}/><Text style={{color:theme.brand,fontWeight:'600',flexShrink:1}}>{label}</Text></Pressable>;
+function FriendAction({label,icon,onPress,disabled,theme,loading=false}: {label:string;icon:keyof typeof Ionicons.glyphMap;onPress:()=>void;disabled:boolean;theme:WorldMapsPalette;loading?:boolean}) {
+  return <Pressable accessibilityRole="button" accessibilityLabel={label} disabled={disabled} accessibilityState={{disabled,busy:loading}} style={[styles.button,{backgroundColor:theme.paper,opacity:disabled?.5:1}]} onPress={onPress}><>{loading ? <ActivityIndicator color={theme.brand}/> : <Ionicons name={icon} size={20} color={theme.brand}/>}</><Text style={{color:theme.brand,fontWeight:'600',flexShrink:1}}>{label}</Text></Pressable>;
 }
 type Job = 'loading'|'saving'|'signingIn'|'creating'|'accepting'|'refreshing'|'sharing'|'signOutBusy';
 type Sheet = 'qr'|'scan'|'link'|null;
@@ -104,7 +104,7 @@ export function FriendsPanel({ incomingInvite, onInviteHandled }: { incomingInvi
     {!!pending && <View style={[styles.preview,{backgroundColor:theme.paper}]}>
       <Text accessibilityRole="header" style={[styles.heading,{color:theme.navy}]}>{c.invitation}</Text>
       <Text style={{color:theme.navy}}>{prefs?.enabled && userId ? c.acceptHint : c.requireSignIn}</Text>
-      {<FriendAction label={c.accept} icon={'person-add-outline'} onPress={()=>void act('accepting',async()=>{
+      {<FriendAction loading={busy==='accepting'} label={c.accept} icon={'person-add-outline'} onPress={()=>void act('accepting',async()=>{
         const token=parseFriendInviteUrl(pending);if(!token){setError(c.invalid);return;}
         await acceptInvitation(token);dismiss();setNotice(c.added);setFriends(await listFriends());
       })} disabled={disabled || (!prefs?.enabled || !userId)} theme={theme} />}
@@ -114,7 +114,7 @@ export function FriendsPanel({ incomingInvite, onInviteHandled }: { incomingInvi
       {!prefs.enabled && <Text style={{color:theme.muted}}>{c.private}</Text>}
       {input(c.nickname,nickname,setNickname)}
       <View style={styles.row}><Text style={{color:theme.navy,flex:1}}>{c.consent}</Text><Switch accessibilityLabel={c.consent} disabled={disabled} value={prefs.enabled} onValueChange={save}/></View>
-      {prefs.enabled && nickname.trim()!==prefs.nickname && <FriendAction label={c.save} icon={'checkmark-outline'} onPress={()=>save(true)} disabled={disabled || (false)} theme={theme} />}
+      {prefs.enabled && nickname.trim()!==prefs.nickname && <FriendAction loading={busy==='saving'} label={c.save} icon={'checkmark-outline'} onPress={()=>save(true)} disabled={disabled || (false)} theme={theme} />}
       {!prefs.enabled && <Text style={{color:theme.muted,fontSize:12}}>{c.enableHint}</Text>}
       {prefs.enabled && <>
         {userId ? <>
@@ -124,17 +124,17 @@ export function FriendsPanel({ incomingInvite, onInviteHandled }: { incomingInvi
             {<FriendAction label={c.scan} icon={'scan-outline'} onPress={()=>setSheet('scan')} disabled={disabled || (false)} theme={theme} />}
           </View>
           {<FriendAction label={c.paste} icon={'link-outline'} onPress={()=>setSheet('link')} disabled={disabled || (false)} theme={theme} />}
-          {<FriendAction label={c.refresh} icon={'refresh-outline'} onPress={()=>void act('refreshing',async()=>{await syncChangedSocialProfile(progress);setFriends(await listFriends());})} disabled={disabled || (false)} theme={theme} />}
+          {<FriendAction loading={busy==='refreshing'} label={c.refresh} icon={'refresh-outline'} onPress={()=>void act('refreshing',async()=>{await syncChangedSocialProfile(progress);setFriends(await listFriends());})} disabled={disabled || (false)} theme={theme} />}
           {!friends.length && !busy && <Text style={{color:theme.muted}}>{c.noFriends}</Text>}
           {friends.map(friend=><View key={friend.uid} style={[styles.preview,{backgroundColor:theme.paper}]}><Text style={{color:theme.navy,fontWeight:'700'}}>{friend.profile?.nickname ?? c.friend}</Text><Text style={{color:theme.muted}}>{friend.profile ? `${friend.profile.xp} XP · ${c.level} ${friend.profile.level}` : c.noProfile}</Text></View>)}
-          {<FriendAction label={c.signOut} icon={'log-out-outline'} onPress={()=>void act('signOutBusy',async()=>{await signOutSocial();setUserId(null);setFriends([]);setInvite('');setPassword('');})} disabled={disabled || (false)} theme={theme} />}
+          {<FriendAction loading={busy==='signOutBusy'} label={c.signOut} icon={'log-out-outline'} onPress={()=>void act('signOutBusy',async()=>{await signOutSocial();setUserId(null);setFriends([]);setInvite('');setPassword('');})} disabled={disabled || (false)} theme={theme} />}
         </> : authLoading ? null : <>
           <Text style={{color:theme.muted}}>{c.signInHint}</Text>
-          {<FriendAction label={c.google} icon={'logo-google'} onPress={()=>void act('signingIn',async()=>{await signInWithGoogle();})} disabled={disabled || (false)} theme={theme} />}
+          {<FriendAction loading={busy==='signingIn'} label={c.google} icon={'logo-google'} onPress={()=>void act('signingIn',async()=>{await signInWithGoogle();})} disabled={disabled || (false)} theme={theme} />}
           {<FriendAction label={c.emailOption} icon={'mail-outline'} onPress={()=>setEmailForm(v=>!v)} disabled={disabled || (false)} theme={theme} />}
           {emailForm && <>{input(c.email,email,setEmail)}{input(c.password,password,setPassword,true)}
-            {<FriendAction label={c.signIn} icon={'log-in-outline'} onPress={()=>void act('signingIn',async()=>{await signInSocial(email,password);setPassword('');})} disabled={disabled || (!email.trim()||!password)} theme={theme} />}
-            {<FriendAction label={c.createAccount} icon={'person-add-outline'} onPress={()=>void act('signingIn',async()=>{await createSocialAccount(email,password);setPassword('');})} disabled={disabled || (!email.trim()||password.length<6)} theme={theme} />}
+            {<FriendAction loading={busy==='signingIn'} label={c.signIn} icon={'log-in-outline'} onPress={()=>void act('signingIn',async()=>{await signInSocial(email,password);setPassword('');})} disabled={disabled || (!email.trim()||!password)} theme={theme} />}
+            {<FriendAction loading={busy==='signingIn'} label={c.createAccount} icon={'person-add-outline'} onPress={()=>void act('signingIn',async()=>{await createSocialAccount(email,password);setPassword('');})} disabled={disabled || (!email.trim()||password.length<6)} theme={theme} />}
           </>}
           {<FriendAction label={c.scan} icon={'scan-outline'} onPress={()=>setSheet('scan')} disabled={disabled || (false)} theme={theme} />}
           {<FriendAction label={c.paste} icon={'link-outline'} onPress={()=>setSheet('link')} disabled={disabled || (false)} theme={theme} />}
@@ -144,10 +144,10 @@ export function FriendsPanel({ incomingInvite, onInviteHandled }: { incomingInvi
     {(busy || waitingForAuth || waitingForFriends) && <View accessibilityLiveRegion="polite" style={styles.row}><ActivityIndicator accessibilityLabel={busy ? c[busy] : waitingForFriends ? c.refreshing : c.loading} color={theme.brand}/><Text style={{color:theme.muted}}>{busy ? c[busy] : waitingForFriends ? c.refreshing : c.loading}</Text></View>}
     {!!notice && <Text accessibilityLiveRegion="polite" style={{color:theme.success}}>{notice}</Text>}
     {!!error && <Text accessibilityRole="alert" style={{color:theme.navy}}>{error}</Text>}
-    {<FriendAction label={c.shareApp} icon={'share-social-outline'} onPress={()=>void act('sharing',async()=>{await Share.share({title:'World Maps',message:`${c.shareMessage}\n${APP_DOWNLOAD_URL}`,url:APP_DOWNLOAD_URL});})} disabled={disabled || (false)} theme={theme} />}
+    {<FriendAction loading={busy==='sharing'} label={c.shareApp} icon={'share-social-outline'} onPress={()=>void act('sharing',async()=>{await Share.share({title:'World Maps',message:`${c.shareMessage}\n${APP_DOWNLOAD_URL}`,url:APP_DOWNLOAD_URL});})} disabled={disabled || (false)} theme={theme} />}
     <OptionsSheet visible={focused && sheet!==null} title={sheet==='qr' ? c.myQr : sheet==='scan' ? c.scan : c.paste} closeLabel={c.close} onClose={()=>setSheet(null)}>
       {sheet==='qr' && <>
-        {busy==='creating' ? <ActivityIndicator accessibilityLabel={c.creating} color={theme.brand}/> : !!invite && <><FriendInviteQr url={invite} label={c.myQr}/><Text style={{color:theme.muted}}>{c.inviteHint}</Text>{<FriendAction label={c.shareInvite} icon={'share-social-outline'} onPress={()=>void act('sharing',async()=>{await Share.share({title:'World Maps',message:`${c.inviteMessage}\n${invite}`,url:invite});})} disabled={disabled || (false)} theme={theme} />}</>}
+        {busy==='creating' ? <ActivityIndicator accessibilityLabel={c.creating} color={theme.brand}/> : !!invite && <><FriendInviteQr url={invite} label={c.myQr}/><Text style={{color:theme.muted}}>{c.inviteHint}</Text>{<FriendAction loading={busy==='sharing'} label={c.shareInvite} icon={'share-social-outline'} onPress={()=>void act('sharing',async()=>{await Share.share({title:'World Maps',message:`${c.inviteMessage}\n${invite}`,url:invite});})} disabled={disabled || (false)} theme={theme} />}</>}
         {!busy && !invite && <FriendAction label={c.retry} icon={'refresh-outline'} onPress={()=>void act('creating',async()=>setInvite(await createInvitation()))} disabled={disabled || (false)} theme={theme} />}
       </>}
       {focused && sheet==='scan' && <FriendQrScanner language={language} onInvite={receive}/>}

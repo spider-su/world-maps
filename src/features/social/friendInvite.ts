@@ -10,18 +10,13 @@ export function friendInviteUrl(token: string): string {
   return `${FRIEND_INVITE_BASE}?invite=${encodeURIComponent(token)}`;
 }
 
-/** Reject arbitrary URLs, extra parameters, and malformed tokens from QR scans. */
+/** Match only generated invite URLs. RN's built-in URL.hostname does not handle
+ * custom schemes like the browser URL implementation; don't depend on it here.
+ * Tokens use URL-safe characters, so no decoding or arbitrary query parser is needed.
+ */
 export function parseFriendInviteUrl(raw: string): string | null {
-  try {
-    const url = new URL(raw);
-    const https = ['https://world-map-1.web.app', 'https://world-maps.web.app'].includes(url.origin) && url.pathname === '/friend';
-    const app = url.protocol === 'worldmaps:' && url.hostname === 'friend' && url.pathname === '' && !url.username && !url.password && !url.port;
-    if (url.username || url.password || (!https && !app) ||
-      [...url.searchParams.keys()].some(key => key !== 'invite') ||
-      url.searchParams.getAll('invite').length !== 1 || url.hash) return null;
-    const token = url.searchParams.get('invite');
-    return token && TOKEN.test(token) ? token : null;
-  } catch { return null; }
+  const match = /^(?:https:\/\/(?:world-map-1|world-maps)\.web\.app\/friend|worldmaps:\/\/friend)\?invite=([A-Za-z0-9_-]{32,128})$/.exec(raw);
+  return match && match[0] === raw ? match[1]! : null;
 }
 
 export function isInviteExpired(createdAt: number, now: number): boolean {

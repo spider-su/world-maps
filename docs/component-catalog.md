@@ -231,3 +231,21 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 - `EuropeMap` shows eligible insets inside the existing play surface, reserves
   their height, and keeps zoom/reset controls above them. Narrow/short layouts
   use compact expandable region cards. Preview height follows region proportions.
+
+## Profile sharing and invitations
+
+- `FriendsPanel({incomingInvite?, onInviteHandled?})`: optional sharing consent,
+  nickname/account controls, friend list, QR/link invitation actions and explicit
+  acceptance. Incoming links are held only in navigation/local state; no automatic
+  acceptance or new progress keys. Busy actions show localized status and prevent
+  duplicate submissions; failed preference writes retain confirmed consent.
+- `FriendQrScanner`: camera permission and QR-only scanning via Expo Camera; mounts
+  only in an open, focused scanner sheet. Handles invalid codes, denied permission
+  and camera failure; no microphone or media-library access.
+- `friendInvite.ts`: canonical Hosting URL, strict HTTPS/custom-scheme parsing,
+  opaque token validation and legacy-host compatibility. `AppNavigation` handles
+  initial/warm links and routes to Profile; Profile scrolls to pending approval.
+- `firebase/hosting`: static app/download and friend-invitation landing page.
+  `prepare-app-hosting.py` verifies clean main source, APK digest and extracted
+  signing fingerprint before generating Android association. A main CI success
+  triggers the Hosting deployment workflow; no invitation token is sent to analytics.

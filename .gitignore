@@ -14,3 +14,8 @@ ios/
 
 artifacts/
 .playwright-mcp/
+
+# Generated Firebase preview build and hosting release artifacts
+google-services.ci.json
+firebase/hosting/downloads/
+firebase/hosting/.well-known/assetlinks.json

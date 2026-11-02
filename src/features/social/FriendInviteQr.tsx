@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import qrcode from './qrcodeVendor';
 
@@ -22,11 +22,9 @@ export function FriendInviteQr({ url, label }: { url: string; label: string }) {
     <Svg width={224} height={224} viewBox={`0 0 ${size} ${size}`} accessibilityLabel={label}>
       <Path d={path} fill="#111111" />
     </Svg>
-    <Text style={styles.label}>{label}</Text>
   </View>;
 }
 
 const styles = StyleSheet.create({
   container: { alignSelf: 'center', padding: 12, backgroundColor: '#FFFFFF', borderRadius: 12, alignItems: 'center', gap: 8 },
-  label: { color: '#222222', fontSize: 12, textAlign: 'center' },
 });

@@ -1,3 +1,8 @@
+---
+title: "World Maps Privacy Policy"
+permalink: /privacy/
+---
+
 # World Maps — privacy policy (publication draft)
 
 **Status: DRAFT — do not publish until owner identity, release build, SDK inventory, actual server configuration and deletion flows are verified.** This is the sole intended public privacy-policy document for World Maps. Existing release and Firebase documentation remains technical evidence, not a second policy.

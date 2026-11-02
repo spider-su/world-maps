@@ -9,7 +9,7 @@ Signature algorithm name: SHA256withRSA
 Subject Public Key Algorithm: 3072-bit RSA key
 Version: 3
 
-Extensions: 
+Extensions:
 
 #1: ObjectId: 2.5.29.14 Criticality=false
 SubjectKeyIdentifier [
@@ -18,4 +18,3 @@ KeyIdentifier [
 0010: 06 96 51 CF                                        ..Q.
 ]
 ]
-

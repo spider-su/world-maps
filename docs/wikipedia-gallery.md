@@ -1,19 +1,19 @@
 # Wikipedia discovery in Learn
 
-Expanded country details (Learn and country collection) offer a direct English
+Expanded country details (Learn, globe and Library) offer a direct English
 Wikipedia article link and, where suitable photographs are available, up to three
 photos from that country's article. Ambiguous titles such as Georgia, the two
 Congos, Micronesia and Palestine have explicit country-article mappings.
 
 Article links, captions, source pages, creator credits and licenses are bundled in
 `data/wikipedia-gallery.json`. No API call is made by the app. No image is requested
-until country details open in Learn, where photos expand by default. Library keeps
+until country details open and photos expand. Learn/globe details expand them by default. Library keeps
 photos hidden until **Show photos** is pressed. Compact gameplay cards never mount
 the gallery.
 Maps, flags, facts and saved progress remain available offline. Remote image
 failures show an offline-friendly placeholder with Retry; failed external link
-opens show an inline error. Opening Learn details or changing country resets the gallery to expanded; Library
-resets it to hidden. Both views retain the Show/Hide photos control.
+opens show an inline error. Opening Learn/globe details or changing country resets the gallery to expanded; Library
+resets it to hidden. All views retain the Show/Hide photos control.
 
 Photos are displayed without cropping, with a caption and creator credit. Source
 & author opens the original Commons file page (including full creator metadata),

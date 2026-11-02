@@ -18,7 +18,7 @@ or production build**, not Expo Go.
    service-account keys. Do not use the Android API key as an OAuth client ID.
 5. For iOS, register the iOS app, add GoogleService-Info.plist and configure the
    corresponding URL scheme/client plugin settings before enabling iOS builds.
-6. Regenerate npm lockfile with `npm install`, create a new native build and
+6. Use the pinned lockfile, create a new native build when configuration changes and
    validate actual Google account selection, Firebase user identity, sign-out,
    reinstall persistence, offline play, Android release signing and account errors.
 
@@ -27,6 +27,9 @@ the same Firebase account is used. Linking an already-created email/password
 account to Google requires an explicit account-linking flow to avoid duplicate
 profiles; this is not implemented.
 
-**Status**: client implementation and UI entry are added, but Google Cloud
-OAuth credentials, native build validation and deployed Firebase Auth are still
-required. Google account picker cannot be tested in Expo Go.
+**Status**: client implementation, UI entry and public Android/Web OAuth configuration
+are present. Console provider settings, installed-certificate matching, real account
+selection and iOS setup still require candidate-specific verification. A successful
+Functions deployment does not establish Google sign-in acceptance. See
+[current implementation evidence](implementation-status.md). Google account picker
+cannot be tested in Expo Go.

@@ -3,20 +3,22 @@
 The workflow `.github/workflows/deploy-firebase.yml` deploys **only from main**,
 automatically after relevant source changes, or via manual workflow_dispatch.
 It uses keyless GitHub OIDC + Google Cloud Workload Identity Federation, not
-long-lived service-account JSON keys. No Firebase deployment has happened by
-adding this workflow.
+long-lived service-account JSON keys. The main Friends deployment reported success
+on 2026-11-02; this does not prove live end-to-end acceptance. See the
+[dated status](implementation-status.md) for current workflow and Hosting evidence.
 
-## Repair of run 41115847680
+## Historical repair: run 41115847680
 
-The failing step is **Verify workload identity configuration**, before Google
+That run failed at **Verify workload identity configuration**, before Google
 Cloud authentication. Both `GCP_WIF_PROVIDER` and `GCP_FIREBASE_DEPLOY_SA`
-are missing from the GitHub `firebase-production` environment. Mobile CI
+were missing from the GitHub `firebase-production` environment. Mobile CI
 passed separately; no Cloud Function was deployed by that failed run.
 
-### One-time owner action
+### Bootstrap reference for a new or unconfigured environment
 
-In Google Cloud Shell or on a machine authenticated with `gcloud`,
-review and execute this repository-provided bootstrap:
+Do not rerun bootstrap merely because of that historical failure; verify current
+configuration first. For an unconfigured environment, an authorized administrator
+can review this repository-provided bootstrap:
 
 ```bash
 bash scripts/bootstrap-firebase-deploy.sh --apply

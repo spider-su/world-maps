@@ -1,12 +1,9 @@
 # Local country learning and practice
 
-Learning counters were introduced in schema 2; current progress schema 4 retains the existing storage key and completed-session history.
-Missing-version data migrates valid retained sessions once into per-target,
-per-mode counters; scores and voice preference are unchanged. Version 2 reads its
-own counters, including misses in unfinished rounds, instead of rebuilding from
-bounded score history. Future versions block writes through the existing read-error
-flow rather than silently replacing data. Migration reconstructs only the history
-that was retained; it cannot recover older rounds previously discarded.
+Current progress requires canonical schema 4, retaining the existing storage key
+and completed-session history. Unsupported versions, including earlier experimental
+schemas, surface a read error and block writes. No automatic history reconstruction
+or v2/v3 migration is implemented. Never clear storage to bypass this protection.
 
 Each unique answer updates correct/incorrect, first-try success, last practiced
 and the last ten answer outcomes for the target country. Total attempts are derived
@@ -24,8 +21,10 @@ including on reopening. Random mode uses uniform weights among the remaining tar
 Adaptive retains its weights there. Both stay inside the active difficulty pool.
 Normal includes at least two thirds of each map, while Difficult includes every country.
 
-Home shows the saved practice selector. Home and Settings show Europe coverage,
-mastery, needing-practice and attempt accuracy, with an expandable country list.
-A country counts as mastered when at least one quiz mode meets the displayed rule;
-it is not a claim of retention across every mode or a validated learning measure.
-No backend, account, or new runtime dependency is involved. Explorer XP is derived separately from cumulative learning and discoveries.
+Home exposes saved practice through its setup sheet. Profile owns selected-map
+learning summaries and history, including coverage, mastery, needing-practice and
+attempt accuracy. A country is mastered when at least one quiz mode has three
+first-try successes and its last three outcomes are correct. This is a current
+learning indicator, not proof of retention across every mode. Core learning uses
+no account or backend; optional Friends publishes only a derived summary after
+consent. Explorer XP derives separately from cumulative learning and discoveries.

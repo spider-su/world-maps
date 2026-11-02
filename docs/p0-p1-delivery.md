@@ -1,4 +1,7 @@
-# World Maps P0–P1 delivery
+# World Maps P0–P1 delivery — historical 2026-10-25 evidence
+
+> This records the earlier source and migration behavior, not current contracts.
+> See [implementation status](implementation-status.md) and [testing](testing.md).
 
 2026-10-25. Integrated on `fix/android-final-validation`; no remote PRs merged.
 The pre-existing `.idea/` directory and saved progress were preserved.

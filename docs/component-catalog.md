@@ -25,7 +25,7 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 - `features/geography/ModeSelector`: four icon-led mode cards in `GAME_MODES`
   order, localized through `gameCopy`, no round state.
 - `screens/GeographyGameScreen`: one game mode/round, compact prompt and answers.
-- `features/geography/DifficultySelector`: saved level selection in Settings/Maps quiz setup.
+- `features/geography/DifficultySelector`: saved level selection in Maps quiz setup.
   `difficultyPack` supplies eligible quiz locations; `EuropeMap.selectableIds`
   restricts interactions while retaining geographic context.
 - `features/geography/learning`: per-country/mode canonical v4 attempt records,
@@ -38,7 +38,7 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
   cancellation and bounded voice discovery. EN/PL/RU share `LANGUAGE_OPTIONS`.
 
 - `CountryInfoCard` / `CountryInfoHeading`: compact country identity and expanded
-  essentials with localized capital, region, optional landmark and opt-in gallery.
+  essentials with localized capital, region, optional landmark and caller-controlled gallery expansion.
 - `GAME_MODES` contains four public Home modes; `GameMode` also accepts legacy
   capital mode IDs for stored progress. `modePackId` preserves all existing IDs.
 
@@ -89,7 +89,7 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 
 - `CountryGallery`: expanded Learn/collection details only. Bundled country article
   link, optional horizontal gallery (up to three images), per-image load/error/retry
-  and source/license links. `defaultExpanded` defaults false; Learn details pass true. Images mount when
+  and source/license links. `defaultExpanded` defaults false; Learn and globe details pass true. Images mount when
   expanded, only while details are open; callers key by
   country ID to reset gallery/error state. Compact cards remain offline.
 - `countryPhotos.ts` / `data/wikipedia-gallery.json`: typed article/photo metadata;
@@ -147,11 +147,11 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 - `explorerProgress(progress)`: derives global XP, level, outfit stage, six
   achievements and per-map discovery from saved facts. Independent of map choice,
   difficulty and bounded session history; current mastery never reduces rewards.
-- `ExplorerAvatar`: bundled human portrait, cosmetic `ExplorerId`, earned stage,
+- `ExplorerAvatar`: bundled human portrait, cosmetic `ExplorerId`, optional hair/eye appearance, earned stage,
   size and localized accessible label. Shared by Profile and outfit previews.
 - `explorer.ts`: stable cosmetic IDs and outfit milestones. `profileCopy` owns
   localized ranks, outfit names, achievements and reward explanation.
-- `ProfileScreen`: shared progress, avatar selection through serialized writes,
+- `ProfileScreen`: shared progress, avatar and simple hair/eye selection through serialized writes,
   secondary outfit/achievement/XP/learning sheets, actionable milestones and map-to-Library navigation. Loading/
   read errors hide unconfirmed progression; save failures retain retry controls.
 - Pre-release progress requires canonical schema 4; keys, score history, learning

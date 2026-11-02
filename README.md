@@ -1,222 +1,110 @@
 # World Maps
 
-Offline geography learning game built with Expo / React Native from
-[mobile_template](https://github.com/spider-su/mobile_template).
+Offline geography learning built with Expo SDK 57 / React Native 0.86, originally
+bootstrapped from [mobile_template](https://github.com/spider-su/mobile_template).
+The core game needs no account or network. Friends sharing and country photographs
+are optional online features.
 
-Six bundled maps cover Europe, Asia, Africa, North America, South America and Oceania.
-See [continent coverage and generation](docs/continent-maps.md).
+## Current app
 
-Europe retains 47 selectable locations (41 polygons
-and six small-country markers). Every map supports Hot & Cold, Find It, Name It and Learn. Completed
-quiz scores and voice preference are stored locally. No API or account required.
+- Six bundled packs: Europe (47), Asia (50), Africa (54), North America (23),
+  South America (12), Oceania (14). Shared country IDs count once for discoveries.
+- Four modes: Hot & Cold, Find It, Name It and Learn. Find It supports country,
+  capital, flag or mixed clues; Name It supports country or capital answers.
+- EN/PL/RU names, capitals and controls; light/dark appearance; installed-voice speech.
+- Home, Maps, Library, Profile and Settings tabs. A full-screen game and globe hide
+  tabs and own their safe edges; modals own their edges separately.
+- Canonical v4 local progress, up to 100 retained completed sessions, cumulative
+  learning, adaptive/random practice, XP, achievements and explorer customization.
+- Optional bundled regional Learn music, independent quiz sounds and a 0–30% volume slider.
 
-Quiz map names stay hidden until guessed/completed. Learn supports freely shown
-labels. Pan/zoom, small-country controls and pronunciation are available. Distance
-clues approximate border proximity; they are not authoritative measurements.
+Choose the map on Home or Maps. Difficulty is adjusted in Maps: Easy uses the seven
+largest projected outlines, Normal includes at least two thirds of each pack and
+all Easy targets, and Difficult includes all locations. Learn includes everyone.
+Both practice modes avoid up to four recent eligible targets, capped at half the
+pool; North America Normal contains 16 of 23 countries.
+
+All six Learn/Maps previews share offline NASA Blue Marble relief, while quizzes
+use political fills. Maps fit the primary land bounds; regional insets provide
+larger island/crowded-country views. Zoom and Whole map/Main view remain visible.
+Quiz names stay hidden until the existing guessed/completed reveal rules allow them.
+
+Learn and Library share country facts, flags, capitals, landmarks, pronunciation
+and attributed online photos. Learn details expand photos by default; Library
+loads photos after Show photos. Compact country cards remain offline. Unavailable
+photos have loading/error/retry UI and do not block facts or navigation.
+
+Profile derives global XP and six achievements from local learning/discoveries.
+Three explorers share earned outfits, with simple hair/eye color editing. Library
+supports localized country/capital search and an Undiscovered filter. Opening a
+country in Learn or Library records discovery; a correct quiz answer is separate.
+
+Home's full-screen globe supports drag, web scrolling, direction/reset controls
+and keyboard/accessibility alternatives. A tap drops a pin and opens Learn-style
+country details; oceans and unsupported areas show coordinates. The pin moves with
+rotation and hides on the far hemisphere. Globe use does not award discovery or XP.
+
+## Friends and sharing
+
+Profile offers explicit sharing consent, email/password or Google sign-in, My QR,
+Scan QR, a secondary invitation-link input, and Add friend approval. Async actions
+show loading feedback. Cold/warm invitation links open Profile and scroll to the
+approval card; scanning never accepts a friendship automatically. The camera is
+requested only for scanning. Native share includes the invitation or download URL.
+
+Only the chosen nickname, explorer ID and aggregate progress summary are shared.
+Local quiz records remain on-device. Friends are foreground snapshots, not live
+presence or cloud-save restoration. Account deletion, remove/revoke UI, last-updated
+presentation and robust reconciliation remain release gaps; see
+[Friends implementation and limits](docs/firebase-friends.md).
+
+The app/download page and Android HTTPS association are prepared in `firebase/hosting`.
+Publishing depends on a successful **main Mobile CI APK** and Hosting deployment.
+**At the 2026-11-02 check, `/` and `/friend` still returned 404:** main CI was cancelled
+and its downstream Hosting job skipped. Merged source is not a deployed download.
+See [current status and evidence](docs/implementation-status.md).
+
+## Development and validation
 
 ```sh
-npm ci
-npm run ci
+npm ci                 # fresh checkout or changed dependencies
+npm run ci             # TypeScript, ESLint, Vitest
 npx expo-doctor
-npx expo start --web --host lan --port 8081
+npx expo start --web
 ```
 
-The Orchestrator runs `bash scripts/agent-validate.sh` in a fresh issue workspace.
-It installs locked dependencies and runs the same CI checks and Expo Doctor. The
-optional `--baseline-sha COMMIT` argument verifies the supplied baseline exists.
-Android APK validation remains a separate required GitHub CI job.
+Use existing installed dependencies when the lockfile has not changed.
+`bash scripts/agent-validate.sh [--baseline-sha COMMIT]` is the clean-workspace
+Orchestrator entry point; it performs a locked install and the same checks.
+Mobile CI runs source checks for PRs; branch pushes to main/develop or manual
+workflow dispatch also build a standalone Android preview. PR APK jobs are skipped.
 
-See the [current acceptance checklist](docs/poc-current-checklist.md),
-[historical POC stages](docs/poc-roadmap.md),
-[map data and attribution](docs/europe-map-assets.md), and
-[game rules](docs/geography-game-draft.md). Unused template code (demo screens,
-generic adapters and the init script) has been removed; remaining template-era
-documents are labelled historical. Game source and the POC roadmap take priority.
+With JDK 17 and Android SDK, `npm run build:android:preview` creates
+`artifacts/world-maps-preview.apk` and `preview-metadata.json`. It embeds JS, uses
+**development signing** and needs no Metro. Local architecture can be limited with
+`WORLD_MAPS_ARCHITECTURES=arm64-v8a`; CI defaults to arm64-v8a + x86_64. Native
+Firebase configuration follows [deployment setup](docs/firebase-github-deploy.md).
+This is not a Google Play AAB or a store-signed release.
 
-The app identity is `world-maps` / `com.spidersu.worldmaps`. Optional environment
-overrides are listed in `.env.example`; never reuse another app's signing or IDs.
+Identity is `world-maps` / `com.spidersu.worldmaps`; public config and environment
+settings must match this app. Preserve native/web SVG adapters, speech queue,
+gesture guard, serialized writes and storage keys. Unsupported experimental progress
+schemas trigger a read error; there is no legacy migration. Never clear saved data
+to make a test pass. Restart and update-over-install must preserve canonical v4.
 
-Web SVG country paths and markers use DOM click events; native uses SVG press
-handlers. Preserve the `.web.tsx` adapters to avoid native responder errors on DOM
-nodes. CI/source checks do not establish native or store readiness.
+[Testing coverage](docs/testing.md) separates unit/SSR tests from browser, emulator,
+physical-device and iOS evidence. Old test counts and APK hashes remain attached to
+the revisions they actually checked; they do not prove current release readiness.
 
-## Standalone POC preview
+## Project references
 
-Use JDK 17 / Android SDK, then `npm run build:android:preview`. The generated
-`artifacts/world-maps-preview.apk` embeds JavaScript and uses development signing.
-It does not require Metro. The local verified preview is arm64-v8a; CI defaults to
-arm64-v8a + x86_64. This is not a store build.
-
-2026-10-25 validation: 53 tests, Expo Doctor 21/21, Android API 35 emulator and
-production web smoke pass. Physical Android, audible speech and iOS remain pending.
-See [exact build/device evidence and limitations](docs/poc-testing.md).
-
-Completed scores and voice/language preferences survive relaunch; unfinished rounds
-are intentionally not restored. Statistics describe the most recent 100 completed
-rounds. Light and dark themes are supported. Learning data is bundled and its
-licenses are available in Settings and [data attribution](docs/country-data.md).
-
-### Difficulty
-
-Choose a level in Quiz setup from Settings or Maps before starting a quiz. **Normal** is the default
-(large/medium outlines, with at least two thirds of each map and all Easy targets); **Easy** uses the seven largest
-outlines on the selected map; **Difficult** uses every location on that map. Size is
-projected map area, not a ranking by national land area. Excluded countries remain
-visible in muted gray and cannot be guessed. Name It draws all four options from
-the selected pool. Learn always includes every country.
-
-The level is saved with preferences and completed rounds; quiz history is filtered
-by mode and level. Rounds without difficulty metadata are interpreted as Difficult; canonical v4 progress is the supported pre-release format. See [difficulty validation](docs/difficulty-testing.md).
-
-### Country learning
-
-Quiz setup offers Adaptive or Random practice. Adaptive revisits recent misses and older
-practice while reducing repeats of mastered countries. Both modes space out up to four
-recent targets (at most half the pool), using existing saved learning records. North America
-Normal includes 16 of 23 countries rather than four; Difficult includes all 23. Profile shows
-selected-map learning statistics and per-country accuracy. Learning records and misses from unfinished rounds persist in canonical v4; older experimental schemas are not migrated. See
-[learning model](docs/country-learning.md).
-
-### Atlas and quiz appearance
-
-Home/Learn use bundled Natural Earth shaded relief, registered to the same SVG
-country geometry used for taps. Learn offers a border toggle; quizzes keep the
-clean political map. [Source, license and regeneration](docs/atlas-data.md).
-
-### Languages and pronunciation
-
-Choose English, Polish or Russian in Settings. All country names/capitals and game
-prompts update without changing scores. Pronunciation uses installed device voices;
-missing voices produce an inline message. See [speech behavior](docs/languages-and-speech.md).
-
-### P0–P1 validation
-
-The [delivery report](docs/p0-p1-delivery.md) records the focused feature PRs,
-combined branch, 73 source/setup tests, offline Android APK provenance and emulator
-evidence, including selection of all 47 countries. Physical-phone, audible speech
-and iOS validation remain separate pending gates.
-
-The shell and game prompts share `gameCopy` / `gamePrompt` for EN/PL/RU. Find It
-clues support country, capital and flag; Name It supports country or capital answers.
-Mode-specific pack IDs remain stable inside the canonical v4 progress document.
-
-Home and gameplay now use a map-first layout inspired by the UI sketch. The middle Europe tab
-contains the offline region summary, difficulty, practice and quiz options. During play, the header
-opens voice/label controls; map tools are available on demand. Small countries have direct on-map targets;
-crowded targets zoom apart when tapped. Learn keeps a compact country card with expandable offline details.
-The [Home artwork and generation prompt](docs/licenses/home-artwork.md) are separate
-from the accurate bundled gameplay geography.
-
-## Continent maps
-
-Choose Europe, Asia, Africa, North America, South America or Oceania on Home or the map tab.
-All four modes use the selected offline map. Easy selects seven large outlines;
-Normal selects large/medium outlines (at least four for answer choices); Difficult
-and Learn include every location. Scores and practice are separate for each map.
-All continent maps use accurate, selectable Natural Earth geometry. Learn and Maps previews now render offline georeferenced relief (NASA Blue Marble for non-European maps, the existing Europe atlas for Europe); quiz modes retain clear political colors.
-Map and quiz variant selections persist across relaunches; first installs default to Europe.
-See [coverage, sources and generation](docs/continent-maps.md).
-
-### Wikipedia discovery
-
-Country details include a Wikipedia article link and optional credited photographs
-of places and landscapes. Learn details expand photos by default; in Library, tap
-**Show photos** to load them. Photos require internet; country facts,
-flags, maps and progress continue working offline. Source/author and license links
-are shown for each image. See [Wikipedia gallery](docs/wikipedia-gallery.md).
-
-### Compact Home and play UI
-
-Home offers one map chooser, four direct-launch mode tiles and a saved difficulty
-selector. The five tabs use short labels: Home, Maps, Library, Profile and Settings.
-During play, tabs hide and the map fills the available width on a continuous ocean
-surface. Fit map stays visible; Play options contains restart and secondary map
-controls. Name It replaces its answers with concise feedback and Next country
-when solved. Learn opens full facts and optional photos from its compact country
-card. See [UI screenshots and verification](docs/evidence/compact-ui/README.md).
-
-### Learn atlas
-
-Learn shows country names and a small initial hint, then a selected-country preview
-with flag, capital and pronunciation. Tap its identity area to open essentials and
-optional photos/Wikipedia; the heading and close control stay visible while
-scrolling. Small-country controls use names in Learn and remain anonymous in
-quizzes. Country details are shared with Library. Coordinates, codes and the
-repeated mini-map were removed from the presentation; offline maps/facts and
-photo attribution are preserved. See [Learn UI evidence](docs/evidence/learn-atlas/README.md).
-
-### Explorer profile
-
-Profile rewards first country discoveries and successful quizzes with XP. A human
-explorer gains outfits at levels 1, 3, 6, 10 and 15, alongside six achievement
-badges. Avatar choice and existing progress stay on device; all six maps share
-one player level. Current saved learning counts toward XP. See
-[progression rules and migration](docs/explorer-progression.md).
-
-### Regional audio and readable geography
-
-All six continents have original offline Learn music tracks with an opt-in Settings
-control and preview. Optional quiz success sounds are separate from voice playback.
-Atlas country labels use dark ink with a white outline for visibility on bright
-terrain in light and dark mode. Test the exact APK on device before distributing.
-See [continent coverage and imagery](docs/continent-maps.md).
-
-### Launch and learning flow
-
-Home shows the saved map, difficulty, practice and quiz variants beside **Customize quiz**.
-The same setup sheet is available from Maps, which also launches Learn or Find It directly.
-Continue practicing starts a new round in the selected map's most recently completed quiz
-family; unfinished rounds are not restored. The Home artwork is a bundled world view.
-
-Quiz prompts and feedback use reserved, scrollable areas so the map does not resize after
-an answer. Non-European maps begin at full extent; Europe uses a gentler phone overview and small highlighted targets are focused; zoom and
-Whole map controls stay visible. Cluster buttons show a plus and count, with gesture guidance.
-Completion distinguishes game points from earned XP and announces new levels, outfits and badges.
-
-Profile has a compact explorer header, actionable milestones and selected-map learning/history
-in a secondary sheet. Settings contains language, audio and attribution. Library offers an
-Undiscovered filter and the same country sheet as Learn; its search, region and scroll remain
-mounted behind details. These flows keep the existing canonical v4 progress and preference keys.
-See [market polish verification](docs/evidence/market-polish/README.md) for validation and limits.
-
-Audio preference recovery uses serialized writes on the existing storage key;
-read failures retry restoration without replacing saved choices with defaults.
-See [audio behavior](docs/music-prototype.md).
-
-Background music volume uses an accessible slider with 1% steps from 0–30%,
-with the current percentage displayed in Settings.
-
-Home keeps launch controls compact; Difficulty is displayed and adjusted in Maps.
-All modes continue to use the saved difficulty.
-
-All six region previews and Learn maps share the bundled NASA Blue Marble relief
-style. Europe retains its original country outlines and tap targets.
-Home’s “Explore the globe” card opens a separate full-screen offline globe: drag to rotate/tilt, scroll over it on web to
-rotate, or use the direction/centre controls. Arrow keys and Home work on web.
-The globe starts centred on the selected region and does not change quiz settings
-or progress. Tap a place to drop a pin and open country facts, flag and expanded
-photos using Learn’s details sheet. Ocean/unsupported areas show coordinates.
-The pin rotates with the globe; drags do not open details. The location button
-(or Enter/Space on web) explores the centre for precise alternative selection.
-
-### Continent framing and regional maps
-
-Play views fit each continent’s mainland geography instead of a shared wide canvas.
-North Atlantic, Caribbean, Pacific, Gulf and Indian Ocean insets keep remote or crowded
-locations available without shrinking the mainland or drawing a leader line to every country.
-Tap an inset to enlarge its map and choose a country from 48dp controls. Quiz controls
-stay anonymous until their existing reveal rules allow names; Name It insets are read-only.
-Visible zoom and Whole map/Main view controls retain access to all original geometry,
-including remote islands. Maps tab previews follow each region’s proportions.
-
-### Sharing and Friends
-
-Profile offers **My QR code**, **Scan QR code** and a secondary invitation-link
-option. Incoming invitation links open Profile for explicit **Add friend** approval;
-sharing consent and sign-in are still required. Account controls use player-facing
-copy and show loading/saving feedback. Camera access is requested only when scanning.
-**Share World Maps** includes the app/download-page URL.
-
-The public landing page and Android app-link association are deployed from a
-successful main-branch APK build. This must be released before browser-scanned QR
-links and the public download work. See [sharing release and evidence](docs/evidence/profile-sharing/README.md).
+- [Current implementation and operational status](docs/implementation-status.md)
+- [Roadmap](docs/poc-roadmap.md), [POC acceptance](docs/poc-current-checklist.md),
+  [release checklist](docs/release-checklist.md), [historical POC record](docs/poc-roadmap-history.md)
+- [Game contract](docs/geography-game-draft.md), [learning](docs/country-learning.md),
+  [progression](docs/explorer-progression.md), [Library/details](docs/explore-collections-profile.md)
+- [Architecture](docs/architecture.md), [component catalog](docs/component-catalog.md),
+  [component ledger](docs/component-ledger.md)
+- [Continent coverage](docs/continent-maps.md), [data attribution](docs/country-data.md),
+  [atlas sources](docs/atlas-data.md), [photo attribution](docs/wikipedia-gallery.md)
+- [Privacy-policy draft](docs/privacy-policy.md) — owner/release approval and a public URL are pending.

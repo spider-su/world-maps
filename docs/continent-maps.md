@@ -22,8 +22,8 @@ de facto boundaries are cartographic conventions, not sovereignty claims.
 
 New maps use real Natural Earth outlines and enlarged, clustered small-country
 picker targets. In Learn and Map previews they now render a clipped offline NASA Blue Marble relief layer aligned to the same geometry; quizzes retain unambiguous political fills. North America includes sovereign countries across the mainland, Central America and Caribbean; Greenland is non-selectable geographic context. All six regions, including Europe, share the same Blue Marble relief style. Country names are bundled in EN,
-PL and RU; new capital names retain the source's Latin-script proper names across
-languages (existing Europe editorial translations are preserved). Flags are SVGs,
+PL and RU; capitals use the editorial EN/PL/RU overlay in `localizedCapitals.ts`
+via `countryFacts.ts`, without rewriting generated outlines. Flags are SVGs,
 not operating-system emoji. No new runtime dependency or network service.
 
 ## Reproduce the bundled data

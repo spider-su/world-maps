@@ -1,6 +1,6 @@
-# Current World Maps POC acceptance checklist — 2026-10-28
+# Current World Maps POC acceptance checklist — 2026-11-02
 
-This is the **current** product acceptance list. Earlier 2026-10-25 POC reports and emulator build hashes are historical snapshots, not evidence that newer features have passed device acceptance.
+This is the **current** product acceptance list. See [implementation/status evidence](implementation-status.md) for source checks, deployments and recorded runtime results. Earlier 2026-10-25 POC reports and emulator build hashes are historical snapshots, not evidence that newer features have passed device acceptance.
 
 ## Current scope
 
@@ -10,7 +10,9 @@ This is the **current** product acceptance list. Earlier 2026-10-25 POC reports 
 - [x] Light and dark appearance, map-first navigation, accessibility controls, Library country collection and Profile
 - [x] Local history, adaptive practice, explorer XP/achievements, continent choice, quiz variants and preferences across relaunches
 - [x] Optional internet-loaded Wikipedia imagery with attribution; offline maps, facts, flags and gameplay
-- [x] Optional offline music for all six continents plus separate quiz sound effects, off by default
+- [x] Optional offline music for all six continents, separate quiz sound effects and a 0–30% slider, off by default
+- [x] Continent fitting/regional insets, globe pins with shared details and explorer hair/eye customization
+- [x] Optional Friends consent/auth/snapshot sync, QR rendering/scanner, share URLs and explicit Profile approval (implementation; live and device gates below)
 
 ## Before sharing the next APK with testers
 
@@ -28,9 +30,24 @@ This is the **current** product acceptance list. Earlier 2026-10-25 POC reports 
 - [ ] Test on physical Android with media volume (previous music audibility issue); document device model and OS
 - [ ] Test iOS separately; Android APK success does not validate iOS
 
+## Optional online features and release gates
+
+- [ ] Complete successful main CI/APK + Hosting deployment; verify root, `/friend`,
+  downloadable APK digest and Android domain association (currently 404/skipped in the status snapshot).
+- [ ] Test a real phone's QR decode, permission denial/retry, cold/warm links,
+  install → return to invite, explicit approval, two-account acceptance and failure states.
+- [ ] Verify social opt-out deletes the shared snapshot and test acknowledgement
+  reconciliation; do not advertise cloud-save restoration, full deletion or remove/revoke UI.
+- [ ] Finish and test account deletion and public privacy/support requirements before public accounts.
+
 ## Pre-release data contract
 
-The app has no deployed production users. Canonical progress schema v4 is required; older experimental test data is not migrated. Clearing test-only storage is acceptable when installing the current development build, but once testing begins on the release candidate, verify ordinary restart and update-over-install preserve v4 progress. Keep read-failure blocking and save retry tested.
+Canonical progress schema v4 is the supported format. Existing keys and pack IDs
+remain stable. Older experimental schemas are rejected through read-error handling;
+there is no automatic migration. Never clear user/tester storage to make a test pass.
+Use a separate fresh test profile/install for clean-state cases, and verify ordinary
+restart and update-over-install preserve established v4 records. A future schema
+change requires a separately tested migration.
 
 ## Evidence status
 

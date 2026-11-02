@@ -7,6 +7,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: appName,
   slug,
+  scheme: 'worldmaps',
   version: process.env.APP_VERSION ?? '1.0.0',
   orientation: 'portrait',
   web: { ...config.web, favicon: './assets/icon.png' },
@@ -19,10 +20,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   android: {
     ...config.android,
+    intentFilters: [{ action: 'VIEW', autoVerify: true, category: ['BROWSABLE', 'DEFAULT'], data: [{ scheme: 'https', host: 'world-map-1.web.app', path: '/friend' }] }],
     package: process.env.ANDROID_PACKAGE ?? 'com.spidersu.worldmaps',
     ...(process.env.GOOGLE_SERVICES_JSON ? { googleServicesFile: process.env.GOOGLE_SERVICES_JSON } : {})
   },
-  plugins: ['expo-system-ui', '@react-native-google-signin/google-signin', '@react-native-firebase/app', '@react-native-firebase/app-check'],
+  plugins: [['expo-camera', { cameraPermission: 'Allow World Maps to scan a friend’s invitation QR code.', recordAudioAndroid: false }], 'expo-system-ui', '@react-native-google-signin/google-signin', '@react-native-firebase/app', '@react-native-firebase/app-check'],
   extra: {
     ...config.extra,
     ...(process.env.EAS_PROJECT_ID

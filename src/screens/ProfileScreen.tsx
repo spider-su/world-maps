@@ -1,9 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect, useIsFocused, useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import type { TabParamList } from '../navigation';
 import { useLanguage } from '../ui/LanguageContext';
@@ -34,6 +34,9 @@ export function ProfileScreen() {
   const { progress, status, update } = useProgress();
   const { map: selectedMap, setMapId } = useMap();
   const navigation = useNavigation<BottomTabNavigationProp<TabParamList, 'Profile'>>();
+  const route = useRoute<RouteProp<TabParamList, 'Profile'>>();
+  const incomingInvite = route.params?.invite;
+  const [friendsY, setFriendsY] = useState<number>();
   const c = gameCopy[language];
   const p = profileCopy[language];
   const pc = polishCopy[language];
@@ -42,6 +45,7 @@ export function ProfileScreen() {
   const [sheet, setSheet] = useState<'explorer' | 'badges' | 'xp' | 'learning' | null>(null);
   const journey = useMemo(() => explorerProgress(progress), [progress]);
   const scroll = useRef<ScrollView>(null);
+  useEffect(() => { if (focused && incomingInvite && friendsY !== undefined) scroll.current?.scrollTo({y: friendsY, animated: true}); }, [focused, incomingInvite, friendsY]);
   const lastXP = useRef<number | undefined>(undefined);
   const available = status !== 'loading' && status !== 'read-error';
   useFocusEffect(useCallback(() => {
@@ -90,7 +94,7 @@ export function ProfileScreen() {
         <Pressable accessibilityRole="button" onPress={() => setSheet('learning')} style={styles.map}><View style={styles.titleRow}><Text style={styles.mapTitle}>{c.learningProgress} · {mapName(selectedMap.id, language)}</Text><Ionicons name="chevron-forward" size={18} color={theme.brand} /></View><Text style={styles.detail}>{c.history}</Text></Pressable>
         <View style={styles.titleRow}><Text accessibilityRole="header" style={styles.section}>{p.achievements}</Text><Pressable accessibilityRole="button" accessibilityLabel={p.allBadges} style={styles.iconButton} onPress={() => setSheet('badges')}><Ionicons name="arrow-forward" size={22} color={theme.brand} /></Pressable></View>
         <View style={styles.badges}>{badges.map(b => <Pressable key={b.id} accessibilityRole="button" accessibilityLabel={`${p.badges[b.id].title}. ${b.earned ? p.earned : `${b.current}/${b.target}`}`} onPress={() => setSheet('badges')} style={styles.badgeTile}>{badge(b.id,b.earned)}<Text style={styles.badgeTitle}>{p.badges[b.id].title}</Text>{b.earned ? <Ionicons name="checkmark-circle" size={16} color={theme.success} /> : <Text style={styles.hint}>{b.current}/{b.target}</Text>}</Pressable>)}</View>
-        <FriendsPanel />
+        <View onLayout={event => setFriendsY(event.nativeEvent.layout.y)}><FriendsPanel key={incomingInvite ?? 'friends'} incomingInvite={incomingInvite} onInviteHandled={() => navigation.setParams({invite: undefined})} /></View>
         <Text accessibilityRole="header" style={styles.section}>{p.yourMaps}</Text>
         {journey.maps.map(map => <Pressable key={map.id} accessibilityRole="button" accessibilityLabel={`${mapName(map.id,language)}. ${map.discovered}/${map.total} ${p.discovered}`} onPress={() => { setMapId(map.id); navigation.navigate('Explore', { filter: 'all', reset: true }); }} style={styles.map}>
           <View style={styles.titleRow}><Text style={styles.mapTitle}>{mapName(map.id,language)}</Text><Text style={styles.hint}>{map.discovered}/{map.total}</Text><Ionicons name="chevron-forward" size={16} color={theme.muted} /></View>

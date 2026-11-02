@@ -70,3 +70,10 @@ recording discoveries. Ocean/unsupported areas show coordinates.
 `EuropeMap` retains original geometry, gestures and selection; `RegionMapInset`
 provides thumbnails and enlarged choices through the same `onSelect`. Viewport
 bounds are transient presentation, never progress or a second geography dataset.
+
+Optional Friends cloud access remains behind Profile sharing consent. App startup
+only listens for invitation URLs locally; it does not initialize Firebase.
+`FriendsPanel` owns account/invitation UI and uses existing social services; QR
+scanning uses `expo-camera`. Shared progress storage/schema is unchanged.
+Static `firebase/hosting` provides a browser fallback and Android download; the
+Hosting release consumes a successful main CI APK and its verified metadata.

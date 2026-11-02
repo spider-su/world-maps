@@ -208,3 +208,15 @@ Tap an inset to enlarge its map and choose a country from 48dp controls. Quiz co
 stay anonymous until their existing reveal rules allow names; Name It insets are read-only.
 Visible zoom and Whole map/Main view controls retain access to all original geometry,
 including remote islands. Maps tab previews follow each region’s proportions.
+
+### Sharing and Friends
+
+Profile offers **My QR code**, **Scan QR code** and a secondary invitation-link
+option. Incoming invitation links open Profile for explicit **Add friend** approval;
+sharing consent and sign-in are still required. Account controls use player-facing
+copy and show loading/saving feedback. Camera access is requested only when scanning.
+**Share World Maps** includes the app/download-page URL.
+
+The public landing page and Android app-link association are deployed from a
+successful main-branch APK build. This must be released before browser-scanned QR
+links and the public download work. See [sharing release and evidence](docs/evidence/profile-sharing/README.md).

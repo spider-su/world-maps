@@ -1,135 +1,159 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, Share, StyleSheet, Switch, Text, TextInput, View, useColorScheme } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { themeForScheme } from '../../ui/worldMapsTheme';
+import { useIsFocused, useFocusEffect } from '@react-navigation/native';
+import { themeForScheme, type WorldMapsPalette } from '../../ui/worldMapsTheme';
 import { useLanguage } from '../../ui/LanguageContext';
+import { OptionsSheet } from '../../ui/OptionsSheet';
 import { useProgress } from '../geography/ProgressContext';
-import { sharedProfile, validateNickname } from './socialProfile';
+import { sharedProfile, validateNickname, type SocialProfile } from './socialProfile';
 import { loadSocialPreferences, saveSocialPreferences, type SocialPreferences } from './socialPreferences';
-import { parseFriendInviteUrl } from './friendInvite';
+import { APP_DOWNLOAD_URL, parseFriendInviteUrl } from './friendInvite';
 import { createInvitation, acceptInvitation, listFriends, deleteSharedProfile } from './firebaseFriends';
 import { createSocialAccount, signInSocial, signOutSocial, firebaseClient } from './firebaseClient';
 import { signInWithGoogle } from './googleSignIn';
 import { syncChangedSocialProfile } from './socialSession';
-import { socialActionError } from './socialError';
-import type { SocialProfile } from './socialProfile';
+import { FriendInviteQr } from './FriendInviteQr';
+import { FriendQrScanner } from './FriendQrScanner';
+import { friendsCopy } from './friendsCopy';
 
-const copy = {
-  en: { title: 'Friends', status: 'Cloud connection not enabled yet', consent: 'Share my progress with friends', nickname: 'Nickname', preview: 'Your shareable summary', discovered: 'countries', import: 'Invitation link', placeholder: 'Paste an invitation link', check: 'Check link', valid: 'Valid invitation link. Accepting requires Firebase sign-in and deployed functions.', invalid: 'Invalid invitation link', pending: 'Firebase sign-in, QR scanning and invites are not enabled in this build.', saving: 'Could not save social preferences', share: 'Share World Maps' },
-  pl: { title: 'Znajomi', status: 'Połączenie z chmurą nie jest jeszcze aktywne', consent: 'Udostępniaj postępy znajomym', nickname: 'Pseudonim', preview: 'Twój udostępniany profil', discovered: 'państw', import: 'Link zaproszenia', placeholder: 'Wklej link zaproszenia', check: 'Sprawdź link', valid: 'Poprawny link. Akceptacja wymaga logowania Firebase i wdrożonych funkcji.', invalid: 'Nieprawidłowy link', pending: 'Logowanie Firebase, skanowanie QR i zaproszenia nie są jeszcze dostępne w tej wersji.', saving: 'Nie udało się zapisać ustawień', share: 'Udostępnij World Maps' },
-  ru: { title: 'Друзья', status: 'Облачное подключение пока не включено', consent: 'Делиться прогрессом с друзьями', nickname: 'Имя игрока', preview: 'Ваш профиль для друзей', discovered: 'стран', import: 'Ссылка-приглашение', placeholder: 'Вставьте ссылку', check: 'Проверить ссылку', valid: 'Ссылка верна. Для принятия нужна авторизация Firebase и развернутые функции.', invalid: 'Недействительная ссылка', pending: 'Вход Firebase, QR-сканер и приглашения пока не включены в этой версии.', saving: 'Не удалось сохранить настройки', share: 'Поделиться World Maps' }
-};
-
-export function FriendsPanel() {
-  const { language } = useLanguage();
-  const c = copy[language];
-  const theme = themeForScheme(useColorScheme());
+function FriendAction({label,icon,onPress,disabled,theme,loading=false}: {label:string;icon:keyof typeof Ionicons.glyphMap;onPress:()=>void;disabled:boolean;theme:WorldMapsPalette;loading?:boolean}) {
+  return <Pressable accessibilityRole="button" accessibilityLabel={label} disabled={disabled} accessibilityState={{disabled,busy:loading}} style={[styles.button,{backgroundColor:theme.paper,opacity:disabled?.5:1}]} onPress={onPress}><>{loading ? <ActivityIndicator color={theme.brand}/> : <Ionicons name={icon} size={20} color={theme.brand}/>}</><Text style={{color:theme.brand,fontWeight:'600',flexShrink:1}}>{label}</Text></Pressable>;
+}
+type Job = 'loading'|'saving'|'signingIn'|'creating'|'accepting'|'refreshing'|'sharing'|'signOutBusy';
+type Sheet = 'qr'|'scan'|'link'|null;
+export function FriendsPanel({ incomingInvite, onInviteHandled }: { incomingInvite?: string; onInviteHandled?: () => void }) {
+  const { language } = useLanguage(), c = friendsCopy[language];
+  const theme = themeForScheme(useColorScheme()), focused = useIsFocused();
   const { progress } = useProgress();
   const [prefs, setPrefs] = useState<SocialPreferences | null>(null);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [userId, setUserId] = useState<string | null>(null);
+  const [nickname, setNickname] = useState('');
+  const [email, setEmail] = useState(''), [password, setPassword] = useState(''), [emailForm, setEmailForm] = useState(false);
+  const [userId, setUserId] = useState<string|null>(null), [authLoading, setAuthLoading] = useState(true);
+  const [friendsLoading, setFriendsLoading] = useState(false);
   const [friends, setFriends] = useState<Array<{uid:string;profile:SocialProfile|null}>>([]);
-  const [invite, setInvite] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
+  const [invite, setInvite] = useState(''), [localInvite, setLocalInvite] = useState(''), [link, setLink] = useState('');
+  const pending = localInvite || (incomingInvite && parseFriendInviteUrl(incomingInvite) ? incomingInvite : '');
+  const [sheet, setSheet] = useState<Sheet>(null), [busy, setBusy] = useState<Job|null>(null);
+  const lock = useRef(false);
+  const [error, setError] = useState(''), [notice, setNotice] = useState('');
+  const friendlyError = (e: unknown) => {
+    const code = e && typeof e === 'object' && 'code' in e ? String(e.code) : '';
+    return code === 'functions/failed-precondition' ? c.expired : code.startsWith('auth/') ? c.authError : code === 'functions/permission-denied' ? c.denied : code === 'functions/not-found' ? c.unavailable : c.failure;
+  };
+  const act = async (job: Job, action: () => Promise<void>) => {
+    if (lock.current) return;
+    lock.current = true; setBusy(job); setError(''); setNotice('');
+    try { await action(); } catch (e) { setError(friendlyError(e)); }
+    finally { lock.current = false; setBusy(null); }
+  };
+  const load = useCallback(async () => {
+    try { const value = await loadSocialPreferences(); setPrefs(value); setNickname(value.nickname); setError(''); }
+    catch { setError(c.preferenceError); }
+  }, [c.preferenceError]);
+  useEffect(() => {
+    let active = true;
+    loadSocialPreferences().then(value => { if(active) { setPrefs(value); setNickname(value.nickname); } }).catch(() => { if(active) setError(c.preferenceError); });
+    return () => { active = false; };
+  }, [c.preferenceError]);
   useEffect(() => {
     if (!prefs?.enabled) return;
     let active = true;
-    let unsubscribe: (() => void) | undefined;
+    let unsubscribe: (() => void)|undefined;
     void firebaseClient().then(async ({auth}) => {
       const { onAuthStateChanged } = await import('firebase/auth');
-      if (!active) return;
-      unsubscribe = onAuthStateChanged(auth, user => { if (active) setUserId(user?.uid ?? null); });
-    }).catch(error => { if (active) setError(error instanceof Error ? error.message : String(error)); });
+      if (active) unsubscribe = onAuthStateChanged(auth, user => { if(active) { setUserId(user?.uid ?? null); setAuthLoading(false); } });
+    }).catch(() => { if(active) { setError(c.unavailable); setAuthLoading(false); } });
     return () => { active = false; unsubscribe?.(); };
-  }, [prefs?.enabled]);
+  }, [prefs?.enabled, c.unavailable]);
+  useFocusEffect(useCallback(() => {
+    if (!prefs?.enabled || !userId) return;
+    let active = true;
+    setFriendsLoading(true);
+    void listFriends().then(value => { if(active) setFriends(value); }).catch(() => { if(active) setError(c.failure); }).finally(() => { if(active) setFriendsLoading(false); });
+    return () => { active = false; };
+  }, [prefs?.enabled, userId, c.failure]));
   useEffect(() => {
-    if (!prefs?.enabled || !userId || prefs.nickname.trim().length < 2) return;
-    const pending = setTimeout(() => {
-      void syncChangedSocialProfile(progress).catch(error => setError(error instanceof Error ? error.message : String(error)));
-    }, 1200);
-    return () => clearTimeout(pending);
-  }, [prefs?.enabled, prefs?.nickname, userId, progress]);
+    if (!focused || !prefs?.enabled || !userId || prefs.nickname.trim().length < 2) return;
+    let active = true;
+    const timer = setTimeout(() => { void syncChangedSocialProfile(progress).catch(() => { if(active) setError(c.failure); }); }, 1200);
+    return () => { active = false; clearTimeout(timer); };
+  }, [focused, prefs?.enabled, prefs?.nickname, userId, progress, c.failure]);
+  const waitingForAuth = !!prefs?.enabled && authLoading;
+  const waitingForFriends = !!prefs?.enabled && !!userId && focused && friendsLoading;
+  const disabled = !!busy || waitingForAuth;
+  const save = (enabled: boolean) => void act('saving', async () => {
+    if (enabled) { try { validateNickname(nickname); } catch { setError(c.nicknameError); return; } }
+    if (prefs?.enabled && !enabled && userId) await deleteSharedProfile();
+    const next = { enabled, nickname: nickname.trim() };
+    await saveSocialPreferences(next); setPrefs(next); setNickname(next.nickname); setNotice(c.saved);
+    if (!enabled) { setUserId(null); setAuthLoading(true); setFriendsLoading(false); setFriends([]); setInvite(''); }
+  });
+  const receive = (url: string) => {
+    if (!parseFriendInviteUrl(url.trim())) { setError(c.invalid); return; }
+    setLocalInvite(url.trim()); setSheet(null); setLink(''); setError(''); setNotice('');
+  };
+  const dismiss = () => { setLocalInvite(''); onInviteHandled?.(); };
 
-  const [link, setLink] = useState('');
-  const linkValid = parseFriendInviteUrl(link.trim()) !== null;
-  useEffect(() => { let active = true; loadSocialPreferences().then(value => { if(active) setPrefs(value); }).catch(() => { if(active) setError(c.saving); }); return () => { active = false; }; }, [c.saving]);
-  const act = async (action: () => Promise<void>) => {
-    setBusy(true); setError('');
-    try { await action(); } catch (e) { setError(socialActionError(e)); }
-    finally { setBusy(false); }
-  };
-  const save = (next: SocialPreferences) => {
-    setError('');
-    void (async () => {
-      // Withdraw remote sharing before switching local consent off.
-      if (prefs?.enabled && !next.enabled && userId) await deleteSharedProfile();
-      await saveSocialPreferences(next);
-      setPrefs(next);
-    })().catch(error => setError(error instanceof Error ? error.message : c.saving));
-  };
-  const preview = prefs?.enabled && prefs.nickname.trim().length >= 2 && prefs.nickname.trim().length <= 24
-    ? (() => { try { return sharedProfile(progress, validateNickname(prefs.nickname)); } catch { return null; } })()
-    : null;
-  return <View style={[styles.container, { backgroundColor: theme.surface }]}>
-    <Text style={[styles.heading, { color: theme.navy }]}>{c.title}</Text>
-    <Text style={{ color: theme.muted }}>{userId ? `Connected · ${userId.slice(0,6)}…` : c.status}</Text>
-    {prefs === null ? <ActivityIndicator /> : <>
-      <View style={styles.row}><Text style={[styles.label, { color: theme.navy, flex: 1 }]}>{c.consent}</Text>
-        <Switch accessibilityLabel={c.consent} value={prefs.enabled} onValueChange={enabled => save({...prefs, enabled})}/></View>
-      <Text style={[styles.label, { color: theme.navy }]}>{c.nickname}</Text>
-      <TextInput accessibilityLabel={c.nickname} style={[styles.input, { color: theme.navy, borderColor: theme.border }]} maxLength={24} value={prefs.nickname} onChangeText={nickname => setPrefs({...prefs, nickname})} onEndEditing={() => save(prefs)} />
-      {preview && <View style={[styles.preview, { backgroundColor: theme.paper }]}>
-        <Text style={[styles.label, { color: theme.navy }]}>{c.preview}: {preview.nickname}</Text>
-        <Text style={{ color: theme.muted }}>{preview.level} · {preview.xp} XP · {preview.discovered} {c.discovered}</Text>
-      </View>}
-      {prefs.enabled && <View style={{ gap: 8 }}>
-        <Text style={[styles.label,{ color: theme.navy }]}>Firebase account</Text>
+  const input = (label: string, value: string, change: (value: string)=>void, passwordField = false) => <TextInput accessibilityLabel={label} placeholder={label} placeholderTextColor={theme.muted} value={value} onChangeText={change} editable={!disabled} secureTextEntry={passwordField} autoCapitalize="none" autoCorrect={false} keyboardType={label===c.email ? 'email-address' : 'default'} maxLength={label===c.nickname ? 24 : undefined} style={[styles.input,{color:theme.navy,borderColor:theme.border}]} />;
+  let preview: SocialProfile|null = null;
+  if (prefs?.enabled) { try { preview = sharedProfile(progress, validateNickname(prefs.nickname)); } catch { /* Name is edited before opt-in. */ } }
+  return <View style={[styles.container,{backgroundColor:theme.surface}]}>
+    <View style={styles.row}><Ionicons name="people-outline" size={23} color={theme.brand}/><Text accessibilityRole="header" style={[styles.heading,{color:theme.navy}]}>{c.title}</Text></View>
+    <Text style={{color:theme.muted}}>{c.intro}</Text>
+    {!!pending && <View style={[styles.preview,{backgroundColor:theme.paper}]}>
+      <Text accessibilityRole="header" style={[styles.heading,{color:theme.navy}]}>{c.invitation}</Text>
+      <Text style={{color:theme.navy}}>{prefs?.enabled && userId ? c.acceptHint : c.requireSignIn}</Text>
+      {<FriendAction loading={busy==='accepting'} label={c.accept} icon={'person-add-outline'} onPress={()=>void act('accepting',async()=>{
+        const token=parseFriendInviteUrl(pending);if(!token){setError(c.invalid);return;}
+        await acceptInvitation(token);dismiss();setNotice(c.added);setFriends(await listFriends());
+      })} disabled={disabled || (!prefs?.enabled || !userId)} theme={theme} />}
+      {<FriendAction label={c.dismiss} icon={'close-outline'} onPress={dismiss} disabled={disabled || (false)} theme={theme} />}
+    </View>}
+    {prefs===null ? <>{!error && <ActivityIndicator accessibilityLabel={c.loading} color={theme.brand}/ >}{!!error && <FriendAction label={c.retry} icon={'refresh-outline'} onPress={()=>void load()} disabled={disabled || (false)} theme={theme} />}</> : <>
+      {!prefs.enabled && <Text style={{color:theme.muted}}>{c.private}</Text>}
+      {input(c.nickname,nickname,setNickname)}
+      <View style={styles.row}><Text style={{color:theme.navy,flex:1}}>{c.consent}</Text><Switch accessibilityLabel={c.consent} disabled={disabled} value={prefs.enabled} onValueChange={save}/></View>
+      {prefs.enabled && nickname.trim()!==prefs.nickname && <FriendAction loading={busy==='saving'} label={c.save} icon={'checkmark-outline'} onPress={()=>save(true)} disabled={disabled || (false)} theme={theme} />}
+      {!prefs.enabled && <Text style={{color:theme.muted,fontSize:12}}>{c.enableHint}</Text>}
+      {prefs.enabled && <>
         {userId ? <>
-          <Pressable disabled={busy} accessibilityRole="button" style={styles.button} onPress={() => void act(async () => { await syncChangedSocialProfile(progress); setFriends(await listFriends()); })}>
-            <Ionicons name="sync-outline" size={19} color={theme.brand}/><Text style={{color:theme.brand}}>Sync changed progress and refresh friends</Text>
-          </Pressable>
-          <Pressable disabled={busy} accessibilityRole="button" style={styles.button} onPress={() => void act(async () => { const url = await createInvitation(); setInvite(url); await Share.share({message:url}); })}>
-            <Ionicons name="qr-code-outline" size={19} color={theme.brand}/><Text style={{color:theme.brand}}>Create invitation link</Text>
-          </Pressable>
-          {!!invite && <Text selectable style={{color:theme.muted}}>{invite}</Text>}
-          <Pressable disabled={busy || !linkValid} accessibilityRole="button" style={styles.button} onPress={() => void act(async () => { const token = parseFriendInviteUrl(link.trim()); if(!token) throw new Error(c.invalid); await acceptInvitation(token); setFriends(await listFriends()); })}>
-            <Text style={{color:theme.brand}}>Accept invitation</Text>
-          </Pressable>
-          {friends.map(friend => <View key={friend.uid} style={[styles.preview,{backgroundColor:theme.paper}]}>
-            <Text style={{color:theme.navy,fontWeight:'700'}}>{friend.profile?.nickname ?? 'Friend'}</Text>
-            <Text style={{color:theme.muted}}>{friend.profile ? `${friend.profile.xp} XP · Level ${friend.profile.level}` : 'No shared profile yet'}</Text>
-          </View>)}
-          <Pressable accessibilityRole="button" disabled={busy} style={styles.button} onPress={() => void act(async () => { await signOutSocial(); setUserId(null); setFriends([]); })}><Text style={{color:theme.brand}}>Sign out</Text></Pressable>
-        </> : <>
-          <Pressable accessibilityRole="button" disabled={busy} style={styles.button} onPress={() => void act(async () => { await signInWithGoogle(); })}><Ionicons name="logo-google" size={20} color={theme.brand}/><Text style={{color:theme.brand,fontWeight:"700"}}>Continue with Google</Text></Pressable>
-          <TextInput accessibilityLabel="Email" autoCapitalize="none" keyboardType="email-address" value={email} onChangeText={setEmail} placeholder="Email" style={[styles.input,{color:theme.navy,borderColor:theme.border}]} />
-          <TextInput accessibilityLabel="Password" secureTextEntry value={password} onChangeText={setPassword} placeholder="Password (6+ characters)" style={[styles.input,{color:theme.navy,borderColor:theme.border}]} />
-          <Pressable accessibilityRole="button" disabled={busy} style={styles.button} onPress={() => void act(async () => { const result = await signInSocial(email,password); setUserId(result.user.uid); await syncChangedSocialProfile(progress); })}><Text style={{color:theme.brand}}>Sign in</Text></Pressable>
-          <Pressable accessibilityRole="button" disabled={busy} style={styles.button} onPress={() => void act(async () => { const result = await createSocialAccount(email,password); setUserId(result.user.uid); await syncChangedSocialProfile(progress); })}><Text style={{color:theme.brand}}>Create account</Text></Pressable>
+          <Text style={{color:theme.muted}}>{c.connected}{preview ? ` · ${c.level} ${preview.level} · ${preview.xp} XP` : ''}</Text>
+          <View style={styles.actions}>
+            {<FriendAction label={c.myQr} icon={'qr-code-outline'} onPress={()=>{setInvite('');setSheet('qr');void act('creating',async()=>{setInvite(await createInvitation());});}} disabled={disabled || (false)} theme={theme} />}
+            {<FriendAction label={c.scan} icon={'scan-outline'} onPress={()=>setSheet('scan')} disabled={disabled || (false)} theme={theme} />}
+          </View>
+          {<FriendAction label={c.paste} icon={'link-outline'} onPress={()=>setSheet('link')} disabled={disabled || (false)} theme={theme} />}
+          {<FriendAction loading={busy==='refreshing'} label={c.refresh} icon={'refresh-outline'} onPress={()=>void act('refreshing',async()=>{await syncChangedSocialProfile(progress);setFriends(await listFriends());})} disabled={disabled || (false)} theme={theme} />}
+          {!friends.length && !busy && <Text style={{color:theme.muted}}>{c.noFriends}</Text>}
+          {friends.map(friend=><View key={friend.uid} style={[styles.preview,{backgroundColor:theme.paper}]}><Text style={{color:theme.navy,fontWeight:'700'}}>{friend.profile?.nickname ?? c.friend}</Text><Text style={{color:theme.muted}}>{friend.profile ? `${friend.profile.xp} XP · ${c.level} ${friend.profile.level}` : c.noProfile}</Text></View>)}
+          {<FriendAction loading={busy==='signOutBusy'} label={c.signOut} icon={'log-out-outline'} onPress={()=>void act('signOutBusy',async()=>{await signOutSocial();setUserId(null);setFriends([]);setInvite('');setPassword('');})} disabled={disabled || (false)} theme={theme} />}
+        </> : authLoading ? null : <>
+          <Text style={{color:theme.muted}}>{c.signInHint}</Text>
+          {<FriendAction loading={busy==='signingIn'} label={c.google} icon={'logo-google'} onPress={()=>void act('signingIn',async()=>{await signInWithGoogle();})} disabled={disabled || (false)} theme={theme} />}
+          {<FriendAction label={c.emailOption} icon={'mail-outline'} onPress={()=>setEmailForm(v=>!v)} disabled={disabled || (false)} theme={theme} />}
+          {emailForm && <>{input(c.email,email,setEmail)}{input(c.password,password,setPassword,true)}
+            {<FriendAction loading={busy==='signingIn'} label={c.signIn} icon={'log-in-outline'} onPress={()=>void act('signingIn',async()=>{await signInSocial(email,password);setPassword('');})} disabled={disabled || (!email.trim()||!password)} theme={theme} />}
+            {<FriendAction loading={busy==='signingIn'} label={c.createAccount} icon={'person-add-outline'} onPress={()=>void act('signingIn',async()=>{await createSocialAccount(email,password);setPassword('');})} disabled={disabled || (!email.trim()||password.length<6)} theme={theme} />}
+          </>}
+          {<FriendAction label={c.scan} icon={'scan-outline'} onPress={()=>setSheet('scan')} disabled={disabled || (false)} theme={theme} />}
+          {<FriendAction label={c.paste} icon={'link-outline'} onPress={()=>setSheet('link')} disabled={disabled || (false)} theme={theme} />}
         </>}
-      </View>}
-      <Text style={[styles.label, { color: theme.navy }]}>{c.import}</Text>
-      <TextInput accessibilityLabel={c.import} style={[styles.input, { color: theme.navy, borderColor: theme.border }]} value={link} autoCapitalize="none" autoCorrect={false} onChangeText={setLink} placeholder={c.placeholder} />
-      <View style={[styles.button, { backgroundColor: theme.paper }]}>
-        <Ionicons name="link-outline" size={19} color={theme.brand} /><Text style={{ color: theme.brand, fontWeight: '700' }}>{c.check}</Text>
-      </View>
-      {link.trim().length > 0 && <Text style={{ color: theme.muted }}>{linkValid ? c.valid : c.invalid}</Text>}
-      <Text style={{ color: theme.muted, fontSize: 12 }}>Invitations require deployed Firebase Functions and valid App Check configuration. QR scanning is not yet available; paste a link above.</Text>
-      <Pressable accessibilityRole="button" style={styles.button} onPress={() => { void Share.share({ message: 'World Maps' }); }}>
-        <Ionicons name="share-social-outline" size={18} color={theme.brand}/><Text style={{ color: theme.brand }}>{c.share}</Text>
-      </Pressable>
+      </>}
     </>}
-    {!!error && <Text accessibilityRole="alert" style={{ color: '#B53D32' }}>{error}</Text>}
+    {(busy || waitingForAuth || waitingForFriends) && <View accessibilityLiveRegion="polite" style={styles.row}><ActivityIndicator accessibilityLabel={busy ? c[busy] : waitingForFriends ? c.refreshing : c.loading} color={theme.brand}/><Text style={{color:theme.muted}}>{busy ? c[busy] : waitingForFriends ? c.refreshing : c.loading}</Text></View>}
+    {!!notice && <Text accessibilityLiveRegion="polite" style={{color:theme.success}}>{notice}</Text>}
+    {!!error && <Text accessibilityRole="alert" style={{color:theme.navy}}>{error}</Text>}
+    {<FriendAction loading={busy==='sharing'} label={c.shareApp} icon={'share-social-outline'} onPress={()=>void act('sharing',async()=>{await Share.share({title:'World Maps',message:`${c.shareMessage}\n${APP_DOWNLOAD_URL}`,url:APP_DOWNLOAD_URL});})} disabled={disabled || (false)} theme={theme} />}
+    <OptionsSheet visible={focused && sheet!==null} title={sheet==='qr' ? c.myQr : sheet==='scan' ? c.scan : c.paste} closeLabel={c.close} onClose={()=>setSheet(null)}>
+      {sheet==='qr' && <>
+        {busy==='creating' ? <ActivityIndicator accessibilityLabel={c.creating} color={theme.brand}/> : !!invite && <><FriendInviteQr url={invite} label={c.myQr}/><Text style={{color:theme.muted}}>{c.inviteHint}</Text>{<FriendAction loading={busy==='sharing'} label={c.shareInvite} icon={'share-social-outline'} onPress={()=>void act('sharing',async()=>{await Share.share({title:'World Maps',message:`${c.inviteMessage}\n${invite}`,url:invite});})} disabled={disabled || (false)} theme={theme} />}</>}
+        {!busy && !invite && <FriendAction label={c.retry} icon={'refresh-outline'} onPress={()=>void act('creating',async()=>setInvite(await createInvitation()))} disabled={disabled || (false)} theme={theme} />}
+      </>}
+      {focused && sheet==='scan' && <FriendQrScanner language={language} onInvite={receive}/>}
+      {sheet==='link' && <>{input(c.placeholder,link,setLink)}{<FriendAction label={c.check} icon={'arrow-forward-outline'} onPress={()=>receive(link)} disabled={disabled || (!link.trim())} theme={theme} />}</>}
+      {!!error && <Text accessibilityRole="alert" style={{color:theme.navy}}>{error}</Text>}
+    </OptionsSheet>
   </View>;
 }
-const styles = StyleSheet.create({
-  container: { borderRadius: 18, padding: 16, gap: 12 },
-  heading: { fontSize: 18, fontWeight: '800' },
-  label: { fontSize: 14, fontWeight: '600' },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  input: { borderWidth: 1, borderRadius: 10, padding: 12, minHeight: 48 },
-  preview: { borderRadius: 12, padding: 12, gap: 4 },
-  button: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 48, borderRadius: 12 }
-});
+const styles=StyleSheet.create({container:{borderRadius:18,padding:16,gap:12},heading:{fontSize:18,fontWeight:'800'},row:{flexDirection:'row',alignItems:'center',gap:10},input:{borderWidth:1,borderRadius:12,padding:12,minHeight:48},preview:{borderRadius:12,padding:12,gap:10},button:{flexDirection:'row',alignItems:'center',justifyContent:'center',gap:8,minHeight:48,padding:10,borderRadius:12},actions:{gap:8}});

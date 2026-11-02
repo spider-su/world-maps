@@ -7,7 +7,7 @@ permalink: /privacy/
 
 **Status: DRAFT — publisher name and contact supplied. Do not publish until release build, SDK inventory, actual server configuration, retention, audience and account deletion flows are verified.** This is the sole intended public privacy-policy document for World Maps. Existing release and Firebase documentation remains technical evidence, not a second policy.
 
-**Publisher / data controller:** Alex Kotik  
+**Publisher / data controller:** Alex Kotik (individual publisher, not acting as a JDG business). Google Play developer display name: smart-box.  
 **Privacy and support email:** alex.kotik.net@gmail.com  
 **Effective date:** [date]  
 **Public policy URL:** https://spider-su.github.io/world-maps/privacy/ (planned; not live or verified)  
@@ -38,7 +38,7 @@ The optional QR scanner requests camera permission while open, decodes invitatio
 
 ## Publisher contact
 
-**Publisher / controller:** Alex Kotik, known in Google Play as **smart-box**. Privacy/support contact: **alex.kotik.net@gmail.com**. No physical correspondence address has been supplied; whether it must be displayed is awaiting legal/publisher review.
+**Publisher / controller:** Alex Kotik, acting as an individual (not as a JDG business), with Google Play display name **smart-box**. Privacy/support contact: **alex.kotik.net@gmail.com**. No physical correspondence address has been supplied; whether it must be displayed is awaiting legal/publisher review.
 
 ## Rights and contact
 

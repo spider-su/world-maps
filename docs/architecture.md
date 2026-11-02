@@ -22,7 +22,7 @@ Read this before adding a feature. World Maps is an offline Expo SDK 57 / React 
 
 ## Dependency direction
 
-Screens may depend on feature modules, UI and platform helpers. Pure feature models (`engine`, `modes`, `learning`, `difficulty`, `progress`) must not import React components. Platform helpers must remain isolated and tested. Do not add a state-management library, router, database, analytics or auth SDK.
+Screens may depend on feature modules, UI and platform helpers. Pure feature models (`engine`, `modes`, `learning`, `difficulty`, `progress`) must not import React components. Platform helpers must remain isolated and tested. Do not add another state-management library, router, database, analytics or auth SDK without a concrete need. Optional Friends already owns the Firebase integration.
 
 ## Safe areas and errors
 
@@ -45,7 +45,8 @@ contract. See `docs/continent-maps.md` for data coverage and regeneration.
 Profile progression is derived by `explorerProgress.ts` from cumulative learning
 and unique discoveries, independent of bounded score history. `explorer.ts` owns
 cosmetic IDs/stages; `ExplorerAvatar` renders bundled human portraits. Schema 4
-persists only the selected cosmetic ID through the existing serialized store.
+persists the selected cosmetic ID and optional hair/eye appearance through the
+existing serialized store.
 
 
 Launch configuration is composed by `PlaySetup` and `QuizSetupSummary` from existing

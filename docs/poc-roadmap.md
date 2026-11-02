@@ -1,129 +1,57 @@
-# Original POC implementation — historical snapshot (2026-10-25)
+# World Maps roadmap — 2026-11-02
 
-> **Historical record.** The original Europe-only and light-only scope below is no longer
-> the current implementation. Use [current POC acceptance checklist](poc-current-checklist.md)
-> for six continents, light/dark, Library/Profile, persisted choices, PL/RU capital names
-> and optional regional music/effects. Old test counts and artifact hashes remain snapshots.
+This is the current plan. [Implementation status](implementation-status.md) describes
+what exists; [POC acceptance](poc-current-checklist.md) and [release checks](release-checklist.md)
+describe what still needs proof. Earlier stages/test totals are preserved in the
+[historical POC record](poc-roadmap-history.md).
 
+## Implemented
 
-Target: a standalone offline Europe app with Home, four modes, country learning,
-EN/PL, saved completed scores and voice preference. One map style, individual
-rounds, no backend/accounts. No claim of physical-device readiness without proof.
+- Six offline continent packs; four modes and capital/flag variants; adaptive/random
+  practice with recent-target spacing; local canonical v4 persistence and recovery.
+- Map-first navigation, shared Blue Marble relief, land-bounds fitting, regional
+  insets, visible zoom/whole-map controls and anonymous quiz targets.
+- Learn/Library details, attributed photos, discovery filters, global Profile XP,
+  achievements, explorer outfits and hair/eye colors.
+- Separate rotating globe with place pins, country details and ocean coordinates.
+- EN/PL/RU, light/dark appearance, speech, optional regional music/effects and volume slider.
+- Optional Friends consent/authentication, aggregate snapshot sync, QR generation /
+  camera scanner, share URLs and explicit Profile invitation approval.
+- Static download/invitation landing page, main-APK provenance checks and Hosting workflow.
 
-1. Baseline: match Expo patch, CI on develop/codex branches, quiz label rules,
-   current documentation. Preserve user lockfile snapshot in named git stash.
-2. Map-first shell: Home mode cards, compact game header, shared map renderer,
-   bottom feedback/answers, Android Back and safe-area ownership.
-3. Complete modes: hide quiz answers, focus small targets, accessible selection,
-   consistent feedback and approximate microstate distance.
-4. Learn: complete offline EN/PL name, flag and capital coverage with source notes.
-5. Daily use: serialized persistence and retry, restore preferences, EN/PL speech,
-   honest last-100 statistics, focused game Settings without template biometrics.
-6. Delivery: standalone preview APK with embedded JS, emulator + web evidence,
-   physical-device and iOS gates recorded separately. Do not publish or merge.
+Implemented does not mean deployed, optically scanned, audible or accepted on every platform.
 
-Deferred: terrain themes, photographs/population, timed/10-question runs, streaks,
-additional regions, store publication and cloud services.
+## Remaining work, in order
 
-## Current roadmap (pre-release, 2026-10-28)
+1. **P0 — Deliver a verifiable candidate and public links.** Main Mobile CI for
+   `409a678` was cancelled; the downstream Hosting run skipped. Complete a main
+   source/APK run, confirm the deploy identity's Hosting permission, publish the
+   matching download and asset association, then verify `/friend`, download digest,
+   Android HTTPS opening and install → return-to-invitation flow. The 2026-11-02
+   endpoints still return 404. This is an operational gate, not missing QR UI.
+2. **P0 — Protect screen/provider orchestration.** Complete open
+   [issue #41](https://github.com/spider-su/world-maps/issues/41): all Home modes,
+   incorrect/correct answers, one completed session, Next/Back, remount restoration,
+   progress read/save recovery and LanguageProvider restoration/races. Pure rules,
+   store tests, SSR and standalone browser scripts do not complete this suite.
+3. **P1 — Exact-candidate device acceptance.** Exercise all six packs and variants,
+   small countries, zoom/pinch, globe drag-vs-tap, details/photos, localization,
+   safe areas, small screens/large fonts, light/dark, Android navigation modes,
+   screen readers, offline restart/update, and real audio/speech. Record source and
+   artifact hashes; physical Android, iOS Simulator and physical iOS are separate gates.
+4. **P1 — Finish and validate optional Friends for public accounts.** Test real
+   two-account acceptance, expiry/replay/concurrency and App Check/rules, physical
+   QR scanning and camera denial/failure. Finish last-updated presentation, remove /
+   revoke and full account-deletion flows. Reconcile local acknowledgement markers
+   after opt-out/server deletion and account/device changes; friend revision caching
+   and automatic retry/backoff are not wired. These are not implemented guarantees.
+5. **P1 — Publication prerequisites.** Finalize the one privacy-policy draft,
+   deletion/support routes, audience/store declarations and third-party attribution;
+   build a correctly signed/versioned release AAB and test the exact artifact.
+6. **P2 — Bounded cleanup and later enhancements.** Remove only reference-checked
+   unused helpers. Defer extra game modes, streaks/timed runs, additional cosmetic
+   complexity, cloud-save restoration and backend expansion until trial feedback.
 
-The six-region core is implemented: Europe, Asia, Africa, North America, South America and Oceania; all four modes, Library/Profile, EN/PL/RU, local v4 progress, opt-in audio and physical relief. Historical stage notes below describe earlier snapshots and are not current acceptance evidence.
-
-1. **P0 — Main-flow regression:** complete [issue #41](https://github.com/spider-su/world-maps/issues/41) with Home → all modes → completion/Next/Back → restart, storage failure and recovery.
-2. **P1 — Persisted audio settings:** verify rapid edits, late reads, failed writes, replay and background/speech behavior. Fix observed races without general platform refactoring.
-3. **P1 — Device acceptance:** verify all six maps, relief alignment, readable labels, island targets, audio, offline use, themes, accessibility and screen sizes on the current standalone Android APK. iOS requires separate evidence.
-4. **P1 — Release stabilization:** follow [current acceptance checklist](poc-current-checklist.md) and [release checklist](release-checklist.md); reconcile tested `develop` with release branch only after CI. Keep canonical progress schema v4; pre-release legacy migration is not required.
-5. **P2 — Verified cleanup only:** check all references across runtime, tests, scripts and native/web adapters before removing helper code; keep historical artifact evidence as snapshots.
-
-No new game modes, accounts or cloud features are required for the first release candidate.
-
-## Rules
-
-- Hot & Cold: red hotter, blue colder, green found; only guessed countries colored.
-- Find It: show the target name, keep unguessed map labels hidden.
-- Name It: highlight one target, offer four unique names, no target label leak.
-- Learn: freely show names, select country details, never record scored sessions.
-- Quiz labels can be explored after completion. No scored Show names assistance.
-- Historical metrics describe the most recent 100 retained completed rounds.
-- Leaving/mode change abandons an unfinished round; completed scores persist.
-
-## Evidence log
-
-Stage results and any remaining gates are appended as implementation proceeds.
-
-### Stage 1 — baseline
-
-- Expo updated to ~57.0.31; `npm ci` succeeded. Existing lockfile preserved in stash
-  `world-maps: original local lockfile before POC dependency refresh`.
-- CI now includes develop, codex branches and PRs to develop.
-- Label help is restricted to Learn/completed rounds; regression tests cover modes.
-- `npm run ci`: PASS (42 unit + 3 setup tests). `npx expo-doctor`: PASS (21/21).
-- npm audit reports six high-severity package entries in the dependency/tooling
-  tree. No forced major SDK downgrade was applied; this remains an explicit
-  dependency limitation, not a claim of a vulnerability-free release.
-
-### Stage 2 — map-first shell
-
-- Integrated existing `feature/world-maps-brand-theme` assets instead of duplicating
-  the icon, tokens or cards. Home now routes into a dedicated game with Back.
-- Shared `EuropeMap` extracted; prompt/answers/feedback sit directly around the map.
-  Game owns both insets with tabs hidden; Home retains visible-tab ownership.
-- EN/PL added for new UI. `npm run ci`: PASS (42 unit + 3 setup tests).
-- Browser 390×844: Home entry, Back and mode entry PASS. Name It answers and primary
-  action fit without scrolling. Zero browser errors; existing pointerEvents warning.
-
-### Stage 3 — gameplay completion
-
-- Small Name It targets initialize at useful zoom; amber highlight and halo remain
-  separate from green correct-answer feedback. Country labels remain hidden.
-- Web country paths support keyboard Enter/Space without native responder props.
-- Small-country proximity now measures marker to polygon outline. Regressions cover
-  Malta/Italy, Andorra/France, Monaco/France and Vatican/Italy plus symmetry.
-- `npm run ci`: PASS (44 unit + 3 setup tests). Browser checks: target highlight,
-  no Name It label leak and keyboard country selection PASS.
-
-### Stage 4 — offline Learn
-
-- Country information card and bundled SVG flags/capitals cover all 47 IDs in EN/PL.
-  Data sources, pinned revisions, regeneration and licenses are documented.
-- `npm run ci`: PASS (46 unit + 3 setup tests). Browser Learn/Andorra: capital,
-  flag and no scored attempts PASS. Flags render via existing SVG dependency.
-
-### Stage 5 — dependable daily use
-
-- One serialized progress writer retains updates across score/preference changes,
-  exposes failed-save retry, and blocks writes after read failure. Existing completed
-  records and Hot & Cold pack IDs remain compatible; history is explicitly last-100.
-- English/Polish game controls, country names, capitals and speech locale integrated.
-  Language preserves legacy preferences and ignores late reads after user changes.
-- Focused Settings replaces biometric demo, includes voice/history and offline license
-  notices. First POC intentionally uses one light theme; no false dark-mode promise.
-- Browser: Polish settings + relaunch + Learn card PASS; completed Name It score
-  survives relaunch PASS. Pure store regressions cover write ordering/read/save failure.
-
-### Stage 6 — delivered preview and evidence
-
-- Standalone arm64 preview built/installed and verified against its installed hash;
-  JavaScript is embedded. Production web export also built and smoke-tested.
-- Android API 35 emulator: offline startup, mode flows, saved state, real APK update,
-  gestures/buttons, navigation/insets and large text PASS. Browser operational
-  read/write fault injection and recovery PASS. Details: `docs/poc-testing.md`.
-- All implementation stages are committed. POC source/local preview are ready for
-  a personal trial with the explicit remaining physical-device, audio, pinch and
-  iOS gates above. No store publication, production signing or merge performed.
-
-### Map-first visual refresh — 2026-10-25
-
-Home now uses decorative offline orbit artwork and four mode cards. Secondary
-setup lives in a sheet; the game prioritizes the map, compact feedback and scores.
-Full Learn facts and non-gesture map controls remain available on demand.
-See [UI implementation and evidence](map-first-ui.md). This is presentation work,
-not a new ruleset or completion of physical-device/iOS acceptance gates.
-
-## Continent expansion — 2026-10-26
-
-The additional-regions deferral above describes the original Europe POC. Four
-offline maps now extend all modes: Asia, Africa, South America and Oceania.
-See [coverage and generation](continent-maps.md) and
-[validation evidence](evidence/continent-maps/README.md). Physical-phone, iOS,
-screen-reader and audible-speech validation remain separate pending gates.
+No gameplay expansion is needed to start an offline POC trial. Public account and
+store readiness still require the applicable gates above. Preserve existing data;
+new schemas require a separately scoped, tested migration rather than storage clearing.

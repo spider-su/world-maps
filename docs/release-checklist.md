@@ -1,14 +1,14 @@
 # World Maps release checklist
 
 ## Source and configuration
-- [ ] Review app.config.ts, .env, app icon and permissions; the app needs no runtime permissions
+- [ ] Review app.config.ts, .env, app icon and permissions; core gameplay needs no permission; optional QR scanning requests camera access, not microphone/media access
 - [ ] Confirm no credentials, signing keys or personal data are committed
 - [ ] Run `npm ci`, `npm run ci` and `npx expo-doctor`
 - [ ] Run a production web export (`npx expo export --platform web`)
 
 ## Canonical data contract
-- [ ] Confirm the build uses the current `develop` canonical progress schema v4, not older main-based APK logic
-- [ ] Use clean test data for old experimental schemas; do not claim compatibility migrations
+- [ ] Confirm the exact candidate uses canonical progress schema v4 and record its source SHA
+- [ ] Use an isolated fresh profile/install for clean-state tests; preserve existing data and verify unsupported schemas block reads instead of claiming migrations
 - [ ] Verify fresh install, force-stop, restart and update-over-install retain canonical v4 progress
 
 ## Device acceptance
@@ -30,6 +30,15 @@
 - [ ] Verify recovery from unreadable saved progress (retry, no data loss)
 - [ ] Capture device model, OS version, artifact SHA and date in the PR
 
+## Friends and public download
+
+- [ ] Confirm main source checks and Android APK succeeded; a cancelled run or skipped PR APK is not candidate proof.
+- [ ] Deploy Hosting from that successful main artifact; verify `/friend`, download digest/signing certificate and `.well-known/assetlinks.json`.
+- [ ] Verify Android HTTPS opening with the exact installed certificate and a real camera scan; retain explicit Profile acceptance.
+- [ ] Test App Check/Auth/rules with two accounts, expired/replayed invites and concurrent acceptance.
+- [ ] Verify removal/revocation/account deletion and local-acknowledgement reconciliation before claiming those flows available.
+- [ ] Validate truthful photo/camera/account/network disclosures; current deployment state is in [implementation status](implementation-status.md).
+
 ## Distribution (only if applicable)
 - [ ] Verify unique app IDs, version and signing configuration
 - [ ] Verify release build, privacy policy, support link and store metadata
@@ -42,7 +51,7 @@
 ## Publication, privacy and third-party rights
 
 - [ ] Verify current social/Firebase behavior against [firebase-friends.md](firebase-friends.md): opt-in, authentication, real network transfers, deployed functions, invitation security, profile deletion and consent withdrawal; do not claim offline-only network behavior for social-enabled releases.
-- [ ] Prepare and publish **one** accurate app privacy policy (none is linked from the current release checklist), reflecting optional remote Wikipedia images and actual Firebase/Auth/Firestore/function/analytics usage. Confirm publisher identity, retention, deletion contact and a public URL; complete Play Data safety and account deletion requirements if accounts are enabled.
+- [ ] Finalize and publish the **one** [privacy-policy draft](privacy-policy.md), reflecting optional remote Wikipedia images and actual Firebase/Auth/Firestore/function/analytics usage. Confirm publisher identity, retention, deletion contact and a public URL; complete Play Data safety and account deletion requirements if accounts are enabled.
 - [ ] Reuse existing [country data](country-data.md), [atlas attribution](atlas-data.md), and [artwork provenance](licenses/home-artwork.md) instead of duplicating licenses. Preserve the repository MIT license and embedded third-party notices; check all new media assets.
 - [ ] Verify store audience/children declarations, permissions, support contact, screenshots, app rating, signed AAB and exact candidate installation/update.
 - [ ] Do not mark publication-ready solely from this historical user test.

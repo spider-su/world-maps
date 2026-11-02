@@ -10,12 +10,12 @@ This is the current application inventory. Previous starter-template and early P
 | Continent framing / regional insets | `mapPresentation.ts`, `RegionMapInset.tsx`, `viewport.ts` | Land-bounds fit; original-geometry Whole map; accessible regional choices respect eligibility, selection guard and quiz secrecy |
 | Country selection | `CountryPath.tsx`, `CountryPath.web.tsx`, `mapPicker.ts`, `selection.ts` | Keep native/web SVG adapters, zoom/pan guard and small-country pickers |
 | Local progress | `ProgressContext.tsx`, `progressStore.ts`, `progressStorage.ts`, `progress.ts` | Pre-release canonical v4; serialized saves, read-error protection, retry |
-| Learning and XP | `learning.ts`, `explorerProgress.ts`, `explorer.ts` | Adaptive/random practice excludes up to four recent targets (at most half the active pool), derived from saved learning; discoveries, avatars, achievements |
+| Learning and XP | `learning.ts`, `explorerProgress.ts`, `explorer.ts` | Adaptive/random practice excludes up to four recent targets (at most half the active pool), derived from saved learning; discoveries, avatars with optional hair/eye colors, achievements |
 | Map and quiz preferences | `MapContext.tsx`, `mapQuizPreferences.ts` | Persist selected continent, Find It clue and Name It answer variant |
 | Language / pronunciation | `LanguageContext.tsx`, `countryFacts.ts`, `speechController.ts` | EN/PL/RU UI and capitals, native voice availability; device test required |
 | Audio | `MusicContext.tsx`, `MusicVolumeSlider(.web).tsx`, `musicPreferenceStore.ts`, `musicAssets.ts`, `soundPolicy.ts` | Serialized audio preferences with read/save retry; six optional region themes, optional quiz cues, speech priority, no background playback |
 | Profile sharing / QR | `FriendsPanel`, `FriendQrScanner`, `friendInvite.ts`, `AppNavigation`, `firebase/hosting` | Explicit consent and approval; localized busy states; camera only while scanning; public download/app links require main Hosting release |
-| Country details | `CountryInfoCard`, `CountryGallery`, `ExploreScreen` | Offline facts/flags; attributed online photos open by default in Learn details, opt-in in Library |
+| Country details | `CountryInfoCard`, `CountryGallery`, `ExploreScreen` | Offline facts/flags; attributed online photos open by default in Learn/globe details, opt-in in Library |
 | Launch setup / continue | `PlaySetup`, `QuizSetupSummary`, `launch.ts` | Home hides Difficulty; Maps owns its adjustment. Existing saved contexts; transient route launch; latest completed selected-map family |
 | Learning presentation | `ProfileScreen`, `LearningOverview`, `explorerReward` | Profile owns history/statistics; result rewards are derived; Library keeps list mounted behind shared details |
 | Full-screen globe | `GlobeScreen`, `RotatingGlobe`, `GlobeSurface(.web)`, `globe.ts` | Offline overview opened from Home; transient place pin and shared Learn details; ocean/unsupported coordinates; no progress writes; drag/scroll/buttons/keyboard |
@@ -28,3 +28,5 @@ Remove a helper only after reference checks cover `src/`, `scripts/`, tests, nat
 ## Remaining evidence
 
 Full Home → mode → answer → completion → Next/Back → persisted restore interaction tests are tracked in [issue #41](https://github.com/spider-su/world-maps/issues/41). Real Android, voice/music fidelity, screen-reader and iOS acceptance remain separate from automated checks.
+
+See [dated implementation status](implementation-status.md) and [test boundaries](testing.md). Pure helper and server-render tests do not establish mounted screen/provider interactions or live backend behavior.

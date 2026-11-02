@@ -1,6 +1,6 @@
 # POC testing and preview delivery — historical 2026-10-25 evidence
 
-> These results validate the original build, **not** today's five-continent, dark-mode,
+> These results validate the original build, **not** current six-continent, dark-mode,
 > Library/Profile or audio builds. For new acceptance gates and artifact capture use
 > [current POC checklist](poc-current-checklist.md).
 

@@ -1,6 +1,6 @@
 # Explorer progression
 
-Profile has one explorer journey across all five maps, independent of quiz
+Profile has one explorer journey across all six maps, independent of quiz
 difficulty and the currently selected continent. Three bundled human portraits
 (Amber, Ocean, Forest) share the same earned outfits. No account or network needed.
 
@@ -34,12 +34,13 @@ learning records, not an inference of every historical round ever played.
 
 ## Storage and migration
 
-Progress schema 4 adds only `explorer: 'amber' | 'ocean' | 'forest'`, default Amber.
+Progress schema 4 stores `explorer: 'amber' | 'ocean' | 'forest'`, default Amber,
+and optional `explorerAppearance` hair/eye choices. Each offers three simple colors;
+missing choices retain the selected portrait's original colors.
 Storage key `world-maps:hot-cold:progress:v1` and all pack IDs stay unchanged.
-Schema 2/3 learning, discoveries, retained scores and preferences are preserved;
-older unversioned/v1 scores retain the existing one-time learning reconstruction.
-Unavailable historical activities cannot be reconstructed. Future unsupported
-versions still surface a read error rather than being overwritten.
+Only canonical v4 is accepted. Earlier experimental and future unsupported versions
+surface a read error rather than migrate or be overwritten. Valid v4 learning,
+discoveries, retained scores and preferences remain in the same document.
 
 XP, level, achievements and outfit stage are derived, not stored copies. Avatar
 selection uses the same serialized progress writer and error/retry path as scores.

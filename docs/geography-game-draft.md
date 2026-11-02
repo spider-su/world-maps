@@ -1,43 +1,45 @@
 # Geography game contract
 
-World Maps is a downstream app of mobile_template. It owns its geography features.
+World Maps owns six bundled packs: Europe (47), Asia (50), Africa (54),
+North America (23), South America (12) and Oceania (14). Counts describe selectable
+learning-pack locations, not a geopolitical standard. See [coverage](continent-maps.md).
 
-- Europe includes 47 selectable locations: 41 country polygons and six markers.
-- Asia (50), Africa (54), South America (12) and Oceania (14) use the same four
-  modes and separate pack IDs for scores/practice. See [coverage](continent-maps.md).
-- Hot & Cold: hidden target; guessed countries retain distance colors; matching ID
-  alone wins. Adjacent countries never count as the answer.
-- Find It: named target; select the correct country on the map.
-- Name It: highlighted target with four unique answers; wrong answers are disabled.
-- Learn: unscored country selection and pronunciation.
-- Quiz labels stay hidden for unguessed countries until completion. Learn supports
-  explicit Show/Hide names; assistance cannot quietly inflate scored quizzes.
-- One completed round is one retained score record, isolated by mode. History is
-  bounded at 100 across modes; displayed statistics must say they cover history.
-- Switching modes or leaving discards the unfinished round. No timer/streak/10-round
-  session is promised. Corrupt storage must not crash the app.
-- Maps/facts are bundled offline. Speech depends on voices available on the device.
-- Map geometry uses Natural Earth's default de facto boundaries and approximate
-  planar distances; map coverage is a learning-pack convention.
+## Modes and rounds
 
-See [POC stages](poc-roadmap.md) and [map attribution](europe-map-assets.md).
+- Hot & Cold: hidden target; guesses retain distance colors. Only matching ID wins.
+- Find It: country, capital, flag or mixed clue; select its country on the map.
+- Name It: highlighted country; choose among four unique country or capital answers.
+  Wrong choices are disabled so repeated taps cannot inflate counters.
+- Learn: unscored selection, pronunciation and country details; opening a country
+  records discovery, not a correct quiz answer.
 
+All packs share these modes and EN/PL/RU content. Legacy capital mode IDs remain
+valid stored identifiers; public controls compose them through quiz variants.
+Quiz labels stay hidden for unguessed countries until completion. Learn offers
+Show/Hide names. Insets and small-country controls respect eligibility and secrecy.
+Difficulty is adjusted in Maps; Home uses saved choices without duplicating it.
+Random/adaptive sampling has a recent-target cooldown within the difficulty pool.
 
-## Capital quiz expansion
+One completed round produces one score record; history is bounded at 100 across
+modes. Cumulative learning and discoveries are independent of that bound. Leaving
+or switching modes discards an unfinished round. No timer, streak or fixed-length
+session is promised. Read failures block mutation and expose recovery controls.
 
-- **Find by Capital** (`capital-find`): show and pronounce a capital; the player taps its matching country on the same offline Europe map. The answer country remains hidden until success, and attempts are recorded.
-- **Name the Capital** (`capital-name`): highlight the country and show four randomized, localized capital names. Wrong options cannot be counted repeatedly; finishing records the session.
-- Reuse 47 existing localized capitals (English, Polish, Russian), difficulty settings, local history and adaptive practice, with independent score/progress keys per mode.
-- There is no new geographic layer or backend. Capitol location coordinates are not needed because the questions are country-based, not city-point selection.
-- Validate Android and web quiz flow, voice and CI before merging.
+## Discovery and progress
 
+Library browses the selected pack by region, country/capital search and discovery
+filter. Learn and Library share country details and record unique discoveries.
+The separate globe reuses details but does not award discovery or XP. Profile
+owns cumulative learning, history, explorer appearance, rewards and map progress.
+Core progress requires canonical schema v4; unsupported versions surface a read
+error, with no automatic v2/v3 migration. Preserve keys and stored pack IDs.
 
-## Country collections and player progress
+Maps, flags and facts are offline. Device voices determine speech availability.
+Optional credited photos require connectivity and open by default in full Learn
+and globe details; Library photos are opt-in. Optional Friends requires consent
+and network access; it is not a backup of local progress.
 
-- A dedicated Explore tab groups the same 47 locations into geographic regions and supports name/capital search.
-- A country opens the existing, shared Learn card. Exploring a country is distinct from mastering it through scored quizzes.
-- Optional credited Wikimedia Commons photos enhance selected details when online; the physical atlas and facts remain offline.
-- A Profile tab reports exploration, quiz mastery and regional progress from the single device-local progress store.
-- Progress schema v3 adds a bounded list of explored IDs and preserves v2 learning and session history.
-
-See [Explore, collections, photography and profile](explore-collections-profile.md) for data definitions, attribution and acceptance criteria.
+Geometry follows Natural Earth's default de facto boundaries, with approximate
+planar distance scoring. See [map attribution](europe-map-assets.md),
+[learning rules](country-learning.md), [Library/Profile](explore-collections-profile.md)
+and the [current roadmap](poc-roadmap.md).

@@ -5,13 +5,13 @@ permalink: /privacy/
 
 # World Maps — privacy policy (publication draft)
 
-**Status: DRAFT — do not publish until owner identity, release build, SDK inventory, actual server configuration and deletion flows are verified.** This is the sole intended public privacy-policy document for World Maps. Existing release and Firebase documentation remains technical evidence, not a second policy.
+**Status: DRAFT — publisher name and contact supplied. Do not publish until release build, SDK inventory, actual server configuration, retention, audience and account deletion flows are verified.** This is the sole intended public privacy-policy document for World Maps. Existing release and Firebase documentation remains technical evidence, not a second policy.
 
-**Publisher / data controller:** [verified legal name and contact address]  
-**Privacy and support email:** [verified email]  
+**Publisher / data controller:** Alex Kotik  
+**Privacy and support email:** alex.kotik.net@gmail.com  
 **Effective date:** [date]  
-**Public policy URL:** [stable HTTPS URL]  
-**Version / Android package:** [release version] / `com.spidersu.worldmaps`
+**Public policy URL:** https://spider-su.github.io/world-maps/privacy/ (planned; not live or verified)  
+**Version / Android package:** [release version — pending candidate] / `com.spidersu.worldmaps`
 
 ## Core offline geography gameplay
 
@@ -36,9 +36,13 @@ The optional QR scanner requests camera permission while open, decodes invitatio
 [Audit actual dependencies, crash SDKs, analytics, advertising ID, app permissions, device identifiers and any diagnostic collection; describe verified purposes, recipients, legal bases and retention.]  
 [Select the actual intended audience and complete any applicable children's privacy requirements. Do not assume educational content is automatically a child-directed app.]
 
+## Publisher contact
+
+**Publisher / controller:** Alex Kotik, known in Google Play as **smart-box**. Privacy/support contact: **alex.kotik.net@gmail.com**. No physical correspondence address has been supplied; whether it must be displayed is awaiting legal/publisher review.
+
 ## Rights and contact
 
-Depending on applicable law, users may have rights to access, correction, erasure, restriction, objection and complaint to a data-protection authority. Contact [verified privacy email] for requests involving data processed by the publisher. For device-only progress not sent to the publisher, the publisher may be unable to retrieve it.
+Depending on applicable law, users may have rights to access, correction, erasure, restriction, objection and complaint to a data-protection authority. Contact alex.kotik.net@gmail.com for requests involving data processed by the publisher. For device-only progress not sent to the publisher, the publisher may be unable to retrieve it.
 
 ## Changes
 
@@ -46,7 +50,7 @@ Update this policy and store declarations before adding or materially changing s
 
 ## Release approval checklist (remove from public HTML)
 
-- [ ] Replace all bracketed fields and obtain owner approval.
+- [ ] Confirm any required public correspondence address, effective date and release version; obtain owner approval.
 - [ ] Verify release-build data flow and third-party recipients; reconcile Firebase feature flags with actual deployment.
 - [ ] Verify legal bases, retention and data-subject request/deletion routes.
 - [ ] Complete Google Play Data safety and account-deletion declarations.

@@ -1,0 +1,9 @@
+{
+  "sourceCommit": "4725e37024ec81802d229e2aa70f015122a20195",
+  "trackedChanges": false,
+  "sha256": "ef12b81b563b4fc1c2aceb2443db779f8e37dd22a75c4cc88e292d8dba86cf66",
+  "architectures": "arm64-v8a",
+  "embeddedJavaScript": true,
+  "signing": "Development signing from generated Android project; not store credentials",
+  "installedApkDigestVerifiedAfterColdBoot": true
+}

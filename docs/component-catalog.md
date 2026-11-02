@@ -25,7 +25,7 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
 - `features/geography/ModeSelector`: four icon-led mode cards in `GAME_MODES`
   order, localized through `gameCopy`, no round state.
 - `screens/GeographyGameScreen`: one game mode/round, compact prompt and answers.
-- `features/geography/DifficultySelector`: saved level selection in Maps quiz setup.
+- `features/geography/DifficultySelector`: saved level selection in Maps and Settings quiz setup.
   `difficultyPack` supplies eligible quiz locations; `EuropeMap.selectableIds`
   restricts interactions while retaining geographic context.
 - `features/geography/learning`: per-country/mode canonical v4 attempt records,
@@ -192,7 +192,7 @@ Reuse an existing component when its behavior matches. Keep pure rules in featur
   existing serialized audio store.
 
 - `PlaySetup.showDifficulty` / `QuizSetupSummary.showDifficulty` default true.
-  Home passes false so Difficulty appears only in Maps setup and its summary.
+  Home passes false so Difficulty is hidden there; Maps setup/summary and Settings Quiz setup expose it.
   This is presentation only; gameplay still uses the saved difficulty.
 
 ## Full-screen globe

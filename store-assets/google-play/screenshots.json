@@ -1,0 +1,202 @@
+{
+  "screenshots": [
+    {
+      "file": "phone/phone-01.png",
+      "screen": "Home: geography modes and Europe continent selection",
+      "captured_at": "2026-11-02T17:55:40.485442+00:00",
+      "capture_method": "adb exec-out screencap -p",
+      "sha256": "b7823c8606a5d41251be226199d0cad1d5d2b40637dc36c376768f5fe6ab6159",
+      "raw_sha256": "347e27562f40b8c64d49fba354f50c7ea25ba3973b01a32943926ae3d3e1099e",
+      "crop": null,
+      "apk": {
+        "file": "world-maps-preview.apk",
+        "sha256": "a3923566bd10124d914cb72d706babb5047a33a84b6374af1e82fd335f37f0c2",
+        "package": "com.spidersu.worldmaps",
+        "version_code": "1",
+        "version_name": "1.0.0",
+        "source_commit": "e24360f95c809832c26907ddc0678b1e17cc490a",
+        "build_url": "https://github.com/spider-su/world-maps/actions/runs/41487483602"
+      },
+      "emulator": {
+        "avd": "play-store-assets-api35",
+        "serial": "emulator-5560",
+        "api": "35",
+        "android": "15",
+        "abi": "arm64-v8a",
+        "display": "Physical size: 1080x2400\nOverride size: 1080x1920",
+        "density": "Physical density: 420\nOverride density: 320",
+        "app_language": "en-US",
+        "system_locale": ""
+      },
+      "foreground_verified": true,
+      "visual_review": "pass",
+      "test_data": "Isolated install; country discoveries and quiz answers earned through real UI; no social account or personal data.",
+      "review_notes": "Inspected each image/contact sheet: current branding, no personal data, debug overlays, failed images or placeholder UI."
+    },
+    {
+      "file": "phone/phone-02.png",
+      "screen": "Europe map preview with continent selector and learning controls",
+      "captured_at": "2026-11-02T17:55:45.314981+00:00",
+      "capture_method": "adb exec-out screencap -p",
+      "sha256": "74dc2c16b10d6976532009aff2cb398910661e0831ccd23c72acea3ca2dd2fef",
+      "raw_sha256": "e73944bd136ff3bd679fd34379beedd9593521d7b9124d8e7d4d7b93ef6214b3",
+      "crop": null,
+      "apk": {
+        "file": "world-maps-preview.apk",
+        "sha256": "a3923566bd10124d914cb72d706babb5047a33a84b6374af1e82fd335f37f0c2",
+        "package": "com.spidersu.worldmaps",
+        "version_code": "1",
+        "version_name": "1.0.0",
+        "source_commit": "e24360f95c809832c26907ddc0678b1e17cc490a",
+        "build_url": "https://github.com/spider-su/world-maps/actions/runs/41487483602"
+      },
+      "emulator": {
+        "avd": "play-store-assets-api35",
+        "serial": "emulator-5560",
+        "api": "35",
+        "android": "15",
+        "abi": "arm64-v8a",
+        "display": "Physical size: 1080x2400\nOverride size: 1080x1920",
+        "density": "Physical density: 420\nOverride density: 320",
+        "app_language": "en-US",
+        "system_locale": ""
+      },
+      "foreground_verified": true,
+      "visual_review": "pass",
+      "test_data": "Isolated install; country discoveries and quiz answers earned through real UI; no social account or personal data.",
+      "review_notes": "Inspected each image/contact sheet: current branding, no personal data, debug overlays, failed images or placeholder UI."
+    },
+    {
+      "file": "phone/phone-03.png",
+      "screen": "Active Name It quiz with readable full-size Europe map and North Atlantic inset",
+      "captured_at": "2026-11-02T17:56:23.834525+00:00",
+      "capture_method": "adb exec-out screencap -p",
+      "sha256": "7a810d3f4ccdca5d800dfecb4d960e4a46d8c68a2ff3025eefa850889c25117b",
+      "raw_sha256": "7031998e29f711b187a3461b8115732b3fc57944caedf8aa2c2947acb3e34fcb",
+      "crop": null,
+      "apk": {
+        "file": "world-maps-preview.apk",
+        "sha256": "a3923566bd10124d914cb72d706babb5047a33a84b6374af1e82fd335f37f0c2",
+        "package": "com.spidersu.worldmaps",
+        "version_code": "1",
+        "version_name": "1.0.0",
+        "source_commit": "e24360f95c809832c26907ddc0678b1e17cc490a",
+        "build_url": "https://github.com/spider-su/world-maps/actions/runs/41487483602"
+      },
+      "emulator": {
+        "avd": "play-store-assets-api35",
+        "serial": "emulator-5560",
+        "api": "35",
+        "android": "15",
+        "abi": "arm64-v8a",
+        "display": "Physical size: 1080x2400\nOverride size: 1080x1920",
+        "density": "Physical density: 420\nOverride density: 320",
+        "app_language": "en-US",
+        "system_locale": ""
+      },
+      "foreground_verified": true,
+      "visual_review": "pass",
+      "test_data": "Isolated install; country discoveries and quiz answers earned through real UI; no social account or personal data.",
+      "review_notes": "Inspected each image/contact sheet: current branding, no personal data, debug overlays, failed images or placeholder UI."
+    },
+    {
+      "file": "phone/phone-04.png",
+      "screen": "Quiz complete: Monaco found in one attempt with points and explorer XP",
+      "captured_at": "2026-11-02T17:56:52.903011+00:00",
+      "capture_method": "adb exec-out screencap -p",
+      "sha256": "423a35f998dce759b0fb933927901a30f9f0d84c06dadbddee8e559ef8b79bb5",
+      "raw_sha256": "32545fa6f3f8adcbaea2f750479e8fc3badcc00e9c9ae3fab5fb4f90cd28fcee",
+      "crop": null,
+      "apk": {
+        "file": "world-maps-preview.apk",
+        "sha256": "a3923566bd10124d914cb72d706babb5047a33a84b6374af1e82fd335f37f0c2",
+        "package": "com.spidersu.worldmaps",
+        "version_code": "1",
+        "version_name": "1.0.0",
+        "source_commit": "e24360f95c809832c26907ddc0678b1e17cc490a",
+        "build_url": "https://github.com/spider-su/world-maps/actions/runs/41487483602"
+      },
+      "emulator": {
+        "avd": "play-store-assets-api35",
+        "serial": "emulator-5560",
+        "api": "35",
+        "android": "15",
+        "abi": "arm64-v8a",
+        "display": "Physical size: 1080x2400\nOverride size: 1080x1920",
+        "density": "Physical density: 420\nOverride density: 320",
+        "app_language": "en-US",
+        "system_locale": ""
+      },
+      "foreground_verified": true,
+      "visual_review": "pass",
+      "test_data": "Isolated install; country discoveries and quiz answers earned through real UI; no social account or personal data.",
+      "review_notes": "Inspected each image/contact sheet: current branding, no personal data, debug overlays, failed images or placeholder UI."
+    },
+    {
+      "file": "phone/phone-05.png",
+      "screen": "Learn: labelled Europe atlas with France flag, Paris capital and pronunciation",
+      "captured_at": "2026-11-02T17:55:54.454938+00:00",
+      "capture_method": "adb exec-out screencap -p",
+      "sha256": "61c027fced0ab08f5e59d940abfb0cd6f7152f27276edf05de5b49dd704adb04",
+      "raw_sha256": "9e2f376753c7456c5cece7f1f2caa49aaaf74c7f991256e83f4b18e3d196ff4b",
+      "crop": null,
+      "apk": {
+        "file": "world-maps-preview.apk",
+        "sha256": "a3923566bd10124d914cb72d706babb5047a33a84b6374af1e82fd335f37f0c2",
+        "package": "com.spidersu.worldmaps",
+        "version_code": "1",
+        "version_name": "1.0.0",
+        "source_commit": "e24360f95c809832c26907ddc0678b1e17cc490a",
+        "build_url": "https://github.com/spider-su/world-maps/actions/runs/41487483602"
+      },
+      "emulator": {
+        "avd": "play-store-assets-api35",
+        "serial": "emulator-5560",
+        "api": "35",
+        "android": "15",
+        "abi": "arm64-v8a",
+        "display": "Physical size: 1080x2400\nOverride size: 1080x1920",
+        "density": "Physical density: 420\nOverride density: 320",
+        "app_language": "en-US",
+        "system_locale": ""
+      },
+      "foreground_verified": true,
+      "visual_review": "pass",
+      "test_data": "Isolated install; country discoveries and quiz answers earned through real UI; no social account or personal data.",
+      "review_notes": "Inspected each image/contact sheet: current branding, no personal data, debug overlays, failed images or placeholder UI."
+    },
+    {
+      "file": "phone/phone-06.png",
+      "screen": "Explorer profile: earned XP, discovery, correct answers and next achievement",
+      "captured_at": "2026-11-02T17:57:01.281603+00:00",
+      "capture_method": "adb exec-out screencap -p",
+      "sha256": "ec121bb09626e8658dd6231ffe55682fb749957a11e861bb9ba232d34811676c",
+      "raw_sha256": "a995e788ab4253e2a2ed3cc42891a065dc17cedd4f0d653448fb643afc63a41c",
+      "crop": null,
+      "apk": {
+        "file": "world-maps-preview.apk",
+        "sha256": "a3923566bd10124d914cb72d706babb5047a33a84b6374af1e82fd335f37f0c2",
+        "package": "com.spidersu.worldmaps",
+        "version_code": "1",
+        "version_name": "1.0.0",
+        "source_commit": "e24360f95c809832c26907ddc0678b1e17cc490a",
+        "build_url": "https://github.com/spider-su/world-maps/actions/runs/41487483602"
+      },
+      "emulator": {
+        "avd": "play-store-assets-api35",
+        "serial": "emulator-5560",
+        "api": "35",
+        "android": "15",
+        "abi": "arm64-v8a",
+        "display": "Physical size: 1080x2400\nOverride size: 1080x1920",
+        "density": "Physical density: 420\nOverride density: 320",
+        "app_language": "en-US",
+        "system_locale": ""
+      },
+      "foreground_verified": true,
+      "visual_review": "pass",
+      "test_data": "Isolated install; country discoveries and quiz answers earned through real UI; no social account or personal data.",
+      "review_notes": "Inspected each image/contact sheet: current branding, no personal data, debug overlays, failed images or placeholder UI."
+    }
+  ]
+}

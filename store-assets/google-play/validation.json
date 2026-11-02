@@ -1,0 +1,68 @@
+{
+  "result": "PASS",
+  "images": [
+    {
+      "file": "icon-512.png",
+      "dimensions": "512 × 512",
+      "bytes": 72191,
+      "format": "PNG",
+      "sha256": "16da50155e4d644d3707e1d9db9423d2fc9c0e9e65ef0f61843ba0a733b57a80"
+    },
+    {
+      "file": "feature-graphic-1024x500.png",
+      "dimensions": "1024 × 500",
+      "bytes": 478040,
+      "format": "PNG",
+      "sha256": "001c3344cc2fe20a2ae190fe0b281b3333bdda4735954b4ecc7710df6f9c69c2"
+    },
+    {
+      "file": "phone/phone-01.png",
+      "dimensions": "1080 × 1920",
+      "bytes": 299514,
+      "format": "PNG",
+      "sha256": "b7823c8606a5d41251be226199d0cad1d5d2b40637dc36c376768f5fe6ab6159"
+    },
+    {
+      "file": "phone/phone-02.png",
+      "dimensions": "1080 × 1920",
+      "bytes": 511886,
+      "format": "PNG",
+      "sha256": "74dc2c16b10d6976532009aff2cb398910661e0831ccd23c72acea3ca2dd2fef"
+    },
+    {
+      "file": "phone/phone-03.png",
+      "dimensions": "1080 × 1920",
+      "bytes": 195169,
+      "format": "PNG",
+      "sha256": "7a810d3f4ccdca5d800dfecb4d960e4a46d8c68a2ff3025eefa850889c25117b"
+    },
+    {
+      "file": "phone/phone-04.png",
+      "dimensions": "1080 × 1920",
+      "bytes": 254123,
+      "format": "PNG",
+      "sha256": "423a35f998dce759b0fb933927901a30f9f0d84c06dadbddee8e559ef8b79bb5"
+    },
+    {
+      "file": "phone/phone-05.png",
+      "dimensions": "1080 × 1920",
+      "bytes": 761057,
+      "format": "PNG",
+      "sha256": "61c027fced0ab08f5e59d940abfb0cd6f7152f27276edf05de5b49dd704adb04"
+    },
+    {
+      "file": "phone/phone-06.png",
+      "dimensions": "1080 × 1920",
+      "bytes": 124040,
+      "format": "PNG",
+      "sha256": "ec121bb09626e8658dd6231ffe55682fb749957a11e861bb9ba232d34811676c"
+    }
+  ],
+  "description_characters": {
+    "title": 10,
+    "short_description": 76,
+    "full_description": 1314
+  },
+  "errors": [],
+  "manual_checks": "Human visual review covers private data, debug overlays, branding and feature correspondence; image statistics do not prove these."
+}

@@ -1,0 +1,21 @@
+{
+  "name": "World Maps",
+  "package": "com.spidersu.worldmaps",
+  "language": "en-US",
+  "title": "World Maps",
+  "short_description": "Learn countries, capitals and flags with maps, quizzes and explorer progress",
+  "icon": "assets/icon.png",
+  "art": "assets/artwork/europe-orbit-home.jpg",
+  "background": "#0A2344",
+  "foreground": "#FFFFFF",
+  "accent": "#AEE15A",
+  "graphic_title": [
+    "World Maps"
+  ],
+  "graphic_subtitle": [
+    "A world to explore.",
+    "A little more to learn."
+  ],
+  "graphic_footer": "MAPS  /  QUIZZES  /  DISCOVERIES",
+  "full_description": "Build your geography knowledge through interactive maps and short quizzes. Explore Europe, Asia, Africa, North America, South America and Oceania with six bundled continent maps.\n\nFour ways to learn\n• Hot & Cold: use distance feedback to work toward the target.\n• Find It: locate countries from country, capital, flag or mixed clues.\n• Name It: choose the country or capital that matches the highlighted place.\n• Learn: explore the atlas at your own pace, select countries and read their facts.\n\nMake practice your own\nChoose a difficulty and use random or adaptive practice. Zoom and regional insets help you explore crowded areas and islands. Search the Library for countries and capitals, then open country details to learn more.\n\nSee your discoveries grow\nTrack local learning progress, earn XP and achievements, and personalize your explorer. Completed rounds and discoveries help you see where you have been and what to practise next.\n\nLearn offline\nCore maps, quizzes, flags and country facts work without an account or connection. Expanded country photographs are optional online content and include source credits. Pronunciation uses voices available on your device.\n\nChoose English, Polish or Russian controls and names, and use light or dark appearance. Your core learning progress stays on your device."
+}

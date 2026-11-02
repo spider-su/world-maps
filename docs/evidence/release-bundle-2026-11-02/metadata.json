@@ -1,0 +1,29 @@
+{
+  "sourceCommit": "ebce962bd741ca093c17629ef4c8e2d46d7f8c21",
+  "sha256": "01432a999b3920207d0b851f9d4683101be85a33f8874fff790a9e43f5ff05ee",
+  "bytes": 51127944,
+  "package": "com.spidersu.worldmaps",
+  "versionName": "1.0.0",
+  "versionCode": "1",
+  "minSdk": "24",
+  "targetSdk": "36",
+  "debuggable": false,
+  "architectures": [
+    "arm64-v8a",
+    "x86_64"
+  ],
+  "embeddedJavaScript": true,
+  "uploadCertificateSha256": "6A:8E:D7:B4:3E:D0:49:E2:A3:67:9F:8B:23:63:3A:83:04:06:69:E0:E1:97:61:36:EE:18:36:9C:5E:FC:20:74",
+  "bundletoolValidation": "PASS",
+  "jarSignatureVerification": "PASS",
+  "storeUploadPerformed": false,
+  "releaseArtifactRuntimeTested": false,
+  "signatureContainerCanonicalized": true,
+  "nonSignaturePayloadPreserved": true,
+  "generatedUniversalApkSignature": "PASS",
+  "generatedUniversalApkZipAlignment16KiB": "PASS",
+  "nativeLibrariesChecked": 46,
+  "nativeElf16KiBAlignment": "PASS",
+  "nativeAlignmentProblems": [],
+  "trackedChangesAtBuild": false
+}

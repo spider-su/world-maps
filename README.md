@@ -18,7 +18,7 @@ are optional online features.
   learning, adaptive/random practice, XP, achievements and explorer customization.
 - Optional bundled regional Learn music, independent quiz sounds and a 0–30% volume slider.
 
-Choose the map on Home or Maps. Difficulty is adjusted in Maps: Easy uses the seven
+Choose the map on Home or Maps. Difficulty is adjusted in Maps or Settings → Quiz setup: Easy uses the seven
 largest projected outlines, Normal includes at least two thirds of each pack and
 all Easy targets, and Difficult includes all locations. Learn includes everyone.
 Both practice modes avoid up to four recent eligible targets, capped at half the

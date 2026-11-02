@@ -1,0 +1,297 @@
+[
+  {
+    "file": "01-home-offline-light.png",
+    "sha256": "f6caad41c13e5eb08e5b25c7974a11a7e5fdd64c3ceb0247214a764b228b8927",
+    "capturedAt": "2026-11-02T10:54:33.125661+01:00"
+  },
+  {
+    "file": "02-hot-cold-offline.png",
+    "sha256": "2f8dcde9e5c47995a5d4d2ef0303985c7d00fb0524e0d47839c8c4b78cd01038",
+    "capturedAt": "2026-11-02T10:54:44.241344+01:00"
+  },
+  {
+    "file": "03-hot-cold-feedback.png",
+    "sha256": "16062b72d81be3cd8b65248ffc5030d8a239b0c308baa48432cbd5e0280f584c",
+    "capturedAt": "2026-11-02T10:55:42.784712+01:00"
+  },
+  {
+    "file": "04-find-it.png",
+    "sha256": "9ff16c63e280a6ec188d679ca8ed55ce0ede23011c804ce7c783bcafa37e1016",
+    "capturedAt": "2026-11-02T10:55:48.400178+01:00"
+  },
+  {
+    "file": "05-name-it.png",
+    "sha256": "42ce210cbfceb8ae2341da23fa31e3ba74592f3ad41e62b098941555e4cde412",
+    "capturedAt": "2026-11-02T10:55:54.019058+01:00"
+  },
+  {
+    "file": "06-name-answer-poland.png",
+    "sha256": "49f275a035ebe990c2ed6c00c4e99515707846fac86b2f1b482503c14f0aa68b",
+    "capturedAt": "2026-11-02T10:56:13.196765+01:00"
+  },
+  {
+    "file": "06-name-answer-switzerland.png",
+    "sha256": "74d6fc4480aa70ad2e53df78b213bfe80d0b452fdbfe0460be6449565bbdb785",
+    "capturedAt": "2026-11-02T10:56:07.861708+01:00"
+  },
+  {
+    "file": "07-name-next.png",
+    "sha256": "1fe50863d9b4a83b3083355389a869245e1414b47754dd33250961b8fe1661e5",
+    "capturedAt": "2026-11-02T10:56:33.908759+01:00"
+  },
+  {
+    "file": "08-learn-africa.png",
+    "sha256": "bbfd164680efce6b3e6188b3e30905e1f4c301bd5c11d8affbab4ed63c362433",
+    "capturedAt": "2026-11-02T10:57:07.428819+01:00"
+  },
+  {
+    "file": "08-learn-asia.png",
+    "sha256": "d9becf8e4d285beff5088cb5c68951011efbbbb85d1c10bc20e9c9856222f072",
+    "capturedAt": "2026-11-02T10:56:56.272688+01:00"
+  },
+  {
+    "file": "08-learn-europe.png",
+    "sha256": "c168f483da095115af81d8b5f0fdc541b9e72fbb0610c4189d447805f7878e3d",
+    "capturedAt": "2026-11-02T10:56:45.038741+01:00"
+  },
+  {
+    "file": "08-learn-north-america.png",
+    "sha256": "78f7d2c4a9d6420295762d01069ef87f3470e29c457785b49d7216451401abec",
+    "capturedAt": "2026-11-02T10:57:18.134444+01:00"
+  },
+  {
+    "file": "08-learn-oceania.png",
+    "sha256": "17d776aab22d35ae9b050f19a73eb24f9a7fadf9ab2041c08368d774f9817d2f",
+    "capturedAt": "2026-11-02T10:58:26.405724+01:00"
+  },
+  {
+    "file": "08-learn-south-america.png",
+    "sha256": "172315966f1f1405b9405363cac163fb2faa0936f9f16fb5696bbf97dab65809",
+    "capturedAt": "2026-11-02T10:58:07.924799+01:00"
+  },
+  {
+    "file": "09-caribbean-sheet.png",
+    "sha256": "af5b71af34959e4dee88913b3f9fd3e47e9d36ef2dd31e2c734828047758a304",
+    "capturedAt": "2026-11-02T10:57:23.308851+01:00"
+  },
+  {
+    "file": "10-caribbean-zoom.png",
+    "sha256": "74eac758d4fc68455b5065914fc998d9a072e1b256e405497a35f109f942faa8",
+    "capturedAt": "2026-11-02T10:57:31.100746+01:00"
+  },
+  {
+    "file": "11-maps.png",
+    "sha256": "8a0e7bab94588ab68555f6527abb0b1c46e5ea47ba9b6aefe36711ace8d2e772",
+    "capturedAt": "2026-11-02T10:58:31.997638+01:00"
+  },
+  {
+    "file": "13-learn-selected.png",
+    "sha256": "edcc720d9712b1b9928b6513e56a70a8447f153da6f46d900c8fa19b1b9e92fd",
+    "capturedAt": "2026-11-02T10:59:00.744226+01:00"
+  },
+  {
+    "file": "14-learn-photos-offline.png",
+    "sha256": "425ba0b646dd7301fe240d3b42aaa71ecb806a8659842b8ad47db7c3765ca691",
+    "capturedAt": "2026-11-02T10:59:39.189276+01:00"
+  },
+  {
+    "file": "15-library.png",
+    "sha256": "2577de4ef98777d05d5983473c4f37c878ef3ad5b0899ae288421337cceb5f24",
+    "capturedAt": "2026-11-02T10:59:45.414442+01:00"
+  },
+  {
+    "file": "16-library-photos-collapsed.png",
+    "sha256": "3686a78baac7d10c6079a401f4179890439b412cae01b02f22c7bf63d73b8984",
+    "capturedAt": "2026-11-02T11:00:09.000422+01:00"
+  },
+  {
+    "file": "17-library-search-restored.png",
+    "sha256": "1cd1907f23965c30f6f21fa58c9c5748db429887e088b7c464a4f631ea501e69",
+    "capturedAt": "2026-11-02T11:00:11.921730+01:00"
+  },
+  {
+    "file": "18-profile.png",
+    "sha256": "4faccadc264311cd291f6b317b144bbc73a64c3faa7855f59abf0b3c9c818f85",
+    "capturedAt": "2026-11-02T11:00:17.087339+01:00"
+  },
+  {
+    "file": "19-explorer-editor.png",
+    "sha256": "dc686d34bb9b5a7441f0f73133e7afde67c0f588999db1a449421991ac7e634d",
+    "capturedAt": "2026-11-02T11:00:22.419568+01:00"
+  },
+  {
+    "file": "20-explorer-customized.png",
+    "sha256": "60dc396fc095cd2c8ff9f904eda8776002aaec6bd6c50e44e32e7bf1979df5c2",
+    "capturedAt": "2026-11-02T11:00:41.716767+01:00"
+  },
+  {
+    "file": "21-profile-restart.png",
+    "sha256": "4e337bf7f7ecb96a8326852475f4ec0ae49210fc58aa4b06ab0443cda785fd7f",
+    "capturedAt": "2026-11-02T11:00:49.214446+01:00"
+  },
+  {
+    "file": "22-explorer-restored.png",
+    "sha256": "60dc396fc095cd2c8ff9f904eda8776002aaec6bd6c50e44e32e7bf1979df5c2",
+    "capturedAt": "2026-11-02T11:00:55.509758+01:00"
+  },
+  {
+    "file": "23-settings-top.png",
+    "sha256": "d7756eeba7eb93d0ed24cdbee6f919ae11245ec32f2fb1b5f1edefe5a969f9ad",
+    "capturedAt": "2026-11-02T11:01:01.689134+01:00"
+  },
+  {
+    "file": "24-music-toggle.png",
+    "sha256": "e565978a55eab476b382689e073cdd53d9edc59d723ccf805d5f4f3ff751e741",
+    "capturedAt": "2026-11-02T11:01:42.432372+01:00"
+  },
+  {
+    "file": "25-settings-bottom.png",
+    "sha256": "173cb4df3f7d8ebf14ae928bf8a6374c6dcc54f259a6be680f0a26ab0043b688",
+    "capturedAt": "2026-11-02T11:01:45.659562+01:00"
+  },
+  {
+    "file": "26-settings-audio-preview.png",
+    "sha256": "0b4f119598cb7b13d4e335c75d4e064fd61b840d25a35921a0eecc594076befe",
+    "capturedAt": "2026-11-02T11:02:22.566232+01:00"
+  },
+  {
+    "file": "27-licenses-top.png",
+    "sha256": "85340e80a4f083baef38ff796d789fe71a60da770338b6eb01e3ce10c7e75724",
+    "capturedAt": "2026-11-02T11:02:27.682808+01:00"
+  },
+  {
+    "file": "28-licenses-bottom.png",
+    "sha256": "d293ae4cb8122f4207b3d724c57c82f28b9e6a657912286d04cf581aa78c00a7",
+    "capturedAt": "2026-11-02T11:02:31.405337+01:00"
+  },
+  {
+    "file": "29-settings-back.png",
+    "sha256": "0b4f119598cb7b13d4e335c75d4e064fd61b840d25a35921a0eecc594076befe",
+    "capturedAt": "2026-11-02T11:02:34.317196+01:00"
+  },
+  {
+    "file": "30-settings-setup.png",
+    "sha256": "765b5e8497c708c60fd21c75e9581d4d4e346411068cdbceb04fd47e8deab52a",
+    "capturedAt": "2026-11-02T11:03:10.700798+01:00"
+  },
+  {
+    "file": "31-globe.png",
+    "sha256": "fbb0cd17ca956fd8cf0fe0767faefda01f96231c41de115c00453d974c968034",
+    "capturedAt": "2026-11-02T11:03:18.778796+01:00"
+  },
+  {
+    "file": "32-globe-country.png",
+    "sha256": "b1a63c581d3a08cd9ebba4d2c3af0f7c9802ee6b56df174c0074a37582df5a3c",
+    "capturedAt": "2026-11-02T15:11:36.329114+01:00"
+  },
+  {
+    "file": "33-globe-pin.png",
+    "sha256": "f508b33d5688c4f87bcad9f8522f34e4cc889266836ad12499f51a111621842a",
+    "capturedAt": "2026-11-02T15:11:39.236354+01:00"
+  },
+  {
+    "file": "34-globe-drag.png",
+    "sha256": "16e2c72c662572b4546c7cf168fe3a3d3a0e4bf24b6d056b8c5bea3b29fbfd77",
+    "capturedAt": "2026-11-02T15:11:47.040761+01:00"
+  },
+  {
+    "file": "35-globe-ocean.png",
+    "sha256": "5ac722fd445c01d3093161451d5ed45439b4577d6590875e2ec27efaeb0c5d0c",
+    "capturedAt": "2026-11-02T15:11:54.688464+01:00"
+  },
+  {
+    "file": "36-profile-after-globe.png",
+    "sha256": "92496fcae049351743dbce5b66da0e4eac2f7be095623098b058ea490303097c",
+    "capturedAt": "2026-11-02T15:12:00.590383+01:00"
+  },
+  {
+    "file": "37-progress-read-error.png",
+    "sha256": "39343da5ab916a312a43d7f7259cffd6333c8b7cfe73ba936575367fab4cca0f",
+    "capturedAt": "2026-11-02T15:12:18.124419+01:00"
+  },
+  {
+    "file": "38-progress-retry-still-protected.png",
+    "sha256": "39343da5ab916a312a43d7f7259cffd6333c8b7cfe73ba936575367fab4cca0f",
+    "capturedAt": "2026-11-02T15:12:23.428002+01:00"
+  },
+  {
+    "file": "39-progress-restored.png",
+    "sha256": "92496fcae049351743dbce5b66da0e4eac2f7be095623098b058ea490303097c",
+    "capturedAt": "2026-11-02T15:12:30.649941+01:00"
+  },
+  {
+    "file": "40-home-small-dark-large-threebutton.png",
+    "sha256": "738bef08eadef7b42773c89e5bc3d433dfc5fca09bddbc773edad5fd89b4de0a",
+    "capturedAt": "2026-11-02T15:16:34.883580+01:00"
+  },
+  {
+    "file": "41-name-small-dark-large-threebutton.png",
+    "sha256": "c4c288b071c1373da1af3ff806583de87794d0a619112bc26111ecdcffd70301",
+    "capturedAt": "2026-11-02T15:16:42.782628+01:00"
+  },
+  {
+    "file": "42-learn-small-dark-large-threebutton.png",
+    "sha256": "3fa3d860ac730b9a3e27a225ef216b47b6492e2338284e0bbc0a48d7d5d40d76",
+    "capturedAt": "2026-11-02T15:16:51.134623+01:00"
+  },
+  {
+    "file": "43-inset-small-dark-large-threebutton.png",
+    "sha256": "93976dcf55e9f39ca763bb7c933b794c42b115e88cec63a2876d17655ae0ab89",
+    "capturedAt": "2026-11-02T15:16:56.354169+01:00"
+  },
+  {
+    "file": "44-settings-small-dark-large-threebutton.png",
+    "sha256": "09d4e48bbb3d27f0c1b66400c7223793e435e723d6256ed6150820293fd03b3a",
+    "capturedAt": "2026-11-02T15:17:02.161683+01:00"
+  },
+  {
+    "file": "45-licenses-small-dark-large-threebutton.png",
+    "sha256": "470bda49fbb23884410d1685480ae1727ec35bc3f953a209895ab1d161175047",
+    "capturedAt": "2026-11-02T15:17:16.341847+01:00"
+  },
+  {
+    "file": "46-profile-small-dark-large-threebutton.png",
+    "sha256": "8b01ff0fb1f78a30e0c63263f18a03f0840975ae757e4cf4c4655ab22375ab2c",
+    "capturedAt": "2026-11-02T15:17:21.923547+01:00"
+  },
+  {
+    "file": "47-cold-invitation.png",
+    "sha256": "254386ce0b4b40520551e1a793a368c94efe8e36760d4f87ce338d9c3128f2de",
+    "capturedAt": "2026-11-02T15:19:08.604513+01:00"
+  },
+  {
+    "file": "48-share-world-maps.png",
+    "sha256": "713044f8df95c05b766554e60875b13053549203f529924cf70c99dd26b46fa9",
+    "capturedAt": "2026-11-02T15:19:14.208216+01:00"
+  },
+  {
+    "file": "49-camera-denied.png",
+    "sha256": "0450e0bcecaebcddfc1f392571deb8c01ca93bf404ad04591b13b7c7d6b9aad8",
+    "capturedAt": "2026-11-02T15:19:36.366802+01:00"
+  },
+  {
+    "file": "50-warm-invitation.png",
+    "sha256": "e060d55293610add766db0cb4dca09d446f1044f2a83eca915e6360dcd8729b5",
+    "capturedAt": "2026-11-02T15:19:39.378815+01:00"
+  },
+  {
+    "file": "51-camera-after-grant.png",
+    "sha256": "996430040425ce40cc4977c84a20cb673b5fef1683a0944e698b4b5be3b655b1",
+    "capturedAt": "2026-11-02T15:21:49.356852+01:00"
+  },
+  {
+    "file": "52-find-it-feedback.png",
+    "sha256": "10eb0c8a255d324a596b7433b37dc3050286be7dd6cd7ab5e4ff14e330541771",
+    "capturedAt": "2026-11-02T15:22:00.938895+01:00"
+  },
+  {
+    "file": "53-name-small-fourth-choice.png",
+    "sha256": "9bb30fe880bd2b86dcb119ef57e736e7c9497b7aafb85f9c2acdf17591114b95",
+    "capturedAt": "2026-11-02T15:22:14.017381+01:00"
+  },
+  {
+    "file": "54-owner-progress-preserved.png",
+    "sha256": "5132100f8bc06d06fc6a72544d34d72733144618b17f22d19293e22e7a896326",
+    "capturedAt": "2026-11-02T15:23:15.109613+01:00"
+  }
+]

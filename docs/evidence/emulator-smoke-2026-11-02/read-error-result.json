@@ -1,0 +1,7 @@
+{
+  "schemaInjection": 999,
+  "isolatedUser": 10,
+  "retryKeptProtection": true,
+  "validProgressRestoredExactly": true,
+  "progressSha256": "e211cddce7c19f7064e85f8aed364f5f0c19b8d46a59cb2e7b28a42f80882f61"
+}

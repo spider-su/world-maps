@@ -68,3 +68,13 @@ Only documentation, environment-example commentary and tests change; no new nati
 compatibility claim is made. No emulator, physical-device, iOS or screen-reader
 run was performed for this alignment. Deployed services are not exercised by the
 mocked social-session unit tests.
+
+## Subsequent emulator and release-artifact evidence
+
+The [2026-11-02 emulator smoke](evidence/emulator-smoke-2026-11-02/README.md)
+now supplies fresh source-matched API 35 screenshots, bounded functional checks,
+read-error recovery and exact owner-data preservation. It found two UI failures;
+physical-device, iOS, screen-reader, optical QR and live social acceptance remain
+unverified. The [separate signed AAB](evidence/release-bundle-2026-11-02/README.md)
+passes structural/signature checks, but was not runtime-tested or uploaded to Play.
+These later results do not retroactively change the earlier deployment snapshot.

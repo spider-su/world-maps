@@ -1,7 +1,7 @@
 # Library, country details and Profile
 
 Home launches four modes and the separate globe. Maps owns continent selection
-and difficulty. Library browses countries; Profile owns progression, learning and
+and difficulty, also available through Settings Quiz setup. Library browses countries; Profile owns progression, learning and
 history. Settings owns language, pronunciation, audio and licenses. The internal
 Library route/component retains the `Explore`/`ExploreScreen` name.
 

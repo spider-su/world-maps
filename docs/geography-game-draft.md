@@ -17,7 +17,7 @@ All packs share these modes and EN/PL/RU content. Legacy capital mode IDs remain
 valid stored identifiers; public controls compose them through quiz variants.
 Quiz labels stay hidden for unguessed countries until completion. Learn offers
 Show/Hide names. Insets and small-country controls respect eligibility and secrecy.
-Difficulty is adjusted in Maps; Home uses saved choices without duplicating it.
+Difficulty is adjusted in Maps or Settings → Quiz setup; Home uses saved choices without duplicating it.
 Random/adaptive sampling has a recent-target cooldown within the difficulty pool.
 
 One completed round produces one score record; history is bounded at 100 across

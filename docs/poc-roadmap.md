@@ -34,7 +34,10 @@ Implemented does not mean deployed, optically scanned, audible or accepted on ev
    incorrect/correct answers, one completed session, Next/Back, remount restoration,
    progress read/save recovery and LanguageProvider restoration/races. Pure rules,
    store tests, SSR and standalone browser scripts do not complete this suite.
-3. **P1 — Exact-candidate device acceptance.** Exercise all six packs and variants,
+3. **P1 — Fix observed UI issues, then exact-candidate acceptance.** The
+   [2026-11-02 smoke](evidence/emulator-smoke-2026-11-02/README.md) found Name It
+   prompt clipping at 150% text on a small display and a low-contrast licenses
+   Close icon in dark mode. Fix these and rebuild before publication. Exercise all six packs and variants,
    small countries, zoom/pinch, globe drag-vs-tap, details/photos, localization,
    safe areas, small screens/large fonts, light/dark, Android navigation modes,
    screen readers, offline restart/update, and real audio/speech. Record source and

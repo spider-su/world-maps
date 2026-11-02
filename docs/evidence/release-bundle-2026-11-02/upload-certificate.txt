@@ -1,0 +1,21 @@
+Owner: CN=World Maps Upload
+Issuer: CN=World Maps Upload
+Serial number: 6341cef95067cf91
+Valid from: Mon Nov 02 15:15:10 CET 2026 until: Fri Mar 20 15:15:10 CET 2054
+Certificate fingerprints:
+	 SHA1: 02:49:74:49:73:38:01:5E:66:5C:60:D9:53:D4:22:C0:AF:59:D9:1C
+	 SHA256: 6A:8E:D7:B4:3E:D0:49:E2:A3:67:9F:8B:23:63:3A:83:04:06:69:E0:E1:97:61:36:EE:18:36:9C:5E:FC:20:74
+Signature algorithm name: SHA256withRSA
+Subject Public Key Algorithm: 3072-bit RSA key
+Version: 3
+
+Extensions: 
+
+#1: ObjectId: 2.5.29.14 Criticality=false
+SubjectKeyIdentifier [
+KeyIdentifier [
+0000: 55 2E EE 22 A2 1D 94 D0   B3 3B B2 75 A4 D0 05 6C  U..".....;.u...l
+0010: 06 96 51 CF                                        ..Q.
+]
+]
+

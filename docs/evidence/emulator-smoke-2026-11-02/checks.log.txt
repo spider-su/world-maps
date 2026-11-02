@@ -1,0 +1,29 @@
+
+> world-maps@0.1.0 ci
+> npm run typecheck && npm run lint && npm test
+
+
+> world-maps@0.1.0 typecheck
+> tsc --noEmit
+
+
+> world-maps@0.1.0 lint
+> eslint App.tsx src
+
+
+> world-maps@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.3 /Users/alex/projects/world-maps
+
+
+ Test Files  54 passed (54)
+      Tests  243 passed (243)
+   Start at  10:55:14
+   Duration  2.23s (import 39%, tests 31%, transform 28%, worker 1%)
+
+  Transform  transforming modules took 3.78s · 28% of tracked time, re-done on every run
+             persist transforms across runs with fsModuleCache: true
+             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns
+

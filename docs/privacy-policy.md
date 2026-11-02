@@ -1,4 +1,5 @@
 ---
+layout: default
 title: "World Maps Privacy Policy"
 permalink: /privacy/
 ---
